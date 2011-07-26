@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: activemq-all-5.5.0.jar 
+ log4j-1.2.14.jar 
+ slf4j-api-1.5.11.jar 
+ slf4j-jdk14-1.6.1.jar
+
