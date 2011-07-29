@@ -36,7 +36,8 @@ public class Consumer {
 
         // Here we receive the message.
         // By default this call is blocking, which means it will wait
-        // for a message to arrive on the queue.
+        // for a message to arrive on the queue. 
+        // receive() is a blocking method
         Message message = consumer.receive();
 
         // There are many types of Message and TextMessage
@@ -49,8 +50,13 @@ public class Consumer {
             System.out.println("Received message '"
                 + textMessage.getText() + "'");
         }
-        connection.close();
         
+        //if textmessage null, return blank
+        if(textMessage==null)
+        	textMessage = session.createTextMessage("");
+        
+        connection.close();
+        	
         return textMessage.getText();
     }
 }
