@@ -22,7 +22,7 @@ public class Reputation implements Serializable {
 	private int reputationScore;
 
 	//bi-directional many-to-one association to People
-    @ManyToOne
+    @OneToOne
 	@JoinColumn(name="PERSON_ID")
 	private People people;
 
