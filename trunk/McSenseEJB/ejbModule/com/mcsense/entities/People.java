@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
 import javax.persistence.*;
+
 import java.util.Set;
 
 
@@ -44,8 +45,9 @@ public class People implements Entity,Serializable {
 	private Set<Bank> banks;
 
 	//bi-directional many-to-one association to Reputation
-	@OneToMany(mappedBy="people")
-	private Set<Reputation> reputations;
+	@OneToOne
+	@JoinColumn(name="PERSON_ID")
+	private Reputation reputation;
 
     public People() {
     }
@@ -89,13 +91,13 @@ public class People implements Entity,Serializable {
 	public void setBanks(Set<Bank> banks) {
 		this.banks = banks;
 	}
-	
-	public Set<Reputation> getReputations() {
-		return this.reputations;
+
+	public Reputation getReputation() {
+		return reputation;
 	}
 
-	public void setReputations(Set<Reputation> reputations) {
-		this.reputations = reputations;
+	public void setReputation(Reputation reputation) {
+		this.reputation = reputation;
 	}
 
 	@Override
