@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.mcsense.service.Consumer;
-import com.mcsense.service.Producer;
+import com.mcsense.mqservice.Consumer;
+import com.mcsense.mqservice.Producer;
 
 /**
  * Servlet implementation class ProviderServlet

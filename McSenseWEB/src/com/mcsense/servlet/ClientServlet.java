@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.mcsense.service.Producer;
+import com.mcsense.mqservice.Producer;
 
 import sun.rmi.runtime.Log;
 
