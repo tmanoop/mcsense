@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="McSense">
+        <wb-resource deploy-path="/" source-path="/EarContent"/>
+        <dependent-module archiveName="McSenseWEB.war" deploy-path="/" handle="module:/resource/McSenseWEB/McSenseWEB">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="McSenseDB.jar" deploy-path="/" handle="module:/resource/McSenseDB/McSenseDB">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="activemq-all-5.5.0.jar" deploy-path="/" handle="module:/classpath/lib/C:/Program Files/apache-activemq-5.5.0/activemq-all-5.5.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="log4j-1.2.14.jar" deploy-path="/" handle="module:/classpath/lib/C:/Program Files/apache-activemq-5.5.0/lib/optional/log4j-1.2.14.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="slf4j-api-1.5.11.jar" deploy-path="/" handle="module:/classpath/lib/C:/Program Files/apache-activemq-5.5.0/lib/slf4j-api-1.5.11.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="slf4j-jdk14-1.6.1.jar" deploy-path="/" handle="module:/classpath/lib/C:/Program Files/slf4j-1.6.1/slf4j-jdk14-1.6.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="McSenseEJB.jar" deploy-path="/" handle="module:/resource/McSenseEJB/McSenseEJB">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>
