@@ -71,7 +71,7 @@ public class BankServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();;
 		if (p!=null) {
 			System.out.println("PersonID: " + p.getPersonId());
-			out.println("<br> PersonID: " + p.getPersonId() + "| FirstName: " + p.getPersonFname() + "| LastName: " + p.getPersonLname() + "| AccountNumber: " + p.getBankAccountId() );
+			out.println("<br> PersonID: " + p.getPersonId() + "| FirstName: " + p.getPersonFname() + "| LastName: " + p.getPersonLname() + "| AccountNumber: " + p.getBankAccountId() + "| Reputation: " + p.getReputation().getReputationScore() );
 		} else if (pList!=null && pList.size()!=0) {
 			System.out.println("PersonID: " + pList.get(0).getPersonId());
 			for(int i=0;i<pList.size();i++){
