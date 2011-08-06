@@ -39,6 +39,7 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.apache.derby.ui.derbyEngine</nature>
 	</natures>
 </projectDescription>
