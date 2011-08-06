@@ -1,0 +1,17 @@
+Sat Aug 06 02:44:32 EDT 2011 : Apache Derby Network Server - 10.8.1.2 - (1095077) started and ready to accept connections on port 1527
+----------------------------------------------------------------
+Sat Aug 06 02:44:37 EDT 2011:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): instance a816c00e-0131-9dd5-ff2f-00000000002e 
+on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB  with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
+Loaded from file:/C:/Program%20Files/eclipse/plugins/org.apache.derby.core_10.8.1/derby.jar
+java.vendor=Sun Microsystems Inc.
+java.runtime.version=1.6.0_24-b07
+user.dir=C:\Manoop\McSense\McSenseEJB
+derby.system.home=.
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Sat Aug 06 03:07:48 EDT 2011: Shutting down Derby engine
+----------------------------------------------------------------
+Sat Aug 06 03:07:49 EDT 2011:
+Shutting down instance a816c00e-0131-9dd5-ff2f-00000000002e on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
+----------------------------------------------------------------
