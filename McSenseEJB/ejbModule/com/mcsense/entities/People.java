@@ -13,7 +13,7 @@ import java.util.Set;
  * 
  */
 @Entity
-@Table(name="PEOPLE",schema="APP")
+@Table(name="PEOPLE",schema="APP", uniqueConstraints = {@UniqueConstraint(columnNames={"BANK_ACCOUNT_ID"})})
 @NamedQueries({
   @NamedQuery(name="People.findByLName",
               query="Select e from People e where e.personLname = :name"),
@@ -25,6 +25,9 @@ public class People implements Entity,Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
+//	@TableGenerator(name = "SEQUENCE", initialValue = 1, allocationSize = 1)
+//	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="people_id")
+//	@SequenceGenerator(name="people_id",sequenceName="APP.people_id", initialValue=1, allocationSize=5)
 	@Column(name="PERSON_ID")
 	private int personId;
 
@@ -37,16 +40,19 @@ public class People implements Entity,Serializable {
 	@Column(name="PERSON_LNAME")
 	private String personLname;
 	
-	@Column(name="BANK_ACCOUNT_ID")
+	@Column(name="BANK_ACCOUNT_ID", unique=true)
 	private String bankAccountId;
 
 	//bi-directional many-to-one association to Bank
 	@OneToMany(mappedBy="people")
 	private Set<Bank> banks;
+	
+	@OneToMany(mappedBy="people")
+	private Set<Task> tasks;
 
 	//bi-directional many-to-one association to Reputation
-	@OneToOne
-	@JoinColumn(name="PERSON_ID")
+	@OneToOne(orphanRemoval=true,mappedBy="people",cascade = {CascadeType.REMOVE,CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+//	@JoinColumn(name="PERSON_ID",referencedColumnName="PERSON_ID", insertable=false, updatable=false)
 	private Reputation reputation;
 
     public People() {
@@ -118,6 +124,14 @@ public class People implements Entity,Serializable {
 
 	public void setBankAccountId(String bankAccountId) {
 		this.bankAccountId = bankAccountId;
+	}
+
+	public Set<Task> getTasks() {
+		return tasks;
+	}
+
+	public void setTasks(Set<Task> tasks) {
+		this.tasks = tasks;
 	}
 	
 }

@@ -1,6 +1,8 @@
 package com.mcsense.entities;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
+
 import javax.persistence.*;
 
 import java.util.Date;
@@ -11,16 +13,19 @@ import java.util.Date;
  * 
  */
 @Entity
-@Table(name="BANK",schema="APP")
-public class Bank implements Serializable {
+public class Bank implements Entity,Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="bank_id")
+    @SequenceGenerator(name="bank_id",sequenceName="bank_id", allocationSize=1)
 	@Column(name="TRANSACTION_ID")
 	private int transactionId;
 
 	private int amount;
+
+	@Column(name="TASK_ID")
+	private int taskId;
 
     @Temporal( TemporalType.DATE)
 	@Column(name="TRANSACTION_DATE")
@@ -33,11 +38,6 @@ public class Bank implements Serializable {
     @ManyToOne
 	@JoinColumn(name="BANK_ACCOUNT_ID", referencedColumnName="BANK_ACCOUNT_ID")
 	private People people;
-
-	//bi-directional many-to-one association to Task
-    @ManyToOne
-	@JoinColumn(name="TASK_ID")
-	private Task task;
 
     public Bank() {
     }
@@ -56,6 +56,14 @@ public class Bank implements Serializable {
 
 	public void setAmount(int amount) {
 		this.amount = amount;
+	}
+
+	public int getTaskId() {
+		return this.taskId;
+	}
+
+	public void setTaskId(int taskId) {
+		this.taskId = taskId;
 	}
 
 	public Date getTransactionDate() {
@@ -81,13 +89,17 @@ public class Bank implements Serializable {
 	public void setPeople(People people) {
 		this.people = people;
 	}
-	
-	public Task getTask() {
-		return this.task;
+
+	@Override
+	public String name() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public void setTask(Task task) {
-		this.task = task;
+	@Override
+	public Class<? extends Annotation> annotationType() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

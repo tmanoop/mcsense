@@ -12,4 +12,10 @@ public interface BankAdminServicesLocal {
 
 	People findPersonByID(String ID);
 
+	int register(People p);
+
+	boolean deletePerson(String id);
+
+	boolean deleteReputation(String id);
+
 }

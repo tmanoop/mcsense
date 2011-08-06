@@ -1,9 +1,9 @@
 package com.mcsense.entities;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.lang.annotation.Annotation;
 
-import java.util.Set;
+import javax.persistence.*;
 
 
 /**
@@ -11,18 +11,18 @@ import java.util.Set;
  * 
  */
 @Entity
-@Table(name="TASK",schema="APP")
-public class Task implements Serializable {
+public class Task implements Entity,Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="task_id")
+    @SequenceGenerator(name="task_id",sequenceName="task_id", allocationSize=1)
 	@Column(name="TASK_ID")
 	private int taskId;
 
-	@Column(name="CLIENT_PERSON_ID")
+	@Column(name="CLIENT_PERSON_ID", insertable=false, updatable=false)
 	private int clientPersonId;
-
+	
 	@Column(name="PARENT_TASK_ID")
 	private int parentTaskId;
 
@@ -35,9 +35,10 @@ public class Task implements Serializable {
 	@Column(name="TASK_TYPE")
 	private String taskType;
 
-	//bi-directional many-to-one association to Bank
-	@OneToMany(mappedBy="task")
-	private Set<Bank> banks;
+	//bi-directional many-to-one association to People
+    @ManyToOne
+	@JoinColumn(name="CLIENT_PERSON_ID", referencedColumnName="PERSON_ID")
+	private People people;
 
     public Task() {
     }
@@ -48,14 +49,6 @@ public class Task implements Serializable {
 
 	public void setTaskId(int taskId) {
 		this.taskId = taskId;
-	}
-
-	public int getClientPersonId() {
-		return this.clientPersonId;
-	}
-
-	public void setClientPersonId(int clientPersonId) {
-		this.clientPersonId = clientPersonId;
 	}
 
 	public int getParentTaskId() {
@@ -90,12 +83,32 @@ public class Task implements Serializable {
 		this.taskType = taskType;
 	}
 
-	public Set<Bank> getBanks() {
-		return this.banks;
+	public People getPeople() {
+		return this.people;
 	}
 
-	public void setBanks(Set<Bank> banks) {
-		this.banks = banks;
+	public void setPeople(People people) {
+		this.people = people;
+	}
+
+	@Override
+	public String name() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Class<? extends Annotation> annotationType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int getClientPersonId() {
+		return clientPersonId;
+	}
+
+	public void setClientPersonId(int clientPersonId) {
+		this.clientPersonId = clientPersonId;
 	}
 	
 }

@@ -50,7 +50,8 @@ public class DataServices implements DataServicesLocal {
 
 	@Override
 	public void remove(Object entity) {
-		getEM().remove(entity);
+		getEM().remove(getEM().merge(entity));
+		//getEM().refresh(entity);
 	}
 
 	@Override
