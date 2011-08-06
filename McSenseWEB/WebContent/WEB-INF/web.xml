@@ -25,6 +25,14 @@
 		<servlet-class>
 		com.mcsense.servlet.BankServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>AdminServlet</display-name>
+		<servlet-name>AdminServlet</servlet-name>
+		<servlet-class>
+		com.mcsense.servlet.AdminServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>ClientServlet</servlet-name>
 		<url-pattern>/pages/ClientServlet</url-pattern>
@@ -36,6 +44,10 @@
 	<servlet-mapping>
 		<servlet-name>BankServlet</servlet-name>
 		<url-pattern>/pages/BankServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AdminServlet</servlet-name>
+		<url-pattern>/pages/AdminServlet</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
