@@ -68,21 +68,28 @@ public class BankServlet extends HttpServlet {
 		}
 		
 		// response
-		PrintWriter out = response.getWriter();;
+		PrintWriter out = response.getWriter();
 		if (p!=null) {
 			System.out.println("PersonID: " + p.getPersonId());
-			out.println("<br> PersonID: " + p.getPersonId() + "| FirstName: " + p.getPersonFname() + "| LastName: " + p.getPersonLname() + "| AccountNumber: " + p.getBankAccountId() + "| Reputation: " + p.getReputation().getReputationScore() );
+			out.println("<br> PersonID: " + p.getPersonId() + "| FirstName: " + p.getPersonFname() + "| LastName: " + p.getPersonLname() + "| AccountNumber: " + p.getBankAccountId() );
+			if(htmlFormName.equals("reputation"))
+				out.print("| Reputation: " + p.getReputation().getReputationScore());
 		} else if (pList!=null && pList.size()!=0) {
 			System.out.println("PersonID: " + pList.get(0).getPersonId());
 			for(int i=0;i<pList.size();i++){
 				People p1 = pList.get(i);
 				out.println("<br> PersonID: " + p1.getPersonId() + "| FirstName: " + p1.getPersonFname() + "| LastName: " + p1.getPersonLname() + "| AccountNumber: " + p1.getBankAccountId() );
+				if(htmlFormName.equals("reputation"))
+					out.print("| Reputation: " + p1.getReputation().getReputationScore());
 			}
 		} else{
 			System.out.println("PersonID not found.");
 			out.println("PersonID not found.");
 		}
-		out.println("<P>Return to <A HREF=../pages/Bank.jsp>Search Screen</A>");
+		if(htmlFormName.equals("reputation"))
+			out.println("<P>Return to <A HREF=../pages/Reputation.jsp>Search Screen</A>");
+		else
+			out.println("<P>Return to <A HREF=../pages/Bank.jsp>Search Screen</A>");
 		out.close();
 	}
 
