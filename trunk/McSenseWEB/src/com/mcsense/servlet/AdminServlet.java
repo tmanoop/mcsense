@@ -9,9 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.mcsense.entities.Bank;
 import com.mcsense.entities.People;
 import com.mcsense.services.BankAdminServicesLocal;
+import com.mcsense.services.DataServicesLocal;
 import com.mcsense.util.McUtility;
+import com.mcsense.entities.Task;
 
 /**
  * Servlet implementation class AdminServlet
@@ -21,6 +24,8 @@ public class AdminServlet extends HttpServlet {
        
 	@EJB(name="com.mcsense.services.BankAdminServices")
 	BankAdminServicesLocal bankAdminServicesLocal;
+	@EJB(name="com.mcsense.services.DataServices")
+	DataServicesLocal dataServicesLocal;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -62,7 +67,6 @@ public class AdminServlet extends HttpServlet {
 			out.print("<br> Below McSense Account is created successfully.");
 			out.print("<br> Your McSense ID: " + personID);
 			
-			out.println("<P>Return to <A HREF=../pages/Admin.jsp>Admin Screen</A>");
 		}
 		else if(htmlFormName.equals("delete")){
 			String id = request.getParameter("id");
@@ -72,8 +76,21 @@ public class AdminServlet extends HttpServlet {
 				out.print("<br> McSense Account#"+id+" is deleted successfully.");
 			else
 				out.print("<br> McSense Account#"+id+" is not deleted due to system error.");
+		} else if(htmlFormName.equals("deposit")){
+			String taskId = request.getParameter("taskId");
+			String amount = request.getParameter("amount");
+			dataServicesLocal = McUtility.lookupEJB("java:global/McSense/McSenseEJB/DataServices!com.mcsense.services.DataServicesLocal");
+			
+			Task t = dataServicesLocal.findEntity(Task.class, new Integer(taskId));
+			
+			Bank b = new Bank();
+			b.setAmount(new Integer(amount));
+			b.setTaskId(new Integer(taskId));
+			b.setPeople(t.getPeople());
+			bankAdminServicesLocal.deposit(b);
+			out.println("<P>Bank amount $"+amount+" is deposited for taskID: "+taskId+" and account#"+t.getPeople().getBankAccountId());
 		}
-		
+		out.println("<P>Return to <A HREF=../pages/Admin.jsp>Admin Screen</A>");
 		out.close();
 	}
 

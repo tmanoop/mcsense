@@ -39,5 +39,18 @@ Person ID:
 <input type="hidden" name="htmlFormName" value="delete">
 <input type="submit" value="Delete" />
 </form>
+<br>
+<i>Deposit in bank.</i>
+<br>
+<form name="deposit" action="AdminServlet" method="post">
+TaskID:
+<input name="taskId" type="text" size="10" value="">
+Amount: $
+<input name="amount" type="text" size="10" value="">
+<br>
+<br>
+<input type="hidden" name="htmlFormName" value="deposit">
+<input type="submit" value="Deposit" />
+</form>
 </body>
 </html>
