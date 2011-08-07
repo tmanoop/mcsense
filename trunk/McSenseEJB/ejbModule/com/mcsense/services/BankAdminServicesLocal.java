@@ -3,6 +3,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import com.mcsense.entities.Bank;
 import com.mcsense.entities.People;
 
 @Local
@@ -17,5 +18,9 @@ public interface BankAdminServicesLocal {
 	boolean deletePerson(String id);
 
 	boolean deleteReputation(String id);
+
+	void deposit(Bank b);
+
+	void withdrawal(Bank b);
 
 }
