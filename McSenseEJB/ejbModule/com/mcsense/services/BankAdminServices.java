@@ -1,12 +1,14 @@
 package com.mcsense.services;
 
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 
+import com.mcsense.entities.Bank;
 import com.mcsense.entities.People;
 import com.mcsense.entities.Reputation;
 import com.mcsense.util.McUtility;
@@ -110,6 +112,7 @@ public class BankAdminServices implements BankAdminServicesLocal {
 		return true;
     }
     
+    @Override
     public boolean deletePerson(String id){
     	People p = findPersonByID(id);
     	try {
@@ -122,5 +125,19 @@ public class BankAdminServices implements BankAdminServicesLocal {
 			return false;
 		}
 		return true;
+    }
+    
+    @Override
+    public void deposit(Bank b){
+    	b.setTransactionType("D");
+    	b.setTransactionDate(new Date());
+    	dataServicesLocal.persist(b);
+    }
+    
+    @Override
+    public void withdrawal(Bank b){
+    	b.setTransactionType("W");
+    	b.setTransactionDate(new Date());
+    	dataServicesLocal.persist(b);
     }
 }
