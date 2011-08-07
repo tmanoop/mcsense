@@ -7,21 +7,21 @@
 <title>Insert title here</title>
 </head>
 <body>
-<b><big>Welcome to McSense Bank Services</big></b>
+<b><big>McSense Task Services</big></b>
 <br>
 <br>
-<i>Search for a bank account details.</i>
+<i>Create a McSense Task</i>
 <br>
-<form name="search" action="BankServlet" method="post">
-Last Name:
-<input name="lname" type="text" size="20" value="">
-Person ID:
-<input name="id" type="text" size="10" value="">
+<form name="task" action="TaskServlet" method="post">
+<p align="left">McSense ID:
+<input name="id" type="text" size="15" value="">
 <br>
+Task Description:
 <br>
-<input type="hidden" name="htmlFormName" value="search">
-<input type="submit" value="Search" />
+<textarea name="taskDesc" rows="10" cols="30"></textarea><br />
+<br>
+<input type="hidden" name="htmlFormName" value="task">
+<input type="submit" value="Create Task"></p>
 </form>
-
 </body>
 </html>
