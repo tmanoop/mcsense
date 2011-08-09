@@ -3,9 +3,8 @@
 	<name>McSense</name>
 	<comment></comment>
 	<projects>
-		<project>McSenseWEB</project>
-		<project>McSenseDB</project>
 		<project>McSenseEJB</project>
+		<project>McSenseWEB</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
