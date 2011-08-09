@@ -5,43 +5,46 @@ import java.lang.annotation.Annotation;
 
 import javax.persistence.*;
 
-
 /**
  * The persistent class for the TASK database table.
  * 
  */
 @Entity
-public class Task implements Entity,Serializable {
+@NamedQueries( {
+		@NamedQuery(name = "Task.findByDesc", query = "Select t from Task t where t.taskType = :desc"),
+		@NamedQuery(name = "Task.findByStatus", query = "Select t from Task t where t.taskStatus = :status"),
+		@NamedQuery(name = "Task.findAll", query = "Select t from Task t "), })
+public class Task implements Entity, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="task_id")
-    @SequenceGenerator(name="task_id",sequenceName="task_id", allocationSize=1)
-	@Column(name="TASK_ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "task_id")
+	@SequenceGenerator(name = "task_id", sequenceName = "task_id", allocationSize = 1)
+	@Column(name = "TASK_ID")
 	private int taskId;
 
-	@Column(name="CLIENT_PERSON_ID", insertable=false, updatable=false)
+	@Column(name = "CLIENT_PERSON_ID", insertable = false, updatable = false)
 	private int clientPersonId;
-	
-	@Column(name="PARENT_TASK_ID")
+
+	@Column(name = "PARENT_TASK_ID")
 	private int parentTaskId;
 
-	@Column(name="PROVIDER_PERSON_ID")
+	@Column(name = "PROVIDER_PERSON_ID")
 	private int providerPersonId;
 
-	@Column(name="TASK_STATUS")
+	@Column(name = "TASK_STATUS")
 	private String taskStatus;
 
-	@Column(name="TASK_TYPE")
+	@Column(name = "TASK_TYPE")
 	private String taskType;
 
-	//bi-directional many-to-one association to People
-    @ManyToOne
-	@JoinColumn(name="CLIENT_PERSON_ID", referencedColumnName="PERSON_ID")
+	// bi-directional many-to-one association to People
+	@ManyToOne
+	@JoinColumn(name = "CLIENT_PERSON_ID", referencedColumnName = "PERSON_ID")
 	private People people;
 
-    public Task() {
-    }
+	public Task() {
+	}
 
 	public int getTaskId() {
 		return this.taskId;
@@ -110,5 +113,5 @@ public class Task implements Entity,Serializable {
 	public void setClientPersonId(int clientPersonId) {
 		this.clientPersonId = clientPersonId;
 	}
-	
+
 }
