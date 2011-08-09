@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 public class McSenseActivity extends Activity {
 
+	protected static final String ip = "192.168.1.8";
 	TextView tv;
 	
 
@@ -67,18 +68,20 @@ public class McSenseActivity extends Activity {
 				
 				// http servlet call
 				HttpClient httpclient = new DefaultHttpClient();
-				String providerURL = "http://10.1.169.42:10080/McSenseWEB/pages/ClientServlet";
+				String providerURL = "http://"+ip+":10080/McSenseWEB/pages/ClientServlet";
 				HttpPost httppost = new HttpPost(providerURL);
 				HttpResponse response = null;
 				InputStream is = null;
 				StringBuilder sb = new StringBuilder();
 				
 				//read data
-				EditText et = (EditText) findViewById(R.id.editText1);
+				EditText et1 = (EditText) findViewById(R.id.editText1);
+				EditText et2 = (EditText) findViewById(R.id.editText2);
 				
 				// Add your data
 		        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-		        nameValuePairs.add(new BasicNameValuePair("taskDesc", et.getText().toString()));
+		        nameValuePairs.add(new BasicNameValuePair("taskDesc", et1.getText().toString()));
+		        nameValuePairs.add(new BasicNameValuePair("id", et2.getText().toString()));
 		        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
 		        
 				// Execute HTTP Get Request
@@ -112,7 +115,7 @@ public class McSenseActivity extends Activity {
 				String task = sb.toString();
 				System.out.println(task);
 				
-				tv.append("Sensing Task Read: " + task + " \r\n");
+				tv.append("Publish: " + task + " \r\n");
 				scrollDown();
 			}
 		});
@@ -122,11 +125,14 @@ public class McSenseActivity extends Activity {
 		Button signButton = (Button) findViewById(R.id.button1);
 		signButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
+				EditText et2 = (EditText) findViewById(R.id.editText2);
+				String id = et2.getText().toString();
+				
 				Context context = getApplicationContext();
 				// http servlet call
 				HttpClient httpclient = new DefaultHttpClient();
-				String providerURL = "http://10.1.169.42:10080/McSenseWEB/pages/ProviderServlet";
-				providerURL = providerURL + "?type=mobile";
+				String providerURL = "http://"+ip+":10080/McSenseWEB/pages/ProviderServlet";
+				providerURL = providerURL + "?type=mobile&id="+id;
 				HttpGet httpget = new HttpGet(providerURL);
 				HttpResponse response = null;
 				InputStream is = null;
