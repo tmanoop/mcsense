@@ -13,8 +13,12 @@
 <i>Describe the task and hit submit.</i>
 <br>
 <form name="input" action="ClientServlet" method="post">
-High Level Gobal Sensing Task: <br>
+<p align="left">Enter McSense ID:
 <br>
+<input name="id" type="text" size="15" value="">
+<br>
+<br>
+High Level Gobal Sensing Task: <br>
 <textarea name="taskDesc" rows="10" cols="30"></textarea><br />
 <br>
 <input type="submit" value="Submit" />

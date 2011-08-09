@@ -13,6 +13,10 @@
 <i>Click on below button to pick one sensing task.</i>
 <br>
 <form name="input" action="ProviderServlet" method="get">
+<p align="left">Enter McSense ID:
+<br>
+<input name="id" type="text" size="15" value="">
+<br>
 <br>
 <input type="submit" value="Pick" />
 </form>
