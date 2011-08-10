@@ -1,6 +1,7 @@
 package com.mcsense.droid;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,8 +21,17 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.method.ScrollingMovementMethod;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -51,7 +61,68 @@ public class McSenseActivity extends Activity {
 		publish();
 		pick();
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu, menu);
+	    
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.camera:
+	        photo(item);
+	        return true;
+	    case R.id.help:
+	        showHelp();
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
 
+	private void showHelp() {
+		showToast("Help");
+	}
+
+	private void photo(MenuItem item) {
+		showToast("Photo");
+		Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
+		File image = new File(Environment.getExternalStorageDirectory(),"TeamImage.jpg");
+		camera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(image));
+        this.startActivityForResult(camera, PICTURE_RESULT);
+        showToast("Photo Saved!!");
+//	    Intent myIntent = new Intent(item.getIntent());
+//        startActivity(myIntent);
+	}
+
+	private static final int PICTURE_RESULT = 1;
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data){
+
+	    if(requestCode == PICTURE_RESULT){
+	        if(resultCode == Activity.RESULT_OK) {
+	            if(data!=null){
+	                Bitmap image = BitmapFactory.decodeFile(data.getExtras().get(MediaStore.Images.Media.TITLE).toString());
+	                showToast("Photo Saved!!");
+//	                grid.add(image);            
+//	                images.addItem(image);
+	            }
+	            if(data==null){
+//	                Toast.makeText(Team_Viewer.this, "no data.", Toast.LENGTH_SHORT).show();
+	            }
+	        }
+	        else if(resultCode == Activity.RESULT_CANCELED) {
+//	            Toast.makeText(Team_Viewer.this, "Picture could not be taken.", Toast.LENGTH_SHORT).show();
+	        }
+	}
+	}
+	
 	public void showToast(String msg) {
 		CharSequence text = msg;
 		int duration = Toast.LENGTH_SHORT;
