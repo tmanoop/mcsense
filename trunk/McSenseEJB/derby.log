@@ -1,7 +1,7 @@
-Mon Aug 08 23:27:22 EDT 2011 : Apache Derby Network Server - 10.8.1.2 - (1095077) started and ready to accept connections on port 1527
+Tue Aug 09 14:43:04 EDT 2011 : Apache Derby Network Server - 10.8.1.2 - (1095077) started and ready to accept connections on port 1527
 ----------------------------------------------------------------
-Mon Aug 08 23:27:25 EDT 2011:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): instance a816c00e-0131-ac94-892b-00000000002e 
+Tue Aug 09 14:43:07 EDT 2011:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): instance a816c00e-0131-afda-e98e-00000000002e 
 on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB  with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
 Loaded from file:/C:/Program%20Files/eclipse/plugins/org.apache.derby.core_10.8.1/derby.jar
 java.vendor=Sun Microsystems Inc.
@@ -10,9 +10,9 @@ user.dir=C:\Manoop\McSense\McSenseEJB
 derby.system.home=.
 Database Class Loader started - derby.database.classpath=''
 ----------------------------------------------------------------
-Tue Aug 09 00:35:32 EDT 2011:
-Shutting down instance a816c00e-0131-ac94-892b-00000000002e on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
-Tue Aug 09 00:35:32 EDT 2011 Thread[DRDAConnThread_12,5,main] (DATABASE = McSenseDB), (DRDAID = {32}), Database 'McSenseDB' shutdown.
+Tue Aug 09 23:02:10 EDT 2011:
+Shutting down instance a816c00e-0131-afda-e98e-00000000002e on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
+Tue Aug 09 23:02:10 EDT 2011 Thread[DRDAConnThread_12,5,main] (DATABASE = McSenseDB), (DRDAID = {154}), Database 'McSenseDB' shutdown.
 ----------------------------------------------------------------
-Tue Aug 09 00:35:41 EDT 2011: Shutting down Derby engine
+Tue Aug 09 23:02:21 EDT 2011: Shutting down Derby engine
 ----------------------------------------------------------------
