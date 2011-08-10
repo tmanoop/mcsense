@@ -25,5 +25,11 @@
             <dependent-object/>
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="commons-fileupload-1.2.2.jar" deploy-path="/" handle="module:/classpath/lib/C:/Documents and Settings/mtalasila1/My Documents/Downloads/commons-fileupload-1.2.2/lib/commons-fileupload-1.2.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-io-2.0.1.jar" deploy-path="/" handle="module:/classpath/lib/C:/Documents and Settings/mtalasila1/My Documents/Downloads/commons-io-2.0.1/commons-io-2.0.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
     </wb-module>
 </project-modules>
