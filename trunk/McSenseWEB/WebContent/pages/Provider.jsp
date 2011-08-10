@@ -20,5 +20,21 @@
 <br>
 <input type="submit" value="Pick" />
 </form>
+<br>
+<i>Complete Photo sensing task.</i>
+<br>
+<form name="completetask" action="ProviderServlet" enctype="multipart/form-data" method="post">
+<p align="left">Task ID:
+<br>
+<input name="taskid" type="text" size="15" value="">
+<br>
+<p align="left">Choose Photo:
+<br>
+<input type="file" name="file1">
+<br>
+<input type="hidden" name="htmlFormName" value="completetask">
+<br>
+<input type="submit" value="Complete Photo Sensing Task" />
+</form>
 </body>
 </html>
