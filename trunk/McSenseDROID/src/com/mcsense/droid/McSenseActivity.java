@@ -42,7 +42,8 @@ import android.widget.Toast;
 
 public class McSenseActivity extends Activity {
 
-	protected static final String ip = "192.168.1.8";
+//	protected static final String ip = "192.168.1.8";
+	protected static final String ip = "manoop.dyndns.org";
 	TextView tv;
 	
 
