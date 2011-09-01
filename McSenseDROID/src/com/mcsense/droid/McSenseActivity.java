@@ -1,6 +1,7 @@
 package com.mcsense.droid;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.util.Base64;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -36,13 +38,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class McSenseActivity extends Activity {
 
-//	protected static final String ip = "192.168.1.8";
+//	protected static final String ip = "192.168.1.3";
+//	protected static final String ip = "10.1.168.50";
 	protected static final String ip = "manoop.dyndns.org";
 	TextView tv;
 	
@@ -88,6 +92,8 @@ public class McSenseActivity extends Activity {
 
 	private void showHelp() {
 		showToast("Help");
+		String imageInSD = "/sdcard/TeamImage.jpg";
+		uploadPhoto(BitmapFactory.decodeFile(imageInSD));
 	}
 
 	private void photo(MenuItem item) {
@@ -96,7 +102,7 @@ public class McSenseActivity extends Activity {
 		File image = new File(Environment.getExternalStorageDirectory(),"TeamImage.jpg");
 		camera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(image));
         this.startActivityForResult(camera, PICTURE_RESULT);
-        showToast("Photo Saved!!");
+        showToast("Photo Saved!!"+Uri.fromFile(image));
 //	    Intent myIntent = new Intent(item.getIntent());
 //        startActivity(myIntent);
 	}
@@ -105,11 +111,13 @@ public class McSenseActivity extends Activity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
-
+		showToast("requestCode: "+requestCode);
+		showToast("resultCode: "+resultCode);
+		Bitmap image = null;
 	    if(requestCode == PICTURE_RESULT){
 	        if(resultCode == Activity.RESULT_OK) {
 	            if(data!=null){
-	                Bitmap image = BitmapFactory.decodeFile(data.getExtras().get(MediaStore.Images.Media.TITLE).toString());
+	                image = BitmapFactory.decodeFile(data.getExtras().get(MediaStore.Images.Media.TITLE).toString());
 	                showToast("Photo Saved!!");
 //	                grid.add(image);            
 //	                images.addItem(image);
@@ -120,8 +128,98 @@ public class McSenseActivity extends Activity {
 	        }
 	        else if(resultCode == Activity.RESULT_CANCELED) {
 //	            Toast.makeText(Team_Viewer.this, "Picture could not be taken.", Toast.LENGTH_SHORT).show();
+	        	showToast("RESULT_CANCELED!!");
+	        	
 	        }
+	        showToast("data:!!"+data);
+	        preview(image);
+//	        uploadPhoto();
+	    }
 	}
+	
+	private void preview(Bitmap image){
+		showToast("preview!!");
+		ImageView bmImage = (ImageView)findViewById(R.id.imageview);
+		   BitmapFactory.Options bmOptions;
+		   bmOptions = new BitmapFactory.Options();
+		   bmOptions.inSampleSize = 1;
+		   String imageInSD = "/sdcard/TeamImage.jpg";
+		   Bitmap bitmap = BitmapFactory.decodeFile(imageInSD);
+//		   bmImage.setImageBitmap(bitmap);
+		   showToast("preview end!!"+bitmap);
+		   scrollDown();
+		   uploadPhoto(bitmap);
+	}
+	
+	private void uploadPhoto(Bitmap bitmap){
+		showToast("uploading!!");
+		// http servlet call
+		HttpClient httpclient = new DefaultHttpClient();
+		String providerURL = "http://"+ip+":10080/McSenseWEB/pages/PhotoServlet";
+		HttpPost httppost = new HttpPost(providerURL);
+		HttpResponse response = null;
+		InputStream is = null;
+		StringBuilder sb = new StringBuilder();
+		
+		//read data
+		EditText et1 = (EditText) findViewById(R.id.editText1);
+		EditText et2 = (EditText) findViewById(R.id.editText2);
+		
+		String imageInSD = Environment.getExternalStorageDirectory()+"/TeamImage.jpg";
+		//Bitmap bitmap = BitmapFactory.decodeFile(imageInSD);
+//		bitmap = BitmapFactory.decodeFile(imageInSD);
+		ByteArrayOutputStream bao = new ByteArrayOutputStream();
+		
+		String ba1="";
+		try {
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bao);
+	        byte [] ba = bao.toByteArray();
+			ba1 = Base64.encodeToString(ba,0);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			showToast("uploading error!! "+e1.getMessage());
+		}
+		
+		// Add your data
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+        nameValuePairs.add(new BasicNameValuePair("taskDesc", et1.getText().toString()));
+        nameValuePairs.add(new BasicNameValuePair("id", et2.getText().toString()));
+        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
+        nameValuePairs.add(new BasicNameValuePair("image",ba1));
+        
+		// Execute HTTP Get Request
+		try {
+			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			
+			response = httpclient.execute(httppost);
+			System.out.println("Reading response...");
+			HttpEntity entity = response.getEntity();
+			is = entity.getContent();
+
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(is, "iso-8859-1"), 8);
+
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+				System.out.println(sb);
+			}
+			is.close();
+			bao.close();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// read task from servlet
+		String resp = sb.toString();
+		System.out.println(resp);
+		
+		tv.append("Submitted: " + resp + " \r\n");
+		scrollDown();
 	}
 	
 	public void showToast(String msg) {
