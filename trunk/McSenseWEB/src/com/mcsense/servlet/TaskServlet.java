@@ -43,6 +43,10 @@ public class TaskServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		String htmlFormName = request.getParameter("htmlFormName");
 		System.out.println("htmlFormName: "+htmlFormName);
+		String type = "";
+		type = request.getParameter("type");
+		System.out.println("type: "+type);
+		
 		if(htmlFormName.equals("tasklookup")){
 			String status = request.getParameter("status");
 			String id = request.getParameter("id");
@@ -50,10 +54,15 @@ public class TaskServlet extends HttpServlet {
 			
 			for(int i=0;i<tList.size();i++){
 				Task t = tList.get(i);
-				out.println("<BR> TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Description: " + t.getTaskType());
+				if (type!=null && type.equals("mobile")){
+					out.println(" TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Description: " + t.getTaskType() + " \r\n");
+				} else {
+					out.println("<BR> TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Description: " + t.getTaskType());
+				}
 			}
 		}	
-		out.println("<P>Return to <A HREF=../pages/TaskLookup.jsp>Task Lookup Screen</A>");
+		if (type==null)
+			out.println("<P>Return to <A HREF=../pages/TaskLookup.jsp>Task Lookup Screen</A>");
 		out.close();
 	}
 
