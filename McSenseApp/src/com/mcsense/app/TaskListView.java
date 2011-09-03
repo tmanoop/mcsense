@@ -1,29 +1,34 @@
 package com.mcsense.app;
 
-import java.util.ArrayList;
+import android.app.ListActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
-public class AppConstants {
-//	protected static final String ip = "192.168.1.3";
-//	protected static final String ip = "10.1.169.18";
-	protected static final String ip = "manoop.dyndns.org";
-	
-	static final Task[] TASKS = {new Task(1,"Photo Task"),new Task(2,"GPS Task"),new Task(3,"Accelerometer Task"),new Task(4,"Magnetometer Task"),new Task(5,"Mic Task")};
-	
-	public static ArrayList<Task> getTaskList(){
-		ArrayList<Task> taskList = new ArrayList<Task>();
-		Task t;
-		Task t1 = new Task(1,"Photo Task");
-		taskList.add(t1);
-		Task t2 = new Task(2,"GPS Task");
-		taskList.add(t2);
-		Task t3 = new Task(3,"Accelerometer Task");
-		taskList.add(t3);
-		Task t4 = new Task(4,"Magnetometer Task");
-		taskList.add(t4);
-		Task t5 = new Task(5,"Mic Task");
-		taskList.add(t5);
-		
-		return taskList;
+public class TaskListView extends ListActivity {
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+	  super.onCreate(savedInstanceState);
+
+	  setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, COUNTRIES));
+
+	  ListView lv = getListView();
+	  lv.setTextFilterEnabled(true);
+
+	  lv.setOnItemClickListener(new OnItemClickListener() {
+	    public void onItemClick(AdapterView<?> parent, View view,
+	        int position, long id) {
+	      // When clicked, show a toast with the TextView text
+	      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
+	          Toast.LENGTH_SHORT).show();
+	    }
+	  });
 	}
 	
 	static final String[] COUNTRIES = new String[] {

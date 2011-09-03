@@ -12,10 +12,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
@@ -54,8 +56,14 @@ public class NewTasks extends Activity {
         
         setContentView(panel);
 		pick();
+		
     }
 		
+	private void iniAccel() {
+		Intent i = new Intent(getApplicationContext(), Sensors.class);
+        startActivity(i);
+	}
+
 	@Override
 	protected void onPause()
 	{
