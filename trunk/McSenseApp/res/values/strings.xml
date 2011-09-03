@@ -3,4 +3,8 @@
     <string name="hello">Hello World, Home!</string>
     <string name="app_name">McSense</string>
     <color name="gray">#C0C0C0</color>
+    <color name="blue">#0000ff</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>

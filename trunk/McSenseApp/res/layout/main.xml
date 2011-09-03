@@ -17,15 +17,16 @@
 			android:layout_gravity="left" android:layout_width="wrap_content">
 			<ImageButton android:id="@+id/imgbtn1"
 				android:layout_width="32dp" android:layout_height="32dp"
-				android:background="@drawable/icon"></ImageButton>
+				android:background="@drawable/ic_launcher"></ImageButton>
 			<TextView android:id="@+id/txtTest" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:textStyle="bold"
-				android:text="Sensing Tasks" android:textColor="#FFFFFF"
+				android:text="Sensing Tasks" android:textColor="@color/black"
 				android:textSize="15sp" android:gravity="center_vertical"
 				android:paddingLeft="5dp">
 
 			</TextView>
 		</LinearLayout>
+		<!--
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:id="@+id/buttonlayout2" android:orientation="horizontal"
 			android:layout_height="wrap_content" android:gravity="right"
@@ -38,6 +39,7 @@
 				android:background="@drawable/icon"></ImageButton>
 		</LinearLayout>
 
+	-->
 	</LinearLayout>
 
 	<TableLayout android:id="@+id/TableLayoutTop"

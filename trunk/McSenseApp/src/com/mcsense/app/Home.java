@@ -29,7 +29,8 @@ public class Home extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-	  super.onBackPressed();
+//	  super.onBackPressed();
+		return;
 	}
 	
 	private void loadHome() {

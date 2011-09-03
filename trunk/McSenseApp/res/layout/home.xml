@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="fill_parent" android:orientation="vertical" android:layout_width="match_parent">
-    <TextView android:textColor="@color/gray" android:text="Sense the world" android:layout_width="wrap_content" android:id="@+id/textView1" android:layout_height="wrap_content" android:layout_gravity="center_horizontal"></TextView>
+    android:layout_height="fill_parent" android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/white" >
+    <TextView android:textColor="@color/black" android:text="Sense the world" android:textStyle="bold" android:textSize="20sp" android:layout_width="wrap_content" android:id="@+id/textView1" android:layout_height="wrap_content" android:layout_gravity="center_horizontal"></TextView>
     <AbsoluteLayout android:id="@+id/absoluteLayout1" android:layout_height="wrap_content" android:layout_width="match_parent"></AbsoluteLayout>
     <ImageView android:id="@+id/imageView1" android:layout_weight="1" android:src="@drawable/sensing" android:layout_gravity="fill_vertical" android:layout_width="match_parent" android:layout_height="match_parent"></ImageView>
     <TableLayout android:layout_height="wrap_content" android:id="@+id/tableLayout1" android:layout_width="match_parent">

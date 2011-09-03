@@ -21,17 +21,24 @@ public class Main extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.main);
-		loadTabs();
-		
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		String login = settings.getString("login", "");
 		//String password = settings.getString("password", "");
 
 		if (login.equals(""))
 			loadHome();
+		else{
+			setContentView(R.layout.main);
+			loadTabs();
+		}
+		//iniAccel();
 	}
 
+	private void iniAccel() {
+		Intent i = new Intent(getApplicationContext(), Sensors.class);
+        startActivity(i);
+	}
+	
 	@Override
 	public void onBackPressed() {
 	  super.onBackPressed();
