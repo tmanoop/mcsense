@@ -2,6 +2,7 @@ package com.mcsense.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -10,11 +11,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
 import com.mcsense.entities.People;
 import com.mcsense.entities.Task;
+import com.mcsense.json.JTask;
 import com.mcsense.services.BankAdminServicesLocal;
 import com.mcsense.services.TaskServicesLocal;
 import com.mcsense.util.McUtility;
+import com.mcsense.util.WebUtil;
 
 /**
  * Servlet implementation class TaskServlet
@@ -52,14 +56,23 @@ public class TaskServlet extends HttpServlet {
 			String id = request.getParameter("id");
 			List<Task> tList = taskServicesLocal.getTasks(status,id);
 			
-			for(int i=0;i<tList.size();i++){
-				Task t = tList.get(i);
-				if (type!=null && type.equals("mobile")){
-					out.println(" TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Description: " + t.getTaskType() + " \r\n");
-				} else {
+			if (type!=null && type.equals("mobile")){
+				List<JTask> jTaskList = new ArrayList<JTask>();
+				for(int i=0;i<tList.size();i++){
+					Task t = tList.get(i);
+					JTask jTask = WebUtil.mapToJsonTask(t);
+					jTaskList.add(jTask);
+				}
+				
+				out.println(new Gson().toJson(jTaskList));
+//				out.println(" TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Description: " + t.getTaskType() + " \r\n");
+			} else {
+				for(int i=0;i<tList.size();i++){
+					Task t = tList.get(i);
 					out.println("<BR> TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Description: " + t.getTaskType());
 				}
 			}
+			
 		}	
 		if (type==null)
 			out.println("<P>Return to <A HREF=../pages/TaskLookup.jsp>Task Lookup Screen</A>");

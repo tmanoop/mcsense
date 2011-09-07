@@ -4,5 +4,6 @@ Class-Path: activemq-all-5.5.0.jar
  slf4j-api-1.5.11.jar 
  slf4j-jdk14-1.6.1.jar 
  commons-fileupload-1.2.2.jar 
- commons-io-2.0.1.jar
+ commons-io-2.0.1.jar 
+ gson-1.7.1.jar
 
