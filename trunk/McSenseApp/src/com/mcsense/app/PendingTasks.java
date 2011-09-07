@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
@@ -12,9 +13,17 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.mcsense.json.JTask;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
@@ -27,6 +36,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class PendingTasks extends ListActivity {
 	TextView textview;
+	ArrayList<JTask> taskList;
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -37,13 +47,20 @@ public class PendingTasks extends ListActivity {
 //        setContentView(textview);
 //        
 //        loadPendingTasks();
-        loadPendingTaskListView();
+//        loadPendingTaskListView();
     }
-
+	
+	@Override
+	protected void onResume(){
+		super.onResume();
+		loadPendingTaskListView();
+	}
+	
 	private void loadPendingTaskListView() {
-		ArrayList<Task> taskList = new ArrayList<Task>();
+		taskList = new ArrayList<JTask>();
+		taskList = loadPendingTasks();
 		//TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, AppConstants.getTaskList());
-		TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, AppConstants.getTaskList());
+		TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, taskList);
 		setListAdapter(taskAdapter);
 //		taskAdapter.notifyDataSetChanged();
 		
@@ -57,18 +74,35 @@ public class PendingTasks extends ListActivity {
 		      // When clicked, show a toast with the TextView text
 //		      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),Toast.LENGTH_SHORT).show();
 		    TextView tt = (TextView) view.findViewById(R.id.toptext);
-		      showToast("Selected: "+tt.getText());
+//		      showToast("Selected: "+tt.getText());
+		      JTask t = taskList.get(position);
+		      loadTask(t);
 		    }
 		  });
 	}
 
-	private void loadPendingTasks() {
+	protected void loadTask(JTask t) {
+		Intent i = new Intent(getApplicationContext(), TaskActivity.class);
+		i.putExtra("JTask", t);
+        startActivity(i);
+	}
+
+	private ArrayList<JTask> loadPendingTasks() {
 		String id = "";//task id
-		String status = "P";
+		String status = "IP";
+		
+
+		ArrayList<JTask> jTaskList = null;
 		
 		Context context = getApplicationContext();
+		
+		//Set http params for timeouts
+		HttpParams httpParameters = new BasicHttpParams();
+		HttpConnectionParams.setConnectionTimeout(httpParameters, AppConstants.timeoutConnection);
+		HttpConnectionParams.setSoTimeout(httpParameters, AppConstants.timeoutSocket);
+		
 		// http servlet call
-		HttpClient httpclient = new DefaultHttpClient();
+		HttpClient httpclient = new DefaultHttpClient(httpParameters);
 		String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/pages/TaskServlet";
 		providerURL = providerURL + "?type=mobile&id="+id+"&status="+status+"&htmlFormName=tasklookup";
 		HttpGet httpget = new HttpGet(providerURL);
@@ -90,14 +124,18 @@ public class PendingTasks extends ListActivity {
 			while ((line = reader.readLine()) != null) {
 				sb.append(line + "\n");
 				System.out.println(sb);
+				
+				//Parse Response into our object
+	            Type collectionType = new TypeToken<ArrayList<JTask>>(){}.getType();
+				jTaskList = new Gson().fromJson(line, collectionType);
 			}
 			is.close();
 
-			// read task from servlet
-			String task = sb.toString();
-			System.out.println(task);
-			
-			textview.append(task + " \r\n");
+//			// read task from servlet
+//			String task = sb.toString();
+//			System.out.println(task);
+//			
+//			textview.append(task + " \r\n");
 //			scrollDown();
 			
 		} catch (ClientProtocolException e) {
@@ -110,6 +148,13 @@ public class PendingTasks extends ListActivity {
 			showToast("Server temporarily not available!!");
 		}
 		
+		if(jTaskList==null){
+			JTask t = new JTask(0,"No Tasks"); 
+			jTaskList = new ArrayList<JTask>();
+			jTaskList.add(t);
+		}
+		
+		return jTaskList;
 	}
 	
 	public void showToast(String msg) {

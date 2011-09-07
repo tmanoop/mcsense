@@ -25,6 +25,13 @@ public class TotalEarningsActivity extends Activity {
         
         loadEarnings();
     }
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		loadEarnings();
+	}
+	
 	private void loadEarnings() {
 		String FILENAME = "hello_file";
 		String string = "$100";

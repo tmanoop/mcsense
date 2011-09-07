@@ -21,6 +21,22 @@ public class Main extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+//		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+//		String login = settings.getString("login", "");
+//		//String password = settings.getString("password", "");
+//
+//		if (login.equals(""))
+//			loadHome();
+//		else{
+//			setContentView(R.layout.main);
+//			loadTabs();
+//		}
+		//iniAccel();
+	}
+
+	@Override
+	protected void onResume(){
+		super.onResume();
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		String login = settings.getString("login", "");
 		//String password = settings.getString("password", "");
@@ -31,9 +47,8 @@ public class Main extends TabActivity {
 			setContentView(R.layout.main);
 			loadTabs();
 		}
-		//iniAccel();
 	}
-
+	
 	private void iniAccel() {
 		Intent i = new Intent(getApplicationContext(), Sensors.class);
         startActivity(i);
