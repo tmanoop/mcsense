@@ -3,6 +3,7 @@ package com.mcsense.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,10 +20,13 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.google.gson.Gson;
 import com.mcsense.entities.Task;
+import com.mcsense.json.JTask;
 import com.mcsense.mqservice.Consumer;
 import com.mcsense.services.TaskServicesLocal;
 import com.mcsense.util.McUtility;
+import com.mcsense.util.WebUtil;
 
 /**
  * Servlet implementation class ProviderServlet
@@ -71,12 +75,18 @@ public class ProviderServlet extends HttpServlet {
 		// C:\Program Files\apache-activemq-5.5.0\bin\activemq)
 		Consumer c = new Consumer();
 		int taskID =0;
+		Task t = null;
 		try {
-			task = c.recieve();
-			//process task
-			Task t = taskServicesLocal.updateTask(id,task);
-			taskID = t.getTaskId();
-			System.out.println("Task read: " + task);
+			//If there is no task with "P" status
+			List<Task> taskList = taskServicesLocal.getTasks("P", "");
+			if(taskList.size() != 0){
+				//return none else call mq receive
+				task = c.recieve();
+				//process task
+				t = taskServicesLocal.updateTask(id,task);
+				taskID = t.getTaskId();
+				System.out.println("Task read: " + task);
+			}			
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
@@ -89,7 +99,17 @@ public class ProviderServlet extends HttpServlet {
 		System.out.println("type: "+type);
 		if (type!=null && type.equals("mobile")){
 			System.out.println("respond to mobile.");
-			out.println("TaskID: "+taskID+"; Task Desc: "+task);
+			if(t!=null){
+				List<JTask> jTaskList = new ArrayList<JTask>();
+//				Task t = tList.get(i);
+				JTask jTask = WebUtil.mapToJsonTask(t);
+				jTaskList.add(jTask);
+				
+				out.println(new Gson().toJson(jTaskList));
+			} else {
+				out.println("No New Tasks");
+			}
+//			out.println("TaskID: "+taskID+"; Task Desc: "+task);
 		}
 		else {
 			out.println("<title>Task read</title>" + "<body bgcolor=FFFFFF>");
