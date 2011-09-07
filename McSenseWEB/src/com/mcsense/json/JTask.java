@@ -7,10 +7,11 @@ public class JTask {
 	int providerPersonId;
 	String taskStatus;
 	String taskType;
+	String taskName;
 	
-	public JTask(int id, String desc){
+	public JTask(int id, String taskName){
 		taskId = id;
-		taskDescription = desc;
+		taskDescription = taskName;//replace with any new desc field from db
 		taskStatus = "Pending";
 	}
 
@@ -43,6 +44,14 @@ public class JTask {
 	}
 	public void setTaskType(String taskType) {
 		this.taskType = taskType;
+	}
+
+	public String getTaskName() {
+		return taskName;
+	}
+
+	public void setTaskName(String taskName) {
+		this.taskName = taskName;
 	}
 
 }

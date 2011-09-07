@@ -13,9 +13,18 @@
 <i>Describe the task and hit submit.</i>
 <br>
 <form name="input" action="ClientServlet" method="post">
-<p align="left">Enter McSense ID:
+Enter McSense ID:
 <br>
 <input name="id" type="text" size="15" value="">
+<br>
+<br>
+Task Type:
+<br>
+<select name="taskType">
+<option value="campusSensing">Campus Sensing Task</option>
+<option value="photo">Photo Task</option>
+<option value="parking">Parking Sensing Task</option>
+</select>
 <br>
 <br>
 High Level Gobal Sensing Task: <br>
