@@ -16,4 +16,6 @@ public interface TaskServicesLocal {
 
 	List<Task> getTasks(String status, String id);
 
+	Task createTask(String id, String taskDesc, String taskType);
+
 }
