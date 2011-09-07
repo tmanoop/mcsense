@@ -9,10 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class TaskAdapter extends ArrayAdapter<Task> {
-	private ArrayList<Task> items;
+import com.mcsense.json.JTask;
 
-    public TaskAdapter(Context context, int textViewResourceId, ArrayList<Task> items) {
+public class TaskAdapter extends ArrayAdapter<JTask> {
+	private ArrayList<JTask> items;
+
+    public TaskAdapter(Context context, int textViewResourceId, ArrayList<JTask> items) {
             super(context, textViewResourceId, items);
             this.items = items;
     }
@@ -24,16 +26,20 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 v = vi.inflate(R.layout.list_item, null);
             }
-            Task t = items.get(position);
-            System.out.println("Task: "+t.taskDescription);
+            JTask t = items.get(position);
+            System.out.println("Task: "+t.getTaskDescription());
             if (t != null) {
                     TextView tt = (TextView) v.findViewById(R.id.toptext);
                     TextView bt = (TextView) v.findViewById(R.id.bottomtext);
                     if (tt != null) {
-                          tt.setText("Name: "+t.taskDescription);                            
+                    	if(t.getTaskDescription().equals("No New Tasks"))
+                    		tt.setText(t.getTaskDescription());
+                    	else
+                    		tt.setText("Name: "+t.getTaskDescription());                            
                     }
                     if(bt != null){
-                          bt.setText("Status: "+ t.taskStatus);
+                    	if(t.getTaskStatus()!=null)
+                    		bt.setText("Status: "+ t.getTaskStatus());
                     }
             }
             return v;

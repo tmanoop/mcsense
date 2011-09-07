@@ -2,12 +2,21 @@ package com.mcsense.app;
 
 import java.util.ArrayList;
 
+import com.mcsense.json.JTask;
+
 public class AppConstants {
 //	protected static final String ip = "192.168.1.3";
 //	protected static final String ip = "10.1.169.18";
 	protected static final String ip = "manoop.dyndns.org";
+	// Set the timeout in milliseconds until a connection is established.
+	protected static final int timeoutConnection = 2000;
+	// Set the default socket timeout (SO_TIMEOUT) 
+	// in milliseconds which is the timeout for waiting for data.
+	protected static final int timeoutSocket = 5000;
 	
 	static final Task[] TASKS = {new Task(1,"Photo Task"),new Task(2,"GPS Task"),new Task(3,"Accelerometer Task"),new Task(4,"Magnetometer Task"),new Task(5,"Mic Task")};
+	
+	public static JTask selectedTask = null;
 	
 	public static ArrayList<Task> getTaskList(){
 		ArrayList<Task> taskList = new ArrayList<Task>();
