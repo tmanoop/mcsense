@@ -10,6 +10,7 @@ public class JTask implements Parcelable {
 	int providerPersonId;
 	String taskStatus;
 	String taskType;
+	String taskName;
 	
 	public JTask(Parcel in){
 		readFromParcel(in);
@@ -61,6 +62,14 @@ public class JTask implements Parcelable {
 		this.taskType = taskType;
 	}
 
+	public String getTaskName() {
+		return taskName;
+	}
+
+	public void setTaskName(String taskName) {
+		this.taskName = taskName;
+	}
+
 	@Override
 	public int describeContents() {
 		// TODO Auto-generated method stub
@@ -74,7 +83,7 @@ public class JTask implements Parcelable {
         dest.writeInt(providerPersonId);
         dest.writeString(taskStatus);
         dest.writeString(taskType);
-		
+        dest.writeString(taskName);
 	}
 	
 	private void readFromParcel(Parcel in) {
@@ -84,6 +93,7 @@ public class JTask implements Parcelable {
 		providerPersonId= in.readInt();
 		taskStatus= in.readString();
 		taskType= in.readString();
+		taskName= in.readString();
 	}
 
 }

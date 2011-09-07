@@ -14,26 +14,26 @@ public class AppConstants {
 	// in milliseconds which is the timeout for waiting for data.
 	protected static final int timeoutSocket = 5000;
 	
-	static final Task[] TASKS = {new Task(1,"Photo Task"),new Task(2,"GPS Task"),new Task(3,"Accelerometer Task"),new Task(4,"Magnetometer Task"),new Task(5,"Mic Task")};
+//	static final Task[] TASKS = {new Task(1,"Photo Task"),new Task(2,"GPS Task"),new Task(3,"Accelerometer Task"),new Task(4,"Magnetometer Task"),new Task(5,"Mic Task")};
 	
 	public static JTask selectedTask = null;
 	
-	public static ArrayList<Task> getTaskList(){
-		ArrayList<Task> taskList = new ArrayList<Task>();
-		Task t;
-		Task t1 = new Task(1,"Photo Task");
-		taskList.add(t1);
-		Task t2 = new Task(2,"GPS Task");
-		taskList.add(t2);
-		Task t3 = new Task(3,"Accelerometer Task");
-		taskList.add(t3);
-		Task t4 = new Task(4,"Magnetometer Task");
-		taskList.add(t4);
-		Task t5 = new Task(5,"Mic Task");
-		taskList.add(t5);
-		
-		return taskList;
-	}
+//	public static ArrayList<Task> getTaskList(){
+//		ArrayList<Task> taskList = new ArrayList<Task>();
+//		Task t;
+//		Task t1 = new Task(1,"Photo Task");
+//		taskList.add(t1);
+//		Task t2 = new Task(2,"GPS Task");
+//		taskList.add(t2);
+//		Task t3 = new Task(3,"Accelerometer Task");
+//		taskList.add(t3);
+//		Task t4 = new Task(4,"Magnetometer Task");
+//		taskList.add(t4);
+//		Task t5 = new Task(5,"Mic Task");
+//		taskList.add(t5);
+//		
+//		return taskList;
+//	}
 	
 	static final String[] COUNTRIES = new String[] {
 	    "Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",

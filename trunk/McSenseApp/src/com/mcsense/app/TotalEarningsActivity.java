@@ -17,18 +17,22 @@ public class TotalEarningsActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        textview = new TextView(this);
-        textview.setText("Below are the Total Earnings: \r\n");
-        textview.setMovementMethod(new ScrollingMovementMethod());
+//        textview = new TextView(this);
+//        textview.setText("Below are the Total Earnings: \r\n");
+//        textview.setMovementMethod(new ScrollingMovementMethod());
+//        
+//        setContentView(textview);
         
-        setContentView(textview);
-        
-        loadEarnings();
+//        loadEarnings();
     }
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
+		textview = new TextView(this);
+        textview.setMovementMethod(new ScrollingMovementMethod());
+        
+        setContentView(textview);
 		loadEarnings();
 	}
 	
@@ -46,7 +50,7 @@ public class TotalEarningsActivity extends Activity {
 			byte[] buffer = new byte[fis.available()];
 			fis.read(buffer);
 			String earnings = new String(buffer);
-			textview.append(earnings+" \r\n");
+			textview.setText("Below are the Total Earnings: \r\n"+earnings+" \r\n");
 			
 			fis.close();
 			fos.close();
