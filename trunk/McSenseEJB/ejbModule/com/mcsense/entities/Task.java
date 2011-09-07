@@ -11,9 +11,9 @@ import javax.persistence.*;
  */
 @Entity
 @NamedQueries( {
-		@NamedQuery(name = "Task.findByDesc", query = "Select t from Task t where t.taskType = :desc"),
-		@NamedQuery(name = "Task.findByStatus", query = "Select t from Task t where t.taskStatus = :status"),
-		@NamedQuery(name = "Task.findAll", query = "Select t from Task t "), })
+		@NamedQuery(name = "Task.findByDesc", query = "Select t from Task t where t.taskType = :desc ORDER BY t.taskId DESC"),
+		@NamedQuery(name = "Task.findByStatus", query = "Select t from Task t where t.taskStatus = :status ORDER BY t.taskId DESC"),
+		@NamedQuery(name = "Task.findAll", query = "Select t from Task t ORDER BY t.taskId DESC"), })
 public class Task implements Entity, Serializable {
 	private static final long serialVersionUID = 1L;
 
