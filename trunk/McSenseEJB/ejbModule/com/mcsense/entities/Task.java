@@ -11,7 +11,7 @@ import javax.persistence.*;
  */
 @Entity
 @NamedQueries( {
-		@NamedQuery(name = "Task.findByDesc", query = "Select t from Task t where t.taskType = :desc ORDER BY t.taskId DESC"),
+		@NamedQuery(name = "Task.findByDesc", query = "Select t from Task t where t.taskName = :desc ORDER BY t.taskId DESC"),
 		@NamedQuery(name = "Task.findByStatus", query = "Select t from Task t where t.taskStatus = :status ORDER BY t.taskId DESC"),
 		@NamedQuery(name = "Task.findAll", query = "Select t from Task t ORDER BY t.taskId DESC"), })
 public class Task implements Entity, Serializable {
@@ -38,6 +38,9 @@ public class Task implements Entity, Serializable {
 	@Column(name = "TASK_TYPE")
 	private String taskType;
 
+	@Column(name = "TASK_NAME")
+	private String taskName;
+	
 	// bi-directional many-to-one association to People
 	@ManyToOne
 	@JoinColumn(name = "CLIENT_PERSON_ID", referencedColumnName = "PERSON_ID")
@@ -84,6 +87,14 @@ public class Task implements Entity, Serializable {
 
 	public void setTaskType(String taskType) {
 		this.taskType = taskType;
+	}
+
+	public String getTaskName() {
+		return taskName;
+	}
+
+	public void setTaskName(String taskName) {
+		this.taskName = taskName;
 	}
 
 	public People getPeople() {

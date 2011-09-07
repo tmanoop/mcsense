@@ -39,7 +39,20 @@ public class TaskServices implements TaskServicesLocal {
 	public Task createTask(String id, String taskDesc){
 		Task t = new Task();
 		t.setClientPersonId(new Integer(id));
-		t.setTaskType(taskDesc);
+		t.setTaskName(taskDesc);
+		
+		People p = (People)bankAdminServicesLocal.findPersonByID(id);
+		t.setPeople(p);
+		t = createTask(t);
+		return t;
+	}
+	
+	@Override
+	public Task createTask(String id, String taskDesc, String taskType){
+		Task t = new Task();
+		t.setClientPersonId(new Integer(id));
+		t.setTaskName(taskDesc);
+		t.setTaskType(taskType);
 		
 		People p = (People)bankAdminServicesLocal.findPersonByID(id);
 		t.setPeople(p);
