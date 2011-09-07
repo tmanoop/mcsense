@@ -31,7 +31,6 @@ public class Main extends TabActivity {
 //			setContentView(R.layout.main);
 //			loadTabs();
 //		}
-		//iniAccel();
 	}
 
 	@Override
@@ -49,15 +48,16 @@ public class Main extends TabActivity {
 		}
 	}
 	
-	private void iniAccel() {
-		Intent i = new Intent(getApplicationContext(), Sensors.class);
-        startActivity(i);
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
 	}
 	
-	@Override
-	public void onBackPressed() {
-	  super.onBackPressed();
-	}
+//	@Override
+//	public void onBackPressed() {
+//	  super.onBackPressed();
+//	}
 	
 	private void loadHome() {
 		Intent i = new Intent(getApplicationContext(), Home.class);

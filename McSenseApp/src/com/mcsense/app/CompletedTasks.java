@@ -34,6 +34,7 @@ import com.mcsense.json.JTask;
 
 public class CompletedTasks extends ListActivity {
 	TextView textview;
+	ArrayList<JTask> taskList;
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -54,9 +55,10 @@ public class CompletedTasks extends ListActivity {
 	}
 
 	private void loadCompleteTaskListView() {
-		ArrayList<Task> taskList = new ArrayList<Task>();
+		taskList = new ArrayList<JTask>();
+		taskList = loadCompletedTasks();
 		//TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, AppConstants.getTaskList());
-		TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, loadCompletedTasks());
+		TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, taskList);
 		setListAdapter(taskAdapter);
 //		taskAdapter.notifyDataSetChanged();
 		

@@ -38,8 +38,8 @@ public class TaskAdapter extends ArrayAdapter<JTask> {
                     		tt.setText("Name: "+t.getTaskDescription());                            
                     }
                     if(bt != null){
-                    	if(t.getTaskStatus()!=null)
-                    		bt.setText("Status: "+ t.getTaskStatus());
+                    	if(t.getTaskType()!=null)
+                    		bt.setText("Type: "+ t.getTaskType());
                     }
             }
             return v;
