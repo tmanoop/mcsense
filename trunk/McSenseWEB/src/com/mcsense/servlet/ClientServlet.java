@@ -45,18 +45,19 @@ public class ClientServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String task = request.getParameter("taskDesc");
+		String taskName = request.getParameter("taskDesc");
 		String id = request.getParameter("id");
-		System.out.println("Task: " + task);
+		String taskType = request.getParameter("taskType");
+		System.out.println("Task Name: " + taskName);
 		// Publish in JMS Queue. Start ActiveMQ before running this. (Run
 		// C:\Program Files\apache-activemq-5.5.0\bin\activemq)
 		Producer p = new Producer();
 		int taskID =0;
 		try {
 			//insert
-			Task t = taskServicesLocal.createTask(id,task);
+			Task t = taskServicesLocal.createTask(id,taskName, taskType);
 			taskID = t.getTaskId();
-			p.send(task);
+			p.send(taskName);
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
