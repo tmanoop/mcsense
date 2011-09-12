@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mcsense.json.JTask;
@@ -31,6 +32,7 @@ public class TaskAdapter extends ArrayAdapter<JTask> {
             if (t != null) {
                     TextView tt = (TextView) v.findViewById(R.id.toptext);
                     TextView bt = (TextView) v.findViewById(R.id.bottomtext);
+                    ImageView iv = (ImageView) v.findViewById(R.id.icon);
                     if (tt != null) {
                     	if(t.getTaskDescription().equals("No New Tasks"))
                     		tt.setText(t.getTaskDescription());
@@ -40,6 +42,10 @@ public class TaskAdapter extends ArrayAdapter<JTask> {
                     if(bt != null){
                     	if(t.getTaskType()!=null)
                     		bt.setText("Type: "+ t.getTaskType());
+                    }
+                    if(iv != null){
+                    	if(t.getTaskType()!=null && t.getTaskType().equals("photo"))
+                    		iv.setImageResource(R.drawable.ic_action_photo);
                     }
             }
             return v;

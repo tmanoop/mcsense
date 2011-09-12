@@ -8,4 +8,5 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <string name="mapskey">0ouC8wAL11PTw8tuk-Iuj5cnjys-ssv_72BbeZQ</string>
+    <color name="tab_widget">#006666</color>
 </resources>
