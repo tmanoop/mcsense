@@ -88,6 +88,7 @@ public class PendingTasks extends ListActivity {
 	}
 
 	private ArrayList<JTask> loadPendingTasks() {
+		
 		String id = "";//task id
 		String status = "IP";
 		
@@ -153,7 +154,7 @@ public class PendingTasks extends ListActivity {
 			jTaskList = new ArrayList<JTask>();
 			jTaskList.add(t);
 		}
-		
+
 		return jTaskList;
 	}
 	

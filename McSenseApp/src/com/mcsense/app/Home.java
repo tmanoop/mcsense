@@ -1,5 +1,7 @@
 package com.mcsense.app;
 
+import java.util.prefs.Preferences;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,6 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.mcsense.security.SimpleCrypto;
+
 public class Home extends Activity {
 	private static final String PREFS_NAME = "myPref";
 
@@ -21,7 +25,6 @@ public class Home extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// setContentView(R.layout.main);
-		setContentView(R.layout.home);
 		
 		loadHome();
 		
@@ -29,12 +32,19 @@ public class Home extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-//	  super.onBackPressed();
-		return;
+	  super.onBackPressed();
+	  finish();
+	}
+	
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		super.finish();
 	}
 	
 	private void loadHome() {
-
+		setContentView(R.layout.home);
+		
 		Button loginButton = (Button) findViewById(R.id.button1);
 		loginButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -51,6 +61,7 @@ public class Home extends Activity {
 	}
 
 	protected void loadApp() {
+		this.finish();
 		Intent i = new Intent(getApplicationContext(), Main.class);
         startActivity(i);
 	}
@@ -112,8 +123,15 @@ public class Home extends Activity {
 
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		String login = settings.getString("login", "");
-		String password = settings.getString("password", "");
-
+		String encryptPassword = settings.getString("password", "");
+		String password = "";
+		try {
+			password = SimpleCrypto.decrypt(AppConstants.SEED, encryptPassword);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		if (!login.equals("") && !password.equals("")) {
 			// bindToService();
 			// if login succeed
@@ -171,11 +189,19 @@ public class Home extends Activity {
 
 	protected void setLoginTokens(String username, String password,
 			String repassword) {
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("login", username);
-		editor.putString("password", password);
+		//Encrypt password
+		String encryptedText = "";
+		try {
+			encryptedText = SimpleCrypto.encrypt(AppConstants.SEED,password);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		editor.putString("password", encryptedText);
 		// Commit the edits!
 		editor.commit();
 	}

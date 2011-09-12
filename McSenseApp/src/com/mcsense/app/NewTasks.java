@@ -19,10 +19,13 @@ import org.apache.http.params.HttpParams;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -36,12 +39,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mcsense.json.JTask;
 
-public class NewTasks extends ListActivity {
+public class NewTasks extends ListActivity implements Runnable {
 	
 	Button pickButton;
 	TextView textview;
 	ArrayList<JTask> taskList;
 	TaskAdapter taskAdapter;
+	private ProgressDialog pDialog;
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +87,12 @@ public class NewTasks extends ListActivity {
 	
 	private void loadNewTaskListView() {
 		taskList = new ArrayList<JTask>();
-		taskList = loadNewTasks();
+//		taskList = loadNewTasks();
+		downloadTasks();
+		if(taskList.size()==0){
+			JTask t = new JTask(0,"No New Tasks"); 
+			taskList.add(t);
+		}
 		//TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, AppConstants.getTaskList());
 		taskAdapter = new TaskAdapter(this, R.layout.list_item, taskList);
 		setListAdapter(taskAdapter);
@@ -104,7 +113,29 @@ public class NewTasks extends ListActivity {
 		  });
 	}
 
+	public void downloadTasks() {
+	    pDialog = ProgressDialog.show(this, "Loading Tasks..", "Please wait", true,false);
+	    pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+	    Thread thread = new Thread(this);
+	    thread.start();
+	}
+
+	public void run() {
+		// add downloading code here
+		taskList = loadNewTasks();
+	    handler.sendEmptyMessage(0);
+	 }
+
+	private Handler handler = new Handler() {
+	    @Override
+	    public void handleMessage(Message msg) {
+	        pDialog.dismiss();
+	        // handle the result here
+	    }
+	};
+	
 	private ArrayList<JTask> loadNewTasks() {
+		
 		ArrayList<JTask> jTaskList = null;
 		
 		String id = "101";
@@ -164,11 +195,11 @@ public class NewTasks extends ListActivity {
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			showToast("Server temporarily not available!!");
+//			showToast("Server temporarily not available!!");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			showToast("Server temporarily not available!!");
+//			showToast("Server temporarily not available!!");
 		}
 		
 		if(jTaskList==null){
@@ -176,7 +207,6 @@ public class NewTasks extends ListActivity {
 			jTaskList = new ArrayList<JTask>();
 			jTaskList.add(t);
 		}
-		
 		return jTaskList;
 	}
 
@@ -205,7 +235,7 @@ public class NewTasks extends ListActivity {
 	
 	@Override
 	public void onBackPressed() {
-		moveTaskToBack(true);
+//		moveTaskToBack(true);
 	  //showCloseDialogue();
 	  super.onBackPressed();
 	}

@@ -5,7 +5,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -14,9 +20,10 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.LinearLayout;
+import android.provider.Settings;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +38,9 @@ public class Sensors extends MapActivity implements SensorEventListener {
     private static Sensor mAccelerometer;
     private static LocationManager mlocManager;
     private static LocationListener mlocListener;
-
+    private static final int NOTIFICATION_EX = 1;
+	private NotificationManager notificationManager;
+    
     public Sensors() {
         
     }
@@ -42,11 +51,18 @@ public class Sensors extends MapActivity implements SensorEventListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		startAccelerometerSensing();
-        
         startGPSSensing();
+		
+		startAccelerometerSensing();
 
-        TableLayout tb = new TableLayout(this);
+		loadNotificationIcon();
+//        View v = null;
+//        LayoutInflater vi = (LayoutInflater)getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        v = vi.inflate(R.layout.sensor, null);
+        
+		setContentView(R.layout.sensor);
+        
+        TableLayout tb = (TableLayout) findViewById(R.id.tableLayoutMap); //new TableLayout(this);
         
         TextView acelTitle = new TextView(this);
         acelTitle.setText("Accelerometer readings: ");
@@ -64,6 +80,7 @@ public class Sensors extends MapActivity implements SensorEventListener {
         tb.addView(gpsTitle,  new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         tb.addView(gpsValues,  new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         
+//        startMaps();
 //        MapView myMap = new MapView(getApplicationContext(), "0ouC8wAL11PTw8tuk-Iuj5cnjys-ssv_72BbeZQ");
 //		myMap.displayZoomControls(true);
 //        
@@ -71,15 +88,55 @@ public class Sensors extends MapActivity implements SensorEventListener {
 //		myLocOverlay.enableMyLocation();
 //		myMap.getOverlays().add(myLocOverlay);
 //		
+        
+       
+        
+//        setContentView(R.layout.sensor);
+        MapView myMap = (MapView) findViewById(R.id.map_view);       
+        myMap.setBuiltInZoomControls(true);
+        myMap.setLayoutParams(new LayoutParams(500, 400));
+
+        
+        MyLocationOverlay myLocOverlay = new MyLocationOverlay(this, myMap);
+		myLocOverlay.enableMyLocation();
+		myMap.getOverlays().add(myLocOverlay);
+		myMap.getController().setCenter(myMap.getMapCenter());
+		myMap.getController().animateTo(myMap.getMapCenter());
+		myMap.getController().setZoom(18);
 //        tb.addView(myMap,  new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         
-        addContentView(tb,  new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+//        addContentView(tb,  new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         
 	}
     
+    private void loadNotificationIcon() {
+		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+	    int icon = R.drawable.ic_launcher;
+	    CharSequence tickerText = "McSense";
+	    long when = System.currentTimeMillis();
+	
+	    Notification notification = new Notification(icon, tickerText, when);
+	
+	    Context context = getApplicationContext();
+	    CharSequence contentTitle = "Mcsense";
+	    CharSequence contentText = "Sense the world";
+	    Intent notificationIntent = new Intent(this, Main.class);
+	    PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+	
+	    notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+	
+	    notificationManager.notify(NOTIFICATION_EX, notification);
+	}
     
-    
-    private void startAccelerometerSensing() {
+    private void startMaps() {
+    	Intent i = new Intent(getApplicationContext(), GMapsActivity.class);
+        startActivity(i);
+	}
+
+
+
+	private void startAccelerometerSensing() {
     	mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         
@@ -88,6 +145,9 @@ public class Sensors extends MapActivity implements SensorEventListener {
 
 
 	private void startGPSSensing() {
+		
+		enableGPS();
+		
     	mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
 		mlocListener = new MyLocationListener(getApplicationContext());
@@ -95,6 +155,50 @@ public class Sensors extends MapActivity implements SensorEventListener {
 		mlocManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
 	}
 
+	private void turnGPSOn(){
+	    String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+	    if(!provider.contains("gps")){ //if gps is disabled
+	        final Intent poke = new Intent();
+	        poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider"); 
+	        poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+	        poke.setData(Uri.parse("3")); 
+	        sendBroadcast(poke);
+	    }
+	}
+
+	private void turnGPSOff(){
+	    String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+	    if(provider.contains("gps")){ //if gps is enabled
+	        final Intent poke = new Intent();
+	        poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+	        poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+	        poke.setData(Uri.parse("3")); 
+	        sendBroadcast(poke);
+	    }
+	}
+
+	private void enableGPS() {
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setTitle("Switch on GPS?");
+		alert.setPositiveButton("Yes",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						turnGPSOn();
+					}
+				});
+
+		alert.setNegativeButton("No",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						showToast("McSense App cannot sense with out GPS!!");
+						onBackPressed();
+					}
+				});
+
+		alert.show();
+	}
 
 
 	@Override
@@ -109,6 +213,10 @@ public class Sensors extends MapActivity implements SensorEventListener {
         super.onPause();
         mSensorManager.unregisterListener(this);
         mlocManager.removeUpdates(mlocListener);
+        if (isFinishing()) {
+	        notificationManager.cancel(NOTIFICATION_EX);
+	    }
+        turnGPSOff();
     }
 
     @Override

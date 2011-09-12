@@ -27,6 +27,16 @@ public class TotalEarningsActivity extends Activity {
     }
 	
 	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		textview = new TextView(this);
+        textview.setMovementMethod(new ScrollingMovementMethod());
+        
+        setContentView(textview);
+	}
+	
+	@Override
 	protected void onResume() {
 		super.onResume();
 		textview = new TextView(this);
