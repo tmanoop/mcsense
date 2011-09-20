@@ -165,16 +165,20 @@ public class McSenseActivity extends Activity {
 		EditText et1 = (EditText) findViewById(R.id.editText1);
 		EditText et2 = (EditText) findViewById(R.id.editText2);
 		
-		String imageInSD = Environment.getExternalStorageDirectory()+"/TeamImage.jpg";
+//		String imageInSD = Environment.getExternalStorageDirectory()+"/TeamImage.jpg";
+		String imageInSD = "/sdcard/TeamImage.jpg";
 		//Bitmap bitmap = BitmapFactory.decodeFile(imageInSD);
-//		bitmap = BitmapFactory.decodeFile(imageInSD);
+		bitmap = BitmapFactory.decodeFile(imageInSD);
 		ByteArrayOutputStream bao = new ByteArrayOutputStream();
 		
 		String ba1="";
 		try {
 			bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bao);
 	        byte [] ba = bao.toByteArray();
-			ba1 = Base64.encodeToString(ba,0);
+//			ba1 = Base64.encodeToString(ba,0);
+	        ArrayList<String> baList = getBitmapEncodedString(ba);
+	        ba1 = baList.get(0);
+	        
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			showToast("uploading error!! "+e1.getMessage());
@@ -222,6 +226,30 @@ public class McSenseActivity extends Activity {
 		scrollDown();
 	}
 	
+	private ArrayList<String> getBitmapEncodedString(byte[] ba) {
+		ArrayList<String> ba1 = new ArrayList<String>();
+		int chunkSize = 128;
+        for(int i =0; i<ba.length;i=i+chunkSize){
+//        	int k=0;
+//        	int nextSize = i+chunkSize;
+//        	if(ba.length<i+chunkSize)
+//        		nextSize = ba.length;
+//        	byte [] tempBA = new byte[nextSize];
+//        	for(int j =i; j<nextSize;j++){
+//        		tempBA[k++] = ba[j];		        	
+//        	}
+//        	ba1 = ba1 + Base64.encodeToString(tempBA,0);
+        	try {
+				ba1.add(Base64.encodeToString(ba,i,i+chunkSize,Base64.DEFAULT));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				showToast("uploading error!! \r\n"+e.getMessage());
+			}
+        }
+		return ba1;
+	}
+
 	public void showToast(String msg) {
 		CharSequence text = msg;
 		int duration = Toast.LENGTH_SHORT;
