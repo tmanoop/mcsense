@@ -6,7 +6,7 @@ import com.mcsense.json.JTask;
 
 public class AppConstants {
 //	protected static final String ip = "128.235.66.235";
-//	protected static final String ip = "10.1.169.41";
+//	protected static final String ip = "10.1.169.128";
 	protected static final String ip = "manoop.dyndns.org";
 	// Set the timeout in milliseconds until a connection is established.
 	protected static final int timeoutConnection = 2000;

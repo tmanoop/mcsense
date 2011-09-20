@@ -79,7 +79,8 @@ public class Main extends TabActivity {
 		
 		//check for non student IDs 
 		if(!login.contains("njit")){
-			login = login.substring(0,login.indexOf("@"));
+			if(login.contains("@"))
+				login = login.substring(0,login.indexOf("@"));
 			//and truncate to 20char
 			if(login.length() > 20){
 				login = login.substring(0, 20);
