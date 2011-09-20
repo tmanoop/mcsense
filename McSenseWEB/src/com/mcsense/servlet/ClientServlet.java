@@ -45,19 +45,22 @@ public class ClientServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String taskName = request.getParameter("taskDesc");
+		String taskDesc = request.getParameter("taskDesc");
 		String id = request.getParameter("id");
 		String taskType = request.getParameter("taskType");
-		System.out.println("Task Name: " + taskName);
+		String clientPay = request.getParameter("pay");
+		System.out.println("Task Name: " + taskDesc);
 		// Publish in JMS Queue. Start ActiveMQ before running this. (Run
 		// C:\Program Files\apache-activemq-5.5.0\bin\activemq)
+//		Sensors requiredSensors = 
+			getSensorsIndicators(request);
 		Producer p = new Producer();
 		int taskID =0;
 		try {
 			//insert
-			Task t = taskServicesLocal.createTask(id,taskName, taskType);
+			Task t = taskServicesLocal.createTask(id,taskDesc, taskType);
 			taskID = t.getTaskId();
-			p.send(taskName);
+			p.send(taskDesc);
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
@@ -77,6 +80,20 @@ public class ClientServlet extends HttpServlet {
 			out.println("<P>Providers can read from <A HREF=../pages/Provider.jsp>Providers Screen</A>");
 		}
 		out.close();
+	}
+
+	private void getSensorsIndicators(HttpServletRequest request) {
+		String accelerometer = request.getParameter("accelerometer");
+		String gps = request.getParameter("gps");
+		String camera = request.getParameter("camera");
+		String mic = request.getParameter("mic");
+		String wifi = request.getParameter("wifi");
+		String bluetooth = request.getParameter("bluetooth");
+		String magnetometer = request.getParameter("magnetometer");
+		String proximity = request.getParameter("proximity");
+		String ambient = request.getParameter("ambient");
+		
+		System.out.println("Sensors:"+accelerometer+","+gps+","+camera+","+mic+","+wifi+","+bluetooth+","+magnetometer+","+proximity+","+ambient);
 	}
 
 }
