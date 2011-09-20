@@ -16,7 +16,8 @@ import com.mcsense.util.Base64;
 public class PhotoServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	private static final String DESTINATION_DIR_PATH ="/files";
+//	private static final String DESTINATION_DIR_PATH ="/files";
+	private static final String DESTINATION_DIR_PATH ="C:\\Manoop\\McSense\\McSenseWEB\\WebContent\\files";
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -50,8 +51,8 @@ public class PhotoServlet extends HttpServlet {
 			String realPath = getServletContext().getRealPath(DESTINATION_DIR_PATH);
 			File destinationDir = new File(realPath);
 			
-			File file = new File(destinationDir,"/ProviderImage.jpg");
-			f = new FileOutputStream(file);
+			File file = new File(destinationDir,"/"+id+".jpg");
+			f = new FileOutputStream(DESTINATION_DIR_PATH+"\\"+id+".jpg");
 //			f = new FileOutputStream(DESTINATION_DIR_PATH+"/ProviderImage.jpg");
 			f.write(imageByteArray);
 		} catch (Exception e) {
