@@ -2,6 +2,7 @@ package com.mcsense.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 
 import javax.ejb.EJB;
 import javax.jms.JMSException;
@@ -46,19 +47,18 @@ public class ClientServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String taskDesc = request.getParameter("taskDesc");
-		String id = request.getParameter("id");
-		String taskType = request.getParameter("taskType");
-		String clientPay = request.getParameter("pay");
 		System.out.println("Task Name: " + taskDesc);
 		// Publish in JMS Queue. Start ActiveMQ before running this. (Run
 		// C:\Program Files\apache-activemq-5.5.0\bin\activemq)
 //		Sensors requiredSensors = 
-			getSensorsIndicators(request);
+//			getSensorsIndicators(request);
 		Producer p = new Producer();
 		int taskID =0;
 		try {
 			//insert
-			Task t = taskServicesLocal.createTask(id,taskDesc, taskType);
+//			Task t = taskServicesLocal.createTask(clientId,taskName, taskType);
+			Task t = prepareTask(request);
+			t = taskServicesLocal.createTask(t);
 			taskID = t.getTaskId();
 			p.send(taskDesc);
 		} catch (JMSException e) {
@@ -80,6 +80,43 @@ public class ClientServlet extends HttpServlet {
 			out.println("<P>Providers can read from <A HREF=../pages/Provider.jsp>Providers Screen</A>");
 		}
 		out.close();
+	}
+
+	private Task prepareTask(HttpServletRequest request) {
+		//parse input
+		String taskDesc = request.getParameter("taskDesc");
+		String clientId = request.getParameter("id");
+		String taskType = request.getParameter("taskType");
+		String clientPay = request.getParameter("pay");
+		String duration = request.getParameter("duration");
+		String taskName = request.getParameter("name");
+		String accelerometer = request.getParameter("accelerometer");
+		String gps = request.getParameter("gps");
+		String camera = request.getParameter("camera");
+		String mic = request.getParameter("mic");
+		String wifi = request.getParameter("wifi");
+		String bluetooth = request.getParameter("bluetooth");
+		String magnetometer = request.getParameter("magnetometer");
+		String proximity = request.getParameter("proximity");
+		String ambient = request.getParameter("ambient");
+		
+		Task t = new Task();
+		t.setClientPersonId(new Integer(clientId));
+		t.setTaskDesc(taskDesc);
+		t.setTaskType(taskType);
+		t.setClientPay(new Integer(clientPay));
+		t.setTaskDuration(new Integer(duration));
+		t.setTaskName(taskName);
+		t.setAccelerometer(accelerometer);
+		t.setGps(gps);
+		t.setCamera(camera);
+		t.setMagnetometer(magnetometer);
+		t.setMic(mic);
+		t.setWifi(wifi);
+		t.setBluetooth(bluetooth);
+		t.setProximitySensor(proximity);
+		t.setAmbientLightSensor(ambient);
+		return t;
 	}
 
 	private void getSensorsIndicators(HttpServletRequest request) {
