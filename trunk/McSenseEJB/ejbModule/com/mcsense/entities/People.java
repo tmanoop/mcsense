@@ -43,6 +43,24 @@ public class People implements Entity,Serializable {
 	@Column(name="BANK_ACCOUNT_ID", unique=true)
 	private String bankAccountId;
 
+	@Column(name="EMAILID")
+	private String emailId;
+	
+	@Column(name="PASSWORD")
+	private String password;
+	
+	@Column(name="GENDER")
+	private String gender;
+	
+	@Column(name="NJIT_DEPARTMENT")
+	private String njitDepartment;
+	
+	@Column(name="NJIT_ACADEMIC_YEAR")
+	private String njitAcademicYear;
+	
+	@Column(name="AGE_GROUP")
+	private String ageGroup;
+	
 	//bi-directional many-to-one association to Bank
 	@OneToMany(mappedBy="people")
 	private Set<Bank> banks;
@@ -88,6 +106,54 @@ public class People implements Entity,Serializable {
 
 	public void setPersonLname(String personLname) {
 		this.personLname = personLname;
+	}
+	
+	public String getEmailId() {
+		return emailId;
+	}
+
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getNjitDepartment() {
+		return njitDepartment;
+	}
+
+	public void setNjitDepartment(String njitDepartment) {
+		this.njitDepartment = njitDepartment;
+	}
+
+	public String getNjitAcademicYear() {
+		return njitAcademicYear;
+	}
+
+	public void setNjitAcademicYear(String njitAcademicYear) {
+		this.njitAcademicYear = njitAcademicYear;
+	}
+
+	public String getAgeGroup() {
+		return ageGroup;
+	}
+
+	public void setAgeGroup(String ageGroup) {
+		this.ageGroup = ageGroup;
 	}
 
 	public Set<Bank> getBanks() {

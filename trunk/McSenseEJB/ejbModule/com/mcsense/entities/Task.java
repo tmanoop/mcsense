@@ -2,6 +2,7 @@ package com.mcsense.entities;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.math.BigDecimal;
 
 import javax.persistence.*;
 
@@ -40,6 +41,45 @@ public class Task implements Entity, Serializable {
 
 	@Column(name = "TASK_NAME")
 	private String taskName;
+	
+	@Column(name = "TASK_DESC")
+	private String taskDesc;
+	
+	@Column(name = "CLIENT_PAY")
+	private int clientPay;
+	
+	@Column(name = "TASK_DURATION")
+	private int taskDuration;
+	
+	@Column(name = "SENSED_DATA_FILE_LOCATION")
+	private String sensedDataFileLocation;
+	
+	@Column(name = "ACCELEROMETER")
+	private String accelerometer;
+	
+	@Column(name = "GPS")
+	private String gps;
+	
+	@Column(name = "CAMERA")
+	private String camera;
+	
+	@Column(name = "MIC")
+	private String mic;
+	
+	@Column(name = "WIFI")
+	private String wifi;
+	
+	@Column(name = "BLUETOOTH")
+	private String bluetooth;
+	
+	@Column(name = "MAGNETOMETER")
+	private String magnetometer;
+	
+	@Column(name = "PROXIMITYSENSOR")
+	private String proximitySensor;
+	
+	@Column(name = "AMBIENTLIGHTSENSOR")
+	private String ambientLightSensor;
 	
 	// bi-directional many-to-one association to People
 	@ManyToOne
@@ -95,6 +135,110 @@ public class Task implements Entity, Serializable {
 
 	public void setTaskName(String taskName) {
 		this.taskName = taskName;
+	}
+	
+	public String getTaskDesc() {
+		return taskDesc;
+	}
+
+	public void setTaskDesc(String taskDesc) {
+		this.taskDesc = taskDesc;
+	}
+
+	public int getClientPay() {
+		return clientPay;
+	}
+
+	public void setClientPay(int clientPay) {
+		this.clientPay = clientPay;
+	}
+
+	public int getTaskDuration() {
+		return taskDuration;
+	}
+
+	public void setTaskDuration(int taskDuration) {
+		this.taskDuration = taskDuration;
+	}
+
+	public String getSensedDataFileLocation() {
+		return sensedDataFileLocation;
+	}
+
+	public void setSensedDataFileLocation(String sensedDataFileLocation) {
+		this.sensedDataFileLocation = sensedDataFileLocation;
+	}
+
+	public String getAccelerometer() {
+		return accelerometer;
+	}
+
+	public void setAccelerometer(String accelerometer) {
+		this.accelerometer = accelerometer;
+	}
+
+	public String getGps() {
+		return gps;
+	}
+
+	public void setGps(String gps) {
+		this.gps = gps;
+	}
+
+	public String getCamera() {
+		return camera;
+	}
+
+	public void setCamera(String camera) {
+		this.camera = camera;
+	}
+
+	public String getMic() {
+		return mic;
+	}
+
+	public void setMic(String mic) {
+		this.mic = mic;
+	}
+
+	public String getWifi() {
+		return wifi;
+	}
+
+	public void setWifi(String wifi) {
+		this.wifi = wifi;
+	}
+
+	public String getBluetooth() {
+		return bluetooth;
+	}
+
+	public void setBluetooth(String bluetooth) {
+		this.bluetooth = bluetooth;
+	}
+
+	public String getMagnetometer() {
+		return magnetometer;
+	}
+
+	public void setMagnetometer(String magnetometer) {
+		this.magnetometer = magnetometer;
+	}
+
+	public String getProximitySensor() {
+		return proximitySensor;
+	}
+
+	public void setProximitySensor(String proximitySensor) {
+		this.proximitySensor = proximitySensor;
+	}
+
+	public String getAmbientLightSensor() {
+		return ambientLightSensor;
+	}
+
+	public void setAmbientLightSensor(String ambientLightSensor) {
+		this.ambientLightSensor = ambientLightSensor;
 	}
 
 	public People getPeople() {
