@@ -14,4 +14,4 @@ select * from APP.TASK where TASK_STATUS = 'IP';
 
 update APP.TASK set TASK_STATUS='C' where TASK_STATUS = 'IP';
 
-delete from APP.TASK where TASK_STATUS = 'P';
+delete from APP.TASK where TASK_STATUS = 'C';
