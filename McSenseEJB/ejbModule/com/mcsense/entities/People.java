@@ -5,6 +5,9 @@ import java.lang.annotation.Annotation;
 
 import javax.persistence.*;
 
+import com.mcsense.security.SimpleCrypto;
+import com.mcsense.util.ServiceConstants;
+
 import java.util.Set;
 
 
@@ -19,12 +22,15 @@ import java.util.Set;
               query="Select e from People e where e.personLname = :name"),
   @NamedQuery(name="People.findByPrimaryKey",
               query="SELECT e FROM People e WHERE e.personId = :id"),
+  @NamedQuery(name="People.loginCheck",
+          	  query="SELECT e FROM People e WHERE e.emailId = :emailId and e.password = :password"),
 })
 public class People implements Entity,Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
+//	@SequenceGenerator(name = "person_id", sequenceName = "person_id", allocationSize = 1)
 //	@TableGenerator(name = "SEQUENCE", initialValue = 1, allocationSize = 1)
 //	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="people_id")
 //	@SequenceGenerator(name="people_id",sequenceName="APP.people_id", initialValue=1, allocationSize=5)
@@ -117,11 +123,26 @@ public class People implements Entity,Serializable {
 	}
 
 	public String getPassword() {
-		return password;
+		String decryptedText = "";
+		try {
+			decryptedText = SimpleCrypto.decrypt(ServiceConstants.SEED, password);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return decryptedText;
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		//Encrypt password
+		String encryptedText = "";
+		try {
+			encryptedText = SimpleCrypto.encrypt(ServiceConstants.SEED,password);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.password = encryptedText;
 	}
 
 	public String getGender() {

@@ -18,4 +18,8 @@ public interface TaskServicesLocal {
 
 	Task createTask(String id, String taskDesc, String taskType);
 
+	void acceptTask(String providerId, String taskId);
+
+	void completeTask(String providerId, String taskId);
+
 }
