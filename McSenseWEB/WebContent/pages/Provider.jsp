@@ -7,6 +7,20 @@
 <title>Provider</title>
 </head>
 <body>
+<br><br><br><br>
+<table align="center" style="border:1px solid #000000;">
+<%
+if(session.getAttribute("emailID")!=null && session.getAttribute("emailID")!="")
+{
+String user = session.getAttribute("emailID").toString();
+%>
+<tr><td align="center"><h1>Welcome <b><%= user%></b></h1></td></tr>
+<%
+} else {
+	response.sendRedirect("login.jsp");
+}
+%>
+</table>
 <b><big>Welcome McSense Providers</big></b>
 <br>
 <br>

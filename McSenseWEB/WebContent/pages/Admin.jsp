@@ -7,6 +7,20 @@
 <title>Insert title here</title>
 </head>
 <body>
+<br><br><br><br>
+<table align="center" style="border:1px solid #000000;">
+<%
+if(session.getAttribute("emailID")!=null && session.getAttribute("emailID")!="")
+{
+String user = session.getAttribute("emailID").toString();
+%>
+<tr><td align="center"><h1>Welcome <b><%= user%></b></h1></td></tr>
+<%
+} else {
+	response.sendRedirect("login.jsp");
+}
+%>
+</table>
 <b><big>McSense Admin Services</big></b>
 <br>
 <br>
@@ -24,6 +38,15 @@ Bank Account ID:
 <br>
 Address:
 <input name="address" type="text" size="30" value="">
+<br>
+EmailID:
+<input name="emailId" type="text" size="15" value="">
+<br>
+Password:
+<input name="password" type="text" size="15" value="">
+<br>
+Re-password:
+<input name="repassword" type="text" size="15" value="">
 <br>
 <br>
 <input type="hidden" name="htmlFormName" value="register">
