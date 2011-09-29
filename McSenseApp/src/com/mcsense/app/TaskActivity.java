@@ -17,27 +17,38 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +60,9 @@ public class TaskActivity extends Activity {
 	private static final int PICTURE_RESULT = 9;
 	LinearLayout linear;
 	Bitmap bitmap;
+	JTask currentTask;
+	Context context;
+	private ProgressDialog pDialog;
 
 	TextView text;
 	public void onCreate(Bundle savedInstanceState) {
@@ -66,18 +80,27 @@ public class TaskActivity extends Activity {
 //        linear.addView(text);
 
 //        setContentView(linear);
+		
+		context = getApplicationContext();
         setContentView(R.layout.task);
         
         JTask jTaskObjInToClass = getIntent().getExtras().getParcelable("JTask");
 //        showToast(jTaskObjInToClass.getTaskDescription());
         text = (TextView) findViewById(R.id.txtTest);
         text.setText(jTaskObjInToClass.getTaskName());
-        
-        loadTaskDetails(jTaskObjInToClass);
+        currentTask = jTaskObjInToClass;
+//        loadTaskDetails(jTaskObjInToClass);
         
 //        iniAccel();
         
     }
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		loadTaskDetails(currentTask);
+	}
 	
 	@Override
 	protected void onPause() {
@@ -95,39 +118,83 @@ public class TaskActivity extends Activity {
 	
 	private void loadTaskDetails(JTask jTask) {
 //		LinearLayout linearLayout =  (LinearLayout)findViewById(R.id.linearLayout1);
+		//get calling tab type
+		final String tab_type = getIntent().getExtras().getString("tab_type");
 		
-		TextView taskID = (TextView) findViewById(R.id.taskID); 
-		taskID.setText(jTask.getTaskId()+"");
+		if(tab_type.equals("completed")){
+			TextView clientPayTextView = (TextView) findViewById(R.id.clientPayTextView); 
+			clientPayTextView.setText("Dollars earned:");
+		}
 		
-		TextView taskStatus = (TextView) findViewById(R.id.taskStatus); 
-		taskStatus.setText(jTask.getTaskStatus());
+		TextView clientPay = (TextView) findViewById(R.id.clientPay); 
+		clientPay.setText("$"+jTask.getClientPay());
+		
+		TextView taskStatus = (TextView) findViewById(R.id.taskStatus);
+		String tskStat = jTask.getTaskStatus();
+		if(tskStat.equals("P"))
+			tskStat = "Available";
+		else if(tskStat.equals("IP"))
+			tskStat = "Accepted";
+		else if(tskStat.equals("C"))
+			tskStat = "Completed";
+		taskStatus.setText(tskStat);
 		
 		TextView taskType = (TextView) findViewById(R.id.taskType); 
 		taskType.setText(jTask.getTaskType());
 		
-		TextView providerID = (TextView) findViewById(R.id.providerID); 
-		providerID.setText(jTask.getProviderPersonId()+"");
+		TextView duration = (TextView) findViewById(R.id.duration); 
+		duration.setText(jTask.getTaskDuration()+" mins");
+		
+		TextView taskDesc = (TextView) findViewById(R.id.taskDescription); 
+		taskDesc.setText(jTask.getTaskDescription());
+		
 		final Button button = (Button) findViewById(R.id.button1); 
 		
+		//get task ID
+		final String taskID = jTask.getTaskId()+"";
 		final String tskType = jTask.getTaskType();
 		String buttonName = "";
-		if(tskType.equals("campusSensing"))
-			buttonName = "Start Sensing";
-		else if(tskType.equals("photo"))
-			buttonName = "Take Photo";
+		if(tab_type.equals("completed")){
+        	button.setVisibility(View.INVISIBLE);
+        } else if(tab_type.equals("new")){
+        	buttonName = "Accept Task";
+        } else if(tab_type.equals("pending")){
+			if(tskType.equals("campusSensing")){
+				if(AppUtils.isServiceRunning(getApplicationContext()))
+					buttonName = "Stop Sensing";
+				else
+					buttonName = "Re-start Sensing";
+			} else if(tskType.equals("photo")){
+				buttonName = "Take Photo";
+			}
+		}
 		button.setText(buttonName);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	if(tskType.equals("campusSensing")){
-            		iniAccel();
-            	} else if(tskType.equals("photo")){
-//            		showToast("Start Camera");
-            		bitmap = null;
-            		photo();
+            	if(tab_type.equals("new")){
+            		//call server to accept the task and update its status
+            		acceptTask(taskID);
+            		showToast("Accepted.");
+            		if(tskType.equals("campusSensing"))
+                		iniSensingService();
+            	} else if(tab_type.equals("pending")){
+            		if(tskType.equals("photo")){
+//            			showToast("Start Camera");
+                		bitmap = null;
+                		photo();
+            		} else if(tskType.equals("campusSensing")){
+            			String buttonName = button.getText().toString();
+            			if(buttonName.equals("Stop Sensing")){
+            				stopService(new Intent(TaskActivity.this, SensingService.class));
+            				button.setText("Re-start Sensing");
+            			} else if(buttonName.equals("Re-start Sensing")){
+            				iniSensingService();
+            				button.setText("Stop Sensing");
+            			}
+            		}
             	}
             }
         });
-		
 //		TextView acelValues = (TextView) findViewById(R.id.acelValues); 
 //		String acelVal = getAccelValues();
 //		acelValues.setText(acelVal);
@@ -135,6 +202,91 @@ public class TaskActivity extends Activity {
 		
 	}
 	
+	protected void iniSensingService() {
+		LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+		boolean isGPS = mlocManager.isProviderEnabled (LocationManager.GPS_PROVIDER);
+		if(!isGPS)
+			enableGPSSettings();
+		else{
+			Intent intent = new Intent(this, SensingService.class);
+			intent.putExtra("JTask", currentTask);
+			startService(intent);
+			finish();
+		}
+	}
+
+	private void enableGPSSettings() {
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setTitle("Switch on GPS?");
+		alert.setPositiveButton("Yes",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						TaskActivity.this.startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
+					}
+				});
+
+		alert.setNegativeButton("No",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						showToast("McSense App cannot sense with out GPS!!");
+						stopService(new Intent(TaskActivity.this, SensingService.class));
+					}
+				});
+
+		alert.show();
+	}
+	
+	protected void acceptTask(String taskID) {
+
+		// http servlet call
+		HttpClient httpclient = new DefaultHttpClient();
+		String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/pages/ProviderServlet";
+		HttpPost httppost = new HttpPost(providerURL);
+		HttpResponse response = null;
+		InputStream is = null;
+		StringBuilder sb = new StringBuilder();
+		
+		// Add your data
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+        nameValuePairs.add(new BasicNameValuePair("taskStatus", "Accepted"));
+        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
+        nameValuePairs.add(new BasicNameValuePair("taskId", currentTask.getTaskId()+""));
+        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
+        
+		// Execute HTTP Get Request
+		try {
+			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			
+			response = httpclient.execute(httppost);
+			System.out.println("Reading response...");
+			HttpEntity entity = response.getEntity();
+			is = entity.getContent();
+
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(is, "iso-8859-1"), 8);
+
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+				System.out.println(sb);
+			}
+			is.close();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// read task from servlet
+		String resp = sb.toString();
+		System.out.println(resp);
+		
+		finish();
+//		showToast("Submitted: " + resp + " \r\n");
+	}
+
 	private void photo() {
 //		showToast("Photo");
 		Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -142,7 +294,7 @@ public class TaskActivity extends Activity {
 		camera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(image));
 
         this.startActivityForResult(camera, PICTURE_RESULT);
-        showToast("Photo Saved!!"+Uri.fromFile(image));
+//        showToast("Photo Saved!!"+Uri.fromFile(image));
 //	    Intent myIntent = new Intent(item.getIntent());
 //        startActivity(myIntent);
 	}
@@ -151,12 +303,13 @@ public class TaskActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 //		showToast("requestCode: "+requestCode);
 //		showToast("resultCode: "+resultCode);
+		Log.d("McSense", "requestCode: "+requestCode+" resultCode: "+resultCode);
 		Bitmap image = null;
 	    if(requestCode == PICTURE_RESULT){
 	        if(resultCode == Activity.RESULT_OK) {
 	            if(data!=null){
 	                image = BitmapFactory.decodeFile(data.getExtras().get(MediaStore.Images.Media.TITLE).toString());
-	                preview(image);
+//	                preview(image);
 //	                showToast("Photo Saved!!");
 //	                grid.add(image);            
 //	                images.addItem(image);
@@ -164,6 +317,7 @@ public class TaskActivity extends Activity {
 	            if(data==null){
 //	                Toast.makeText(Team_Viewer.this, "no data.", Toast.LENGTH_SHORT).show();
 	            }
+	            preview(image);
 	        }
 	        else if(resultCode == Activity.RESULT_CANCELED) {
 //	            Toast.makeText(Team_Viewer.this, "Picture could not be taken.", Toast.LENGTH_SHORT).show();
@@ -171,7 +325,7 @@ public class TaskActivity extends Activity {
 	        	
 	        }
 //	        showToast("data:!!"+data);
-	        preview(image);
+//	        preview(image);
 //	        uploadPhoto();
 	    }
 	}
@@ -187,11 +341,57 @@ public class TaskActivity extends Activity {
 		   bitmap = BitmapFactory.decodeFile(imageInSD);
 		   bmImage.setImageBitmap(bitmap);
 		   
-		   uploadPhoto();
+		   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		   //add upload button
+		   addUploadButton();
+//		   uploadPhoto();
 	}
 	
+	private void addUploadButton() {
+		RelativeLayout rl = (RelativeLayout) findViewById(R.id.relativeLayout1);
+		System.out.println("adding upload button");
+		Button button = new Button(this); 
+		button.setText("Upload Photo");
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	uploadProgress();
+            }
+        });
+        RelativeLayout.LayoutParams p = new 
+        RelativeLayout.LayoutParams( 
+        		RelativeLayout.LayoutParams.FILL_PARENT, 
+        		RelativeLayout.LayoutParams.WRAP_CONTENT 
+                    ); 
+		rl.addView(button,p);
+		//hide take photo button
+		Button takePhotoButton = (Button) findViewById(R.id.button1);
+		takePhotoButton.setVisibility(View.INVISIBLE);
+	}
+
+	public void uploadProgress() {
+	    pDialog = ProgressDialog.show(this, "Uploading Photo..", "Please wait", true,false);
+	    pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+	    Thread thread = new Thread(new Runnable() {
+	    	 public void run() {
+	    		// add downloading code here
+	    		 	uploadPhoto();
+	    		    handler.sendEmptyMessage(0);
+	    		}     
+	    	 });
+	    thread.start();
+	}
+	
+	private Handler handler = new Handler() {
+	    @Override
+	    public void handleMessage(Message msg) {
+	        pDialog.dismiss();
+	        // handle the result here
+			finish();
+	    }
+	};
+	
 	private void uploadPhoto(){
-		showToast("uploading!!");
+//		showToast("uploading!!");
 		// http servlet call
 		HttpClient httpclient = new DefaultHttpClient();
 		String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/pages/PhotoServlet";
@@ -201,8 +401,8 @@ public class TaskActivity extends Activity {
 		StringBuilder sb = new StringBuilder();
 		
 		//read data
-		TextView taskIDTxt = (TextView) findViewById(R.id.taskID);;
-		TextView taskDescTxt = (TextView) findViewById(R.id.txtTest);
+//		TextView taskIDTxt = (TextView) findViewById(R.id.taskID);;
+//		TextView taskDescTxt = (TextView) findViewById(R.id.txtTest);
 		
 //		String imageInSD = Environment.getExternalStorageDirectory()+"/McSenseImage.jpg";
 //		String imageInSD = "/sdcard/McSenseImage.jpg";
@@ -220,13 +420,15 @@ public class TaskActivity extends Activity {
 	        
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
-			showToast("uploading error!! "+e1.getMessage());
+			e1.printStackTrace();
+//			showToast("uploading error!! "+e1.getMessage());
 		}
 		
 		// Add your data
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-        nameValuePairs.add(new BasicNameValuePair("taskDesc", taskDescTxt.getText().toString()));
-        nameValuePairs.add(new BasicNameValuePair("id", taskIDTxt.getText().toString()));
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+//        nameValuePairs.add(new BasicNameValuePair("taskDesc", currentTask.getTaskDescription()));
+        nameValuePairs.add(new BasicNameValuePair("taskId", currentTask.getTaskId()+""));
+        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
         nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
         nameValuePairs.add(new BasicNameValuePair("image",ba1));
         
@@ -261,8 +463,7 @@ public class TaskActivity extends Activity {
 		String resp = sb.toString();
 		System.out.println(resp);
 		
-		showToast("Submitted: " + resp + " \r\n");
-		
+//		showToast("Uploaded: \r\n");
 	}
 	
 	private ArrayList<String> getBitmapEncodedString(byte[] ba) {

@@ -1,22 +1,23 @@
 package com.mcsense.app;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Main extends TabActivity {
-	private static final String PREFS_NAME = "myPref";
+
 	private WifiManager wifiManager;
 
 	/** Called when the activity is first created. */
@@ -24,7 +25,7 @@ public class Main extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
 		String login = settings.getString("login", "");
 		//String password = settings.getString("password", "");
 
@@ -38,6 +39,51 @@ public class Main extends TabActivity {
 			}
 			loadTabs();
 		}
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.logout:
+	        logout();
+	        return true;
+	    case R.id.settings:
+	    	settings();
+	        return true;
+	    case R.id.help:
+	        showHelp();
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+
+	private void settings() {
+		Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
+        startActivity(i);
+	}
+
+	private void showHelp() {
+		Intent i = new Intent(getApplicationContext(), HelpActivity.class);
+        startActivity(i);
+	}
+
+	private void logout() {
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, Context.MODE_PRIVATE);
+
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("providerId", "");	
+		editor.putString("login", "");	
+		editor.commit();
+		finish();
 	}
 
 	private void enableWiFi() {
@@ -74,9 +120,10 @@ public class Main extends TabActivity {
 	}
 
 	private void loadLoginUser() {
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
 		String login = settings.getString("login", "");
-		
+		String providerId = settings.getString("providerId", "");
+		AppConstants.providerId = providerId;
 		//check for non student IDs 
 		if(!login.contains("njit")){
 			if(login.contains("@"))
@@ -164,13 +211,13 @@ public class Main extends TabActivity {
 		intent = new Intent().setClass(this, NewTasks.class);
 
 		// Initialize a TabSpec for each tab and add it to the TabHost
-		spec = tabHost.newTabSpec("new").setIndicator("New",
+		spec = tabHost.newTabSpec("new").setIndicator("Available",
 				res.getDrawable(R.drawable.ic_tab_new)).setContent(intent);
 		tabHost.addTab(spec);
 
 		// Do the same for the other tabs
 		intent = new Intent().setClass(this, PendingTasks.class);
-		spec = tabHost.newTabSpec("pending").setIndicator("Pending",
+		spec = tabHost.newTabSpec("pending").setIndicator("Accepted",
 				res.getDrawable(R.drawable.ic_tab_pending)).setContent(intent);
 		tabHost.addTab(spec);
 
@@ -185,6 +232,6 @@ public class Main extends TabActivity {
 				res.getDrawable(R.drawable.ic_tab_earnings)).setContent(intent);
 		tabHost.addTab(spec);
 
-		tabHost.setCurrentTab(0);
+		tabHost.setCurrentTab(1);
 	}
 }

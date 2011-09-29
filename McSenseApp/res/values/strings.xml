@@ -9,4 +9,7 @@
     <color name="black">#000000</color>
     <string name="mapskey">0ouC8wAL11PTw8tuk-Iuj5cnjys-ssv_72BbeZQ</string>
     <color name="tab_widget">#006666</color>
+    <string name="logout">Log Out</string>
+    <string name="help">Help</string>
+    <string name="settings">Settings</string>
 </resources>
