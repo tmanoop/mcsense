@@ -51,6 +51,8 @@ public class Sensors extends MapActivity implements SensorEventListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		startService(new Intent(this, SensingService.class));
+		
         startGPSSensing();
 		
 		startAccelerometerSensing();
@@ -150,8 +152,8 @@ public class Sensors extends MapActivity implements SensorEventListener {
 		
     	mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
-		mlocListener = new MyLocationListener(getApplicationContext());
-
+		mlocListener = new MyInnerLocationListener(getApplicationContext());
+		
 		mlocManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
 	}
 
@@ -211,6 +213,7 @@ public class Sensors extends MapActivity implements SensorEventListener {
     @Override
     protected void onPause() {
         super.onPause();
+        stopService(new Intent(this, SensingService.class));
         mSensorManager.unregisterListener(this);
         mlocManager.removeUpdates(mlocListener);
         if (isFinishing()) {
@@ -283,9 +286,9 @@ public class Sensors extends MapActivity implements SensorEventListener {
 		return mSensorManager.getSensorList(Sensor.TYPE_ALL);
 	}
 	
-	class MyLocationListener implements LocationListener {
+	class MyInnerLocationListener implements LocationListener {
 		Context appContext;
-		public MyLocationListener(Context context) {
+		public MyInnerLocationListener(Context context) {
 			appContext = context;
 		}
 		

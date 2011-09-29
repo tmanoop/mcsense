@@ -39,7 +39,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mcsense.json.JTask;
 
-public class NewTasks extends ListActivity implements Runnable {
+public class NewTasks extends ListActivity{
 	
 	Button pickButton;
 	TextView textview;
@@ -86,13 +86,13 @@ public class NewTasks extends ListActivity implements Runnable {
     }
 	
 	private void loadNewTaskListView() {
-		taskList = new ArrayList<JTask>();
-//		taskList = loadNewTasks();
-		downloadTasks();
-		if(taskList.size()==0){
-			JTask t = new JTask(0,"No New Tasks"); 
-			taskList.add(t);
-		}
+//		taskList = new ArrayList<JTask>();
+////		taskList = loadNewTasks();
+//		downloadTasks();
+//		if(taskList.size()==0){
+//			JTask t = new JTask(0,"No New Tasks"); 
+//			taskList.add(t);
+//		}
 		//TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, AppConstants.getTaskList());
 		taskAdapter = new TaskAdapter(this, R.layout.list_item, taskList);
 		setListAdapter(taskAdapter);
@@ -105,32 +105,45 @@ public class NewTasks extends ListActivity implements Runnable {
 		  lv.setOnItemClickListener(new OnItemClickListener() {
 		    public void onItemClick(AdapterView<?> parent, View view,
 		        int position, long id) {
-		      // When clicked, show a toast with the TextView text
-//		      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),Toast.LENGTH_SHORT).show();
-		    TextView tt = (TextView) view.findViewById(R.id.toptext);
-		      showToast("Selected: "+tt.getText());
+		    	//When clicked, show a toast with the TextView text
+		    	//Toast.makeText(getApplicationContext(), ((TextView) view).getText(),Toast.LENGTH_SHORT).show();
+		    	TextView tt = (TextView) view.findViewById(R.id.toptext);
+		    	JTask t = taskList.get(position);
+			      if(!t.getTaskDescription().equals("No New Tasks"))
+			    	  loadTask(t);
+			      else
+			    	  showToast(""+tt.getText());
 		    }
 		  });
 	}
 
+	protected void loadTask(JTask t) {
+		Intent i = new Intent(getApplicationContext(), TaskActivity.class);
+		i.putExtra("JTask", t);
+		i.putExtra("tab_type", "new");
+        startActivity(i);
+	}
+	
 	public void downloadTasks() {
 	    pDialog = ProgressDialog.show(this, "Loading Tasks..", "Please wait", true,false);
 	    pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	    Thread thread = new Thread(this);
+	    Thread thread = new Thread(new Runnable() {
+	    	 public void run() {
+	    		// add downloading code here
+	    			taskList = loadNewTasks();
+	    		    handler.sendEmptyMessage(0);
+	    		}     
+	    	 });
 	    thread.start();
 	}
-
-	public void run() {
-		// add downloading code here
-		taskList = loadNewTasks();
-	    handler.sendEmptyMessage(0);
-	 }
 
 	private Handler handler = new Handler() {
 	    @Override
 	    public void handleMessage(Message msg) {
 	        pDialog.dismiss();
 	        // handle the result here
+	        loadNewTaskListView();
+			taskAdapter.notifyDataSetChanged();
 	    }
 	};
 	
@@ -176,11 +189,12 @@ public class NewTasks extends ListActivity implements Runnable {
 					//Parse Response into our object
 		            Type collectionType = new TypeToken<ArrayList<JTask>>(){}.getType();
 					jTaskList = new Gson().fromJson(line, collectionType);
-				} else {
-					JTask t = new JTask(0,line); 
-					jTaskList = new ArrayList<JTask>();
-					jTaskList.add(t);
-				}
+				} 
+//				else {
+//					JTask t = new JTask(0,line); 
+//					jTaskList = new ArrayList<JTask>();
+//					jTaskList.add(t);
+//				}
 				
 			}
 			is.close();
@@ -226,11 +240,10 @@ public class NewTasks extends ListActivity implements Runnable {
 	protected void onResume()
 	{
 		super.onResume();
-	    //Restore state here
-//		showToast("Loading..");
-//		taskList.clear();
+		taskList = new ArrayList<JTask>();
 //		taskList = loadNewTasks();
-		loadNewTaskListView();
+		downloadTasks();
+//		loadNewTaskListView();
 	}
 	
 	@Override

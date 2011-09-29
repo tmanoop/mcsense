@@ -22,9 +22,12 @@ import com.google.gson.reflect.TypeToken;
 import com.mcsense.json.JTask;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,6 +40,8 @@ import android.widget.AdapterView.OnItemClickListener;
 public class PendingTasks extends ListActivity {
 	TextView textview;
 	ArrayList<JTask> taskList;
+	TaskAdapter taskAdapter;
+	private ProgressDialog pDialog;
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -53,14 +58,13 @@ public class PendingTasks extends ListActivity {
 	@Override
 	protected void onResume(){
 		super.onResume();
-		loadPendingTaskListView();
+		taskList = new ArrayList<JTask>();
+		downloadTasks();
 	}
 	
 	private void loadPendingTaskListView() {
-		taskList = new ArrayList<JTask>();
-		taskList = loadPendingTasks();
 		//TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, AppConstants.getTaskList());
-		TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, taskList);
+		taskAdapter = new TaskAdapter(this, R.layout.list_item, taskList);
 		setListAdapter(taskAdapter);
 //		taskAdapter.notifyDataSetChanged();
 		
@@ -79,7 +83,7 @@ public class PendingTasks extends ListActivity {
 		      if(!t.getTaskDescription().equals("No Tasks"))
 		    	  loadTask(t);
 		      else
-		    	  showToast("Selected: "+tt.getText());
+		    	  showToast(""+tt.getText());
 		    }
 		  });
 	}
@@ -87,79 +91,32 @@ public class PendingTasks extends ListActivity {
 	protected void loadTask(JTask t) {
 		Intent i = new Intent(getApplicationContext(), TaskActivity.class);
 		i.putExtra("JTask", t);
+		i.putExtra("tab_type", "pending");
         startActivity(i);
 	}
-
-	private ArrayList<JTask> loadPendingTasks() {
-		
-		String id = "";//task id
-		String status = "IP";
-		
-
-		ArrayList<JTask> jTaskList = null;
-		
-		Context context = getApplicationContext();
-		
-		//Set http params for timeouts
-		HttpParams httpParameters = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpParameters, AppConstants.timeoutConnection);
-		HttpConnectionParams.setSoTimeout(httpParameters, AppConstants.timeoutSocket);
-		
-		// http servlet call
-		HttpClient httpclient = new DefaultHttpClient(httpParameters);
-		String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/pages/TaskServlet";
-		providerURL = providerURL + "?type=mobile&id="+id+"&status="+status+"&htmlFormName=tasklookup";
-		HttpGet httpget = new HttpGet(providerURL);
-		HttpResponse response = null;
-		InputStream is = null;
-		StringBuilder sb = new StringBuilder();
-		
-		// Execute HTTP Get Request
-		try {
-			response = httpclient.execute(httpget);
-			System.out.println("Reading response...");
-			HttpEntity entity = response.getEntity();
-			is = entity.getContent();
-
-			BufferedReader reader = new BufferedReader(
-					new InputStreamReader(is, "iso-8859-1"), 8);
-
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				sb.append(line + "\n");
-				System.out.println(sb);
-				
-				//Parse Response into our object
-	            Type collectionType = new TypeToken<ArrayList<JTask>>(){}.getType();
-				jTaskList = new Gson().fromJson(line, collectionType);
-			}
-			is.close();
-
-//			// read task from servlet
-//			String task = sb.toString();
-//			System.out.println(task);
-//			
-//			textview.append(task + " \r\n");
-//			scrollDown();
-			
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			showToast("Server temporarily not available!!");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			showToast("Server temporarily not available!!");
-		}
-		
-		if(jTaskList==null){
-			JTask t = new JTask(0,"No Tasks"); 
-			jTaskList = new ArrayList<JTask>();
-			jTaskList.add(t);
-		}
-
-		return jTaskList;
+	
+	public void downloadTasks() {
+	    pDialog = ProgressDialog.show(this, "Loading Tasks..", "Please wait", true,false);
+	    pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+	    Thread thread = new Thread(new Runnable() {
+	    	 public void run() {
+	    		 	// add downloading code here
+	    		 	taskList = AppUtils.loadTasks("IP",getApplicationContext());
+	    		    handler.sendEmptyMessage(0);
+	    		}     
+	    	 });
+	    thread.start();
 	}
+
+	private Handler handler = new Handler() {
+	    @Override
+	    public void handleMessage(Message msg) {
+	        pDialog.dismiss();
+	        // handle the result here
+	        loadPendingTaskListView();
+			taskAdapter.notifyDataSetChanged();
+	    }
+	};
 	
 	public void showToast(String msg) {
 		CharSequence text = msg;

@@ -4,6 +4,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+
+import com.mcsense.json.JTask;
 
 import android.app.Activity;
 import android.content.Context;
@@ -47,27 +50,17 @@ public class TotalEarningsActivity extends Activity {
 	}
 	
 	private void loadEarnings() {
-		String FILENAME = "hello_file";
-		String string = "$100";
+		int totalEarnings = 0;
 
 		try {
-			//writing
-			FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			fos.write(string.getBytes());
-			
-			//reading
-			FileInputStream fis = openFileInput(FILENAME);
-			byte[] buffer = new byte[fis.available()];
-			fis.read(buffer);
-			String earnings = new String(buffer);
-			textview.setText("Below are the Total Earnings: \r\n"+earnings+" \r\n");
-			
-			fis.close();
-			fos.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+			if(AppConstants.jTaskCompletedList==null)
+				AppConstants.jTaskCompletedList = AppUtils.loadTasks("C",getApplicationContext());
+			ArrayList<JTask> jTaskList = AppConstants.jTaskCompletedList;
+			for(JTask task : jTaskList){
+				totalEarnings = totalEarnings + task.getClientPay();
+			}
+			textview.setText("Below are the Total Earnings: \r\n $"+totalEarnings+" \r\n");
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

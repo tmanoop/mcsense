@@ -37,7 +37,7 @@ public class TaskAdapter extends ArrayAdapter<JTask> {
                     	if(t.getTaskDescription().equals("No New Tasks"))
                     		tt.setText(t.getTaskDescription());
                     	else
-                    		tt.setText("Name: "+t.getTaskDescription());                            
+                    		tt.setText("Name: "+t.getTaskName());                            
                     }
                     if(bt != null){
                     	if(t.getTaskType()!=null)

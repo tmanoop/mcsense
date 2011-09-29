@@ -6,8 +6,10 @@ import com.mcsense.json.JTask;
 
 public class AppConstants {
 //	protected static final String ip = "128.235.66.235";
-//	protected static final String ip = "10.1.169.128";
+//	protected static final String ip = "10.1.169.144";
 	protected static final String ip = "manoop.dyndns.org";
+	
+	protected static final String PREFS_NAME = "myPref";
 	// Set the timeout in milliseconds until a connection is established.
 	protected static final int timeoutConnection = 2000;
 	// Set the default socket timeout (SO_TIMEOUT) 
@@ -17,7 +19,13 @@ public class AppConstants {
 	protected static final String SEED = "mcsense";
 //	static final Task[] TASKS = {new Task(1,"Photo Task"),new Task(2,"GPS Task"),new Task(3,"Accelerometer Task"),new Task(4,"Magnetometer Task"),new Task(5,"Mic Task")};
 	
+	protected static String providerId = "";
+	
 	public static JTask selectedTask = null;
+	
+	protected static ArrayList<JTask> jTaskCompletedList = null;
+	
+	public static boolean gpsLocUpdated = false;
 	
 //	public static ArrayList<Task> getTaskList(){
 //		ArrayList<Task> taskList = new ArrayList<Task>();
