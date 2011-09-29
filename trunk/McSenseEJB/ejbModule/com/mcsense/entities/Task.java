@@ -12,6 +12,8 @@ import javax.persistence.*;
  */
 @Entity
 @NamedQueries( {
+		@NamedQuery(name = "Task.findByID", query = "Select t from Task t where t.taskId = :taskId "),
+		@NamedQuery(name = "Task.findByStatusAndId", query = "Select t from Task t where t.taskStatus = :status and t.providerPersonId = :providerId ORDER BY t.taskId DESC "),
 		@NamedQuery(name = "Task.findByDesc", query = "Select t from Task t where t.taskName = :desc ORDER BY t.taskId DESC"),
 		@NamedQuery(name = "Task.findByStatus", query = "Select t from Task t where t.taskStatus = :status ORDER BY t.taskId DESC"),
 		@NamedQuery(name = "Task.findAll", query = "Select t from Task t ORDER BY t.taskId DESC"), })

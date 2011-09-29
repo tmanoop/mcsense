@@ -85,19 +85,22 @@ public class TaskServices implements TaskServicesLocal {
 		
 		return t;
 	}
-
+	
 	@Override
-	public List<Task> getTasks(String status, String id) {
+	public List<Task> getTasks(String status, String providerId) {
 		List<Task> tList = new ArrayList<Task>();
 		
 		try {			
-			if(id != null && !id.equals("")){
-				Task t = dataServicesLocal.getEM().find(Task.class, new Integer(id));
-				tList.add(t);
-			} else if(status != null && !status.equals("") && !status.equals("ALL")){
-				System.out.println("Status:"+status);
-				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatus").setParameter("status", status);				
-				tList = (List<Task>) q.getResultList();
+			if(status != null && !status.equals("") && !status.equals("ALL")){
+				if(providerId != null && !providerId.equals("") && !status.equals("P")){
+					System.out.println("Status:"+status+" providerId:"+providerId);
+					Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatusAndId").setParameter("status", status).setParameter("providerId", new Integer(providerId));				
+					tList = (List<Task>) q.getResultList();
+				} else{
+					System.out.println("Status:"+status);
+					Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatus").setParameter("status", status);				
+					tList = (List<Task>) q.getResultList();
+				}
 			} else {				
 				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findAll");
 				tList = (List<Task>) q.getResultList();
@@ -110,4 +113,41 @@ public class TaskServices implements TaskServicesLocal {
 		return tList;
 	}
 
+	@Override
+	public void acceptTask(String providerId, String taskId) {
+		Task t = null;
+		try {
+			
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByID").setParameter("taskId", new Integer(taskId));
+			
+			t = (Task) q.getSingleResult();		
+			t.setProviderPersonId(new Integer(providerId));
+			t.setTaskStatus("IP");	//IP - in progress
+			
+			dataServicesLocal.merge(t);
+			
+		} catch (Exception e) {
+			System.out.println("Task not found.");
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void completeTask(String providerId, String taskId) {
+		Task t = null;
+		try {
+			
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByID").setParameter("taskId", new Integer(taskId));
+			
+			t = (Task) q.getSingleResult();		
+			t.setProviderPersonId(new Integer(providerId));
+			t.setTaskStatus("C");	//IP - in progress
+			
+			dataServicesLocal.merge(t);
+			
+		} catch (Exception e) {
+			System.out.println("Task not found.");
+			e.printStackTrace();
+		}
+	}
 }
