@@ -5,6 +5,8 @@ import com.mcsense.json.JTask;
 
 public class WebUtil {
 	
+	public static final Object adminID = "mt57@njit.edu";
+
 	public static JTask mapToJsonTask(Task t) {
 		JTask jTask = new JTask(t.getTaskId(),t.getTaskDesc());
 		jTask.setProviderPersonId(t.getProviderPersonId());

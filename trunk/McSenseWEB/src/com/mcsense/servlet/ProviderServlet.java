@@ -1,6 +1,7 @@
 package com.mcsense.servlet;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import com.mcsense.entities.Task;
 import com.mcsense.json.JTask;
 import com.mcsense.mqservice.Consumer;
 import com.mcsense.services.TaskServicesLocal;
+import com.mcsense.util.Base64;
 import com.mcsense.util.McUtility;
 import com.mcsense.util.WebUtil;
 
@@ -40,6 +42,7 @@ public class ProviderServlet extends HttpServlet {
 	private static final String TMP_DIR_PATH = "c:\\temp";
 	private File tmpDir;
 	private static final String DESTINATION_DIR_PATH ="/files";
+	private static final String SENSING_DESTINATION_DIR_PATH ="C:\\Manoop\\McSense\\McSenseWEB\\WebContent\\files";
 	private File destinationDir;
 	
 	/**
@@ -75,19 +78,21 @@ public class ProviderServlet extends HttpServlet {
 		// C:\Program Files\apache-activemq-5.5.0\bin\activemq)
 		Consumer c = new Consumer();
 		int taskID =0;
+		List<Task> taskList = null;
 		Task t = null;
 		try {
 			//If there is no task with "P" status
-			List<Task> taskList = taskServicesLocal.getTasks("P", "");
+			taskList = taskServicesLocal.getTasks("P", "");
 			if(taskList.size() != 0){
-				//return none else call mq receive
-				task = c.recieve();
-				//process task
-				t = taskServicesLocal.updateTask(id,task);
+//				//return none else call mq receive
+//				task = c.recieve();
+//				//process task
+//				t = taskServicesLocal.updateTask(id,task);
+				t = taskList.get(taskList.size()-1);
 				taskID = t.getTaskId();
 				System.out.println("Task read: " + task);
 			}			
-		} catch (JMSException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -104,7 +109,7 @@ public class ProviderServlet extends HttpServlet {
 //				Task t = tList.get(i);
 				JTask jTask = WebUtil.mapToJsonTask(t);
 				jTaskList.add(jTask);
-				
+				//if wnat to show only one task, then use jTaskList
 				out.println(new Gson().toJson(jTaskList));
 			} else {
 				out.println("No New Tasks");
@@ -129,7 +134,42 @@ public class ProviderServlet extends HttpServlet {
 		response.setContentType("text/plain");
 		String htmlFormName = request.getParameter("htmlFormName");
 		System.out.println("htmlFormName: "+htmlFormName);
-		if(htmlFormName == null || htmlFormName.equals("completetask")){
+		
+		String providerId = request.getParameter("providerId");
+		String taskId = request.getParameter("taskId");
+		String taskStatus = request.getParameter("taskStatus");
+
+		if (taskStatus != null){ 
+			if(taskStatus.equals("Accepted")) {
+				Task t = taskServicesLocal.getTaskById(taskId);
+				if(t.getTaskStatus().equals("P")){
+					taskServicesLocal.acceptTask(providerId,taskId);
+					out.println("Accepted");
+				} else{
+					out.println("Task not available.");
+				}
+			} else if (taskStatus.equals("Completed")){
+				System.out.println("Sensed Data Recieved");
+				String sensedData = request.getParameter("sensedData");
+				
+				FileOutputStream f =null;
+				try {
+					byte[] sensedDataByteArray = Base64.decode(sensedData);
+					System.out.println("sensedDataByteArray length: " + sensedDataByteArray.length);
+					
+					f = new FileOutputStream(SENSING_DESTINATION_DIR_PATH+"\\"+taskId+".txt");
+//					f = new FileOutputStream(DESTINATION_DIR_PATH+"/ProviderImage.jpg");
+					f.write(sensedDataByteArray);
+					
+					taskServicesLocal.completeTask(providerId,taskId);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			    f.close();
+				System.out.println("Task: " + taskId);
+			}
+		} else if(htmlFormName == null || htmlFormName.equals("completetask")){
 			String taskid = request.getParameter("taskid");
 //			String picloc = request.getParameter("picloc");
 			
@@ -183,9 +223,9 @@ public class ProviderServlet extends HttpServlet {
 			} catch(Exception ex) {
 				log("Error encountered while uploading file",ex);
 			}
-			
+			out.println("<P>Return to <A HREF=../pages/Provider.jsp>Providers Screen</A>");
 		}
-		out.println("<P>Return to <A HREF=../pages/Provider.jsp>Providers Screen</A>");
+		
 		out.close();
 	}
 
