@@ -10,4 +10,6 @@ public interface LoginServicesLocal {
 
 	People register(People p);
 
+	boolean isPersonExist(String emailId, String meid);
+
 }

@@ -114,6 +114,22 @@ public class TaskServices implements TaskServicesLocal {
 	}
 
 	@Override
+	public Task getTaskById(String taskId){
+		Task t = null;
+		try {
+			
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByID").setParameter("taskId", new Integer(taskId));
+			
+			t = (Task) q.getSingleResult();	
+			
+		} catch (Exception e) {
+			System.out.println("Task not found.");
+			e.printStackTrace();
+		}
+		return t;
+	}
+	
+	@Override
 	public void acceptTask(String providerId, String taskId) {
 		Task t = null;
 		try {

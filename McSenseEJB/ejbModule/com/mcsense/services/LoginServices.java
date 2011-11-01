@@ -86,4 +86,25 @@ public class LoginServices implements LoginServicesLocal {
 		return newPerson;
     	
     }
+
+	@Override
+	public boolean isPersonExist(String emailId, String meid) {
+		List<People> pList = null;
+		boolean exist = false;
+		try {
+
+			Query q = dataServicesLocal.getEM().createNamedQuery("People.emailIdCheck").setParameter("emailId", emailId);//.setParameter("meid", meid)
+			
+			pList = (List<People>)q.getResultList();
+						
+		} catch (Exception e) {
+			System.out.println("PersonID not found.");
+		}
+		
+		if (pList!=null && pList.size()>0) {
+			System.out.println("exist");
+			exist = true;
+		}
+		return exist;
+	}
 }

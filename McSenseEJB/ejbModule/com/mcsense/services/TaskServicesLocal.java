@@ -22,4 +22,6 @@ public interface TaskServicesLocal {
 
 	void completeTask(String providerId, String taskId);
 
+	Task getTaskById(String taskId);
+
 }
