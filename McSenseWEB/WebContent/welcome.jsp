@@ -17,7 +17,7 @@ String user = session.getAttribute("emailID").toString();
 <tr><td align="center"><h1>Welcome <b><%= user%></b></h1><a href="login.jsp">Logout</a></td></tr>
 <%
 } else {
-	response.sendRedirect("login.jsp");
+	response.sendRedirect("../login.jsp");
 }
 %>
 </table>

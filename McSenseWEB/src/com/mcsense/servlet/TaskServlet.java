@@ -53,19 +53,21 @@ public class TaskServlet extends HttpServlet {
 		
 		if(htmlFormName.equals("tasklookup")){
 			String status = request.getParameter("status");
-			String id = request.getParameter("id");
-			List<Task> tList = taskServicesLocal.getTasks(status,id);
+			String providerId = request.getParameter("providerId");
+			List<Task> tList = taskServicesLocal.getTasks(status,providerId);
 			
 			if (type!=null && type.equals("mobile")){
-				List<JTask> jTaskList = new ArrayList<JTask>();
-				for(int i=0;i<tList.size();i++){
-					Task t = tList.get(i);
-					JTask jTask = WebUtil.mapToJsonTask(t);
-					jTaskList.add(jTask);
+				if (tList!=null) {
+					List<JTask> jTaskList = new ArrayList<JTask>();
+					for (int i = 0; i < tList.size(); i++) {
+						Task t = tList.get(i);
+						JTask jTask = WebUtil.mapToJsonTask(t);
+						jTaskList.add(jTask);
+					}
+					out.println(new Gson().toJson(jTaskList));
+				} else {
+					out.println("No Tasks");
 				}
-				
-				out.println(new Gson().toJson(jTaskList));
-//				out.println(" TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Description: " + t.getTaskType() + " \r\n");
 			} else {
 				for(int i=0;i<tList.size();i++){
 					Task t = tList.get(i);

@@ -53,20 +53,27 @@ public class AdminServlet extends HttpServlet {
 			String lname = request.getParameter("lname");
 			String fname = request.getParameter("fname");
 			String bankid = request.getParameter("bankid");
-			String address = request.getParameter("address");		
-			
-			People p = new People();
-			p.setBankAccountId(bankid);
-			p.setPersonFname(fname);
-			p.setPersonLname(lname);
-			p.setPersonAddress(address);
-			
-			int personID = bankAdminServicesLocal.register(p);
-			
-			// response
-			out.print("<br> Below McSense Account is created successfully.");
-			out.print("<br> Your McSense ID: " + personID);
-			
+			String address = request.getParameter("address");	
+			String emailId = request.getParameter("emailId");	
+			String password = request.getParameter("password");	
+			String repassword = request.getParameter("repassword");	
+			if(!password.equals(repassword))
+				response.sendRedirect("/pages/Admin.jsp");
+			else{
+				People p = new People();
+				p.setBankAccountId(bankid);
+				p.setPersonFname(fname);
+				p.setPersonLname(lname);
+				p.setPersonAddress(address);
+				p.setEmailId(emailId);
+				p.setPassword(password);
+				
+				int personID = bankAdminServicesLocal.register(p);
+				
+				// response
+				out.print("<br> Below McSense Account is created successfully.");
+				out.print("<br> Your McSense ID: " + personID);
+			}
 		}
 		else if(htmlFormName.equals("delete")){
 			String id = request.getParameter("id");

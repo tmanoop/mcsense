@@ -60,8 +60,8 @@ public class ClientServlet extends HttpServlet {
 			Task t = prepareTask(request);
 			t = taskServicesLocal.createTask(t);
 			taskID = t.getTaskId();
-			p.send(taskDesc);
-		} catch (JMSException e) {
+//			p.send(taskDesc);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
