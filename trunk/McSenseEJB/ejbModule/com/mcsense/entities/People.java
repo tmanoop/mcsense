@@ -20,6 +20,8 @@ import java.util.Set;
 @NamedQueries({
   @NamedQuery(name="People.findByLName",
               query="Select e from People e where e.personLname = :name"),
+  @NamedQuery(name="People.emailIdCheck",
+          	  query="Select e from People e where e.emailId = :emailId"),
   @NamedQuery(name="People.findByPrimaryKey",
               query="SELECT e FROM People e WHERE e.personId = :id"),
   @NamedQuery(name="People.loginCheck",
