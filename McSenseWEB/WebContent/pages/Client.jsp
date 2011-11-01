@@ -14,9 +14,11 @@
 <br><br><br><br>
 <table align="center" style="border:1px solid #000000;">
 <%
+String clientID = "";
 if(session.getAttribute("emailID")!=null && session.getAttribute("emailID")!="")
 {
 String user = session.getAttribute("emailID").toString();
+clientID = session.getAttribute("clientID").toString(); 
 %>
 <tr><td align="center"><h1>Welcome <b><%= user%></b></h1><a href="login.jsp">Logout</a></td></tr>
 <%
@@ -33,7 +35,7 @@ String user = session.getAttribute("emailID").toString();
 <form name="input" action="ClientServlet" method="post">
 Enter McSense ID:
 <br>
-<input name="id" type="text" size="15" value="">
+<input name="id" type="text" size="15" value=<%= clientID%> >
 <br>
 <br>
 Task Name:
@@ -72,7 +74,7 @@ Sensors:<br>
 <input type="checkbox" name="ambient" value="1"> Ambient Light Sensor<br>
 <br>
 High Level Gobal Sensing Task: <br>
-<textarea name="taskDesc" rows="10" cols="30"></textarea><br />
+<textarea name="taskDesc" rows="10" cols="30" ></textarea><br />
 <br>
 <input type="submit" value="Submit" />
 </form>
