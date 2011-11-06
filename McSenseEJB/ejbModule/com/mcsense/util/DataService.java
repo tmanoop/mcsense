@@ -26,7 +26,7 @@ public class DataService {
 	private static final Object LOGGING_SESSION = null;
 	private static final Object TARGET_SERVER = null;
 
-	@PersistenceContext(name="McSenseDB",unitName="McSenseDB",type=PersistenceContextType.TRANSACTION)
+	@PersistenceContext(name="McSenseEJB",unitName="McSenseEJB",type=PersistenceContextType.TRANSACTION)
     private static EntityManager emTransaction;
 	
 	public static void main(String[] args) {
@@ -44,7 +44,7 @@ public class DataService {
 	 
 	    // Configure the internal EclipseLink connection pool
 	    properties.put(JDBC_DRIVER, "org.apache.derby.jdbc.ClientDriver");
-	    properties.put(JDBC_URL, "jdbc:derby://localhost:1527/McSenseDB;create=true;");
+	    properties.put(JDBC_URL, "jdbc:derby://localhost:1527/McSenseEJB;create=true;");
 	    properties.put(JDBC_USER, "app");
 	    properties.put(JDBC_PASSWORD, "app");
 	 
@@ -60,7 +60,7 @@ public class DataService {
 //		EntityManagerFactory emf = Persistence
 //				.createEntityManagerFactory("McSenseDB");
 
-	    EntityManagerFactory emf = Persistence.createEntityManagerFactory("McSenseDB", properties);
+	    EntityManagerFactory emf = Persistence.createEntityManagerFactory("McSenseEJB", properties);
 	    
 		EntityManager em = emf.createEntityManager();
 		
