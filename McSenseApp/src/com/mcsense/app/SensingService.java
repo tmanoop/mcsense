@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -27,8 +29,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Handler;
@@ -39,6 +43,7 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.mcsense.app.MyLocation.LocationResult;
 import com.mcsense.app.Sensors.MyInnerLocationListener;
 import com.mcsense.json.JTask;
 
@@ -47,6 +52,7 @@ public class SensingService extends Service {
 	private static SensorManager mSensorManager;
 	private static Sensor mAccelerometer;
 	private static AcelSensor acelSensorListener;
+	private static MyLocation myLocation;
 	private static LocationManager mlocManager;
     private static LocationListener mlocListener;
 	private JTask currentTask;
@@ -65,7 +71,8 @@ public class SensingService extends Service {
 	public void onCreate() {
 		appContext = this.getApplicationContext();
 		startAccelerometerSensing();
-		startGPSSensing();
+		myLocation = new MyLocation();
+//		startGPSSensing();
 	}
 
 	@Override
@@ -73,7 +80,7 @@ public class SensingService extends Service {
 		Log.d("McSense", "stopping srvice");
 		showToast("sensing service stopped");
 		mSensorManager.unregisterListener(acelSensorListener);
-        mlocManager.removeUpdates(mlocListener);
+//        mlocManager.removeUpdates(mlocListener);
 	    notificationManager.cancel(NOTIFICATION_EX);
 	}
 	
@@ -86,7 +93,7 @@ public class SensingService extends Service {
 		JTask jTaskObjInToClass = intent.getExtras().getParcelable("JTask");
 		currentTask = jTaskObjInToClass;
 		sensingDuration = jTaskObjInToClass.getTaskDuration();
-		startGPSSensing();
+//		startGPSSensing();
 		startSensing();
 		loadNotificationIcon();
 		Thread t = new Thread(new Runnable() {
@@ -94,21 +101,27 @@ public class SensingService extends Service {
 						//check time and stop service
 						// Get current time
 						 long start = System.currentTimeMillis();
+						 logSensingStartTime(start, currentTask.getTaskId(), "IP");
 						// Get elapsed time in milliseconds
 						 long elapsedTimeMillis = System.currentTimeMillis()-start;
 						// Get elapsed time in minutes
 						 float elapsedTimeMin = elapsedTimeMillis/(60*1000F);
 						 float nextTrigger = 1;
+						 logSensingElapsedTime(elapsedTimeMillis, currentTask.getTaskId(), "IP");
 						 while(elapsedTimeMin < sensingDuration){
-							 elapsedTimeMillis = System.currentTimeMillis()-start;							 
+							 elapsedTimeMillis = System.currentTimeMillis()-start;
+
 							 elapsedTimeMin = elapsedTimeMillis/(60*1000F);
 							 //trigger sensing at every min
 							 if(elapsedTimeMin - nextTrigger == 0){
+								 if(!AppUtils.isServiceRunning(getApplicationContext()))
+									 break;
+								 logSensingElapsedTime(elapsedTimeMillis, currentTask.getTaskId(), "IP");
 								 startHandler.sendEmptyMessage(0);
 								 nextTrigger++;
 							 }		
-							//stop sensing after 6 secs
-							 if(nextTrigger - elapsedTimeMin == 0.1){
+							//stop sensing after 15secs secs
+							 if(nextTrigger - elapsedTimeMin == 0.75){
 								 stopHandler.sendEmptyMessage(0);
 							 }
 						 }
@@ -116,12 +129,36 @@ public class SensingService extends Service {
 						 if(AppUtils.isServiceRunning(getApplicationContext())){
 							 stopService(new Intent(SensingService.this, SensingService.class));
 							 uploadSensedData();
+							 logSensingElapsedTime(elapsedTimeMillis, currentTask.getTaskId(), "C");
 						 } 
 		    		}     
 		    	 });
 		t.start();
 	}
 	
+	protected void logSensingStartTime(long start,int taskID, String status) {
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("startTime", AppUtils.currentTime());
+		editor.putString("startTimeMillisecs", start+"");
+		editor.putString("taskID", taskID + "");
+		editor.putString("status", status);
+		AppConstants.status = status;
+		editor.commit();
+	}
+	
+	protected void logSensingElapsedTime(long elapsed,int taskID, String status) {
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("taskID", taskID + "");
+		editor.putString("status", status);
+		AppConstants.status = status;
+		editor.putString("elapsedTime", elapsed+"");
+		editor.commit();
+	}
+
 	private Handler startHandler = new Handler() {
 	    @Override
 	    public void handleMessage(Message msg) {
@@ -140,15 +177,17 @@ public class SensingService extends Service {
 	
 	protected void stopSensing() {
 		mSensorManager.unregisterListener(acelSensorListener);
-        mlocManager.removeUpdates(mlocListener);
+//        mlocManager.removeUpdates(mlocListener);
 	}
 
 	private void startSensing() {
 		acelSensorListener = new AcelSensor(getApplicationContext(),currentTask);
 		mSensorManager.registerListener(acelSensorListener, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 		
-		mlocListener = new MyLocationListener(getApplicationContext(),currentTask);
-		mlocManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 60000 , 0, mlocListener);
+		myLocation.getLocation(this, locationResult);
+//		mlocListener = new MyLocationListener(getApplicationContext(),currentTask);
+		//can set the min time to 60000.
+//		mlocManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 0 , 0, mlocListener);
 	}
 
 	private void startAccelerometerSensing() {
@@ -192,7 +231,7 @@ public class SensingService extends Service {
 		// "accel_file"+currentTask.getTaskId()
 		// http servlet call
 		HttpClient httpclient = new DefaultHttpClient();
-		String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/pages/ProviderServlet";
+		String providerURL = AppConstants.ip+"/McSenseWEB/pages/ProviderServlet";
 		HttpPost httppost = new HttpPost(providerURL);
 		HttpResponse response = null;
 		InputStream is = null;
@@ -268,4 +307,18 @@ public class SensingService extends Service {
 		Toast toast = Toast.makeText(this, text, duration);
 		toast.show();
 	}
+	
+	public LocationResult locationResult = (new LocationResult(){
+	    @Override
+	    public void gotLocation(final Location loc){
+	        //Got the location!
+	    	Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+//			String gpsVals = "My current location is: " +	"\n Latitude = " + loc.getLatitude() +	"\n Longitude = " + loc.getLongitude();
+			String gpsVals = "Timestamp:"+currentTimestamp+",TaskId:"+currentTask.getTaskId()+",ProviderId:"+AppConstants.providerId+",Latitude:" + loc.getLatitude() +	",Longitude:" + loc.getLongitude()+ ",Speed:" + loc.getSpeed()+" \n";
+			
+			AppUtils.writeToFile(getApplicationContext(), gpsVals,"sensing_file"+currentTask.getTaskId());
+//			AppUtils.writeToXFile(gpsVals,"sensing_file"+currentTask.getTaskId());
+			AppConstants.gpsLocUpdated = true;
+	    }
+	});
 }

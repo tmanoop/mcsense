@@ -119,7 +119,7 @@ public class Home extends Activity {
 						String password = input2.getText().toString();
 						String repassword = input3.getText().toString();
 						if (!password.equals(repassword))
-							showToast("passwords donot match!!");
+							showToast("Passwords do not match!!");
 						else {
 							boolean loginInd = setLoginTokens(username, password, repassword);
 							if (loginInd) {
@@ -146,46 +146,20 @@ public class Home extends Activity {
 	private boolean checkLoginTokens(String username, String pswd) {
 		boolean loginInd = false;
 
-//		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-//		String login = settings.getString("login", "");
-//		String encryptPassword = settings.getString("password", "");
-//		String password = "";
-//		try {
-//			password = SimpleCrypto.decrypt(AppConstants.SEED, encryptPassword);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		if (!login.equals("") && !password.equals("")) {
-//			// bindToService();
-//			// if login succeed
-//			if (login.equals(username) && password.equals(pswd))
-//				loginInd = true;
-//		}
-
-		boolean result = bindToServer(username, pswd, "login");
-		// if login succeed
-		if(result){
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-
+		String result = bindToServer(username, pswd, "login");		
+		try {
+			// if login succeed
+			int providerId = Integer.parseInt(result);
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+					Context.MODE_PRIVATE);
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putString("login", username);
-//			//Encrypt password
-//			String encryptedText = "";
-//			try {
-//				encryptedText = SimpleCrypto.encrypt(AppConstants.SEED,password);
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			editor.putString("password", encryptedText);
-			// Commit the edits!
-			
+			editor.putString("providerId", providerId + "");
 			editor.commit();
-		}
-		loginInd = result;
-		
+			loginInd = true;
+		} catch (Exception e) {
+			loginInd = false;
+		}		
 		return loginInd;
 	}
 
@@ -236,33 +210,28 @@ public class Home extends Activity {
 
 	protected boolean setLoginTokens(String username, String password,
 			String repassword) {
-		boolean result = bindToServer(username, password, "register");
-		// if login succeed
-		if(result){
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-
+		String result = bindToServer(username, password, "register");
+		try {
+			// if login succeed
+			int providerId = Integer.parseInt(result);
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+					Context.MODE_PRIVATE);
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putString("login", username);
-//			//Encrypt password
-//			String encryptedText = "";
-//			try {
-//				encryptedText = SimpleCrypto.encrypt(AppConstants.SEED,password);
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			editor.putString("password", encryptedText);
-			// Commit the edits!
-			
+			editor.putString("providerId", providerId + "");
 			editor.commit();
+		} catch (Exception e) {
+			if(result.equals("exist"))
+				showToast("EmailId already registered!!");
+			return false;
 		}
-		return result;
+		return true;
 	}
 
-	private boolean bindToServer(String emailId, String password, String reqType) {
+	private String bindToServer(String emailId, String password, String reqType) {
 		// http servlet call
 		HttpClient httpclient = new DefaultHttpClient();
-		String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/LoginServlet";
+		String providerURL = AppConstants.ip+"/McSenseWEB/LoginServlet";
 		HttpPost httppost = new HttpPost(providerURL);
 		HttpResponse response = null;
 		InputStream is = null;
@@ -297,26 +266,18 @@ public class Home extends Activity {
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			showToast("Server not reachable");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			showToast("Server not reachable");
 		}
 
 		// read task from servlet
 		String resp = sb.toString().trim();
 		System.out.println(resp);
 		
-		boolean result = true;
-		if(resp.equals("failed")){
-			result = false;
-		} else{
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-
-			SharedPreferences.Editor editor = settings.edit();
-			editor.putString("providerId", resp);			
-			editor.commit();
-		}
-		return result;
+		return resp;
 //		showToast("Uploaded: \r\n");
 	}
 	

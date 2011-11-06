@@ -28,9 +28,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.location.LocationManager;
@@ -40,6 +42,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
@@ -119,11 +124,51 @@ public class TaskActivity extends Activity {
 	private void loadTaskDetails(JTask jTask) {
 //		LinearLayout linearLayout =  (LinearLayout)findViewById(R.id.linearLayout1);
 		//get calling tab type
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
 		final String tab_type = getIntent().getExtras().getString("tab_type");
 		
 		if(tab_type.equals("completed")){
 			TextView clientPayTextView = (TextView) findViewById(R.id.clientPayTextView); 
 			clientPayTextView.setText("Dollars earned:");
+			
+			String startTime = settings.getString("startTime", "");			
+			TextView start = (TextView) findViewById(R.id.start); 
+			start.setText(startTime);
+			
+			TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
+			textElapsed.setText("Task Completed on: ");
+			
+			String completedTime = settings.getString("completedTime", "");
+
+			TextView elapsed = (TextView) findViewById(R.id.elapsed);
+			elapsed.setText(completedTime);
+		} else if(tab_type.equals("pending")){
+			String taskIDString = settings.getString("taskID", "");
+			String status = settings.getString("status", "");
+			int sensingTaskID = 0;
+			if(!taskIDString.equals(""))
+				sensingTaskID = Integer.parseInt(taskIDString);
+			if(jTask.getTaskId() == sensingTaskID){//&& status.equals("IP")
+				String startTime = settings.getString("startTime", "");
+				String elapsedTime = settings.getString("elapsedTime", "");			
+				
+				TextView start = (TextView) findViewById(R.id.start); 
+				start.setText(startTime);
+				
+				if(!elapsedTime.equals("") && status.equals("IP")){
+					TextView elapsed = (TextView) findViewById(R.id.elapsed);
+					float elapsedTimeMin = Long.parseLong(elapsedTime)/(60*1000F);
+					int min = Math.round(elapsedTimeMin);
+					if(min < 60 )
+						elapsed.setText(min +" mins");
+					else{
+						int hour = min / 60;
+						int rem_min = min % 60;
+						elapsed.setText(hour +" Hours " + rem_min +" mins");
+					}
+						
+				}
+			}
 		}
 		
 		TextView clientPay = (TextView) findViewById(R.id.clientPay); 
@@ -145,7 +190,8 @@ public class TaskActivity extends Activity {
 		TextView duration = (TextView) findViewById(R.id.duration); 
 		duration.setText(jTask.getTaskDuration()+" mins");
 		
-		TextView taskDesc = (TextView) findViewById(R.id.taskDescription); 
+		
+		final TextView taskDesc = (TextView) findViewById(R.id.taskDescription); 
 		taskDesc.setText(jTask.getTaskDescription());
 		
 		final Button button = (Button) findViewById(R.id.button1); 
@@ -172,11 +218,27 @@ public class TaskActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	if(tab_type.equals("new")){
-            		//call server to accept the task and update its status
-            		acceptTask(taskID);
-            		showToast("Accepted.");
-            		if(tskType.equals("campusSensing"))
-                		iniSensingService();
+            		//check for already running service
+            		if(tskType.equals("campusSensing") && AppUtils.isServiceRunning(getApplicationContext())){
+            			showToast("Another Sensing Task is already running.");
+            			taskDesc.setText(currentTask.getTaskDescription());
+//            			taskDesc.append("\t\n \t\n Task not accepted. \n Another Sensing Task is already running.");
+            			String appendText = "\t\n \t\n Task not accepted. \n Another Sensing Task is already running.";
+            			Spannable WordtoSpan = new SpannableString(appendText);
+
+            			WordtoSpan.setSpan(new ForegroundColorSpan(Color.YELLOW), 0, appendText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            			taskDesc.append(WordtoSpan);
+            		} else {
+            			//call server to accept the task and update its status
+                		String resp = acceptTask(taskID);
+                		showToast(resp);
+                		if(resp.equals("Accepted")){
+                    		if(tskType.equals("campusSensing"))
+                        		iniSensingService();
+                		}
+                		finish();
+            		}          		
             	} else if(tab_type.equals("pending")){
             		if(tskType.equals("photo")){
 //            			showToast("Start Camera");
@@ -186,6 +248,19 @@ public class TaskActivity extends Activity {
             			String buttonName = button.getText().toString();
             			if(buttonName.equals("Stop Sensing")){
             				stopService(new Intent(TaskActivity.this, SensingService.class));
+            				SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
+            				String startTimeMillisecs = settings.getString("startTimeMillisecs", "");
+            				long start = Long.parseLong(startTimeMillisecs);
+            				long elapsedTimeMillis = System.currentTimeMillis()-start;
+            				float elapsedTimeMin = elapsedTimeMillis/(60*1000F);
+            				int min = Math.round(elapsedTimeMin);
+            				if(min<3){
+            					AppConstants.status = "E";
+            					AppConstants.failedTaskList.add(currentTask.getTaskId()+"");
+            					System.out.println("currentTaskId: "+currentTask.getTaskId()+" min: "+min+" status: "+AppConstants.status);
+            				}
+            					logSensingElapsedTime(elapsedTimeMillis, currentTask.getTaskId(), "E");
+            				uploadSensedData();
             				button.setText("Re-start Sensing");
             			} else if(buttonName.equals("Re-start Sensing")){
             				iniSensingService();
@@ -200,6 +275,19 @@ public class TaskActivity extends Activity {
 //		acelValues.setText(acelVal);
 //		linearLayout.addView(t);
 		
+	}
+	
+	protected void logSensingElapsedTime(long elapsed,int taskID, String status) {
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("taskID", taskID + "");
+		editor.putString("status", status);
+		editor.putString("elapsedTime", elapsed+"");
+		System.out.println("status: "+status+"taskID: "+ taskID);
+		AppConstants.status = status;
+		editor.putString("completedTime", AppUtils.currentTime());
+		editor.commit();
 	}
 	
 	protected void iniSensingService() {
@@ -236,11 +324,11 @@ public class TaskActivity extends Activity {
 		alert.show();
 	}
 	
-	protected void acceptTask(String taskID) {
+	protected String acceptTask(String taskID) {
 
 		// http servlet call
 		HttpClient httpclient = new DefaultHttpClient();
-		String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/pages/ProviderServlet";
+		String providerURL = AppConstants.ip+"/McSenseWEB/pages/ProviderServlet";
 		HttpPost httppost = new HttpPost(providerURL);
 		HttpResponse response = null;
 		InputStream is = null;
@@ -282,8 +370,7 @@ public class TaskActivity extends Activity {
 		// read task from servlet
 		String resp = sb.toString();
 		System.out.println(resp);
-		
-		finish();
+		return resp.trim();
 //		showToast("Submitted: " + resp + " \r\n");
 	}
 
@@ -394,7 +481,7 @@ public class TaskActivity extends Activity {
 //		showToast("uploading!!");
 		// http servlet call
 		HttpClient httpclient = new DefaultHttpClient();
-		String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/pages/PhotoServlet";
+		String providerURL = AppConstants.ip+"/McSenseWEB/pages/PhotoServlet";
 		HttpPost httppost = new HttpPost(providerURL);
 		HttpResponse response = null;
 		InputStream is = null;
@@ -526,5 +613,59 @@ public class TaskActivity extends Activity {
 
 		Toast toast = Toast.makeText(this, text, duration);
 		toast.show();
+	}
+	
+	protected void uploadSensedData() {
+		// "accel_file"+currentTask.getTaskId()
+		// http servlet call
+		HttpClient httpclient = new DefaultHttpClient();
+		String providerURL = AppConstants.ip+"/McSenseWEB/pages/ProviderServlet";
+		HttpPost httppost = new HttpPost(providerURL);
+		HttpResponse response = null;
+		InputStream is = null;
+		StringBuilder sb = new StringBuilder();
+		
+		//read sensed data file and set as string
+		String sensedData = AppUtils.readFile(getApplicationContext(),"sensing_file"+currentTask.getTaskId());
+//		String sensedData = AppUtils.readXFile("sensing_file"+currentTask.getTaskId());
+		
+		// Add your data
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+        nameValuePairs.add(new BasicNameValuePair("taskStatus", "Completed"));
+        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
+        nameValuePairs.add(new BasicNameValuePair("taskId", currentTask.getTaskId()+""));
+        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
+        nameValuePairs.add(new BasicNameValuePair("sensedData", sensedData));
+        
+		// Execute HTTP Get Request
+		try {
+			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			
+			response = httpclient.execute(httppost);
+			System.out.println("Reading response...");
+			HttpEntity entity = response.getEntity();
+			is = entity.getContent();
+
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(is, "iso-8859-1"), 8);
+
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+				System.out.println(sb);
+			}
+			is.close();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// read task from servlet
+		String resp = sb.toString();
+		System.out.println(resp);
+		finish();
 	}
 }

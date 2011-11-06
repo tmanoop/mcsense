@@ -86,7 +86,7 @@ public class TaskService extends Service {
 		// "accel_file"+currentTask.getTaskId()
 		// http servlet call
 		HttpClient httpclient = new DefaultHttpClient();
-		String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/pages/ProviderServlet";
+		String providerURL = AppConstants.ip+"/McSenseWEB/pages/ProviderServlet";
 		HttpPost httppost = new HttpPost(providerURL);
 		HttpResponse response = null;
 		InputStream is = null;

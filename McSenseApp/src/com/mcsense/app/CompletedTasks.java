@@ -80,10 +80,10 @@ public class CompletedTasks extends ListActivity {
 //		      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),Toast.LENGTH_SHORT).show();
 		    TextView tt = (TextView) view.findViewById(R.id.toptext);
 		    JTask t = taskList.get(position);
-		      if(!t.getTaskDescription().equals("No Tasks"))
+		      if(!t.getTaskDescription().equals("No Completed Tasks"))
 		    	  loadTask(t);
 		      else
-		    	  showToast("Selected: "+tt.getText());
+		    	  showToast(""+tt.getText());
 		    }
 		  });
 	}
