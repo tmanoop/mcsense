@@ -109,7 +109,7 @@ public class NewTasks extends ListActivity{
 		    	//Toast.makeText(getApplicationContext(), ((TextView) view).getText(),Toast.LENGTH_SHORT).show();
 		    	TextView tt = (TextView) view.findViewById(R.id.toptext);
 		    	JTask t = taskList.get(position);
-			      if(!t.getTaskDescription().equals("No New Tasks"))
+			      if(!t.getTaskDescription().equals("No Available Tasks"))
 			    	  loadTask(t);
 			      else
 			    	  showToast(""+tt.getText());
@@ -130,7 +130,7 @@ public class NewTasks extends ListActivity{
 	    Thread thread = new Thread(new Runnable() {
 	    	 public void run() {
 	    		// add downloading code here
-	    			taskList = loadNewTasks();
+	    			taskList = AppUtils.loadTasks("P",getApplicationContext());//loadNewTasks();
 	    		    handler.sendEmptyMessage(0);
 	    		}     
 	    	 });
@@ -147,10 +147,11 @@ public class NewTasks extends ListActivity{
 	    }
 	};
 	
+	
 	private ArrayList<JTask> loadNewTasks() {
 		
 		ArrayList<JTask> jTaskList = null;
-		
+		//this id is not used
 		String id = "101";
 		
 		Context context = getApplicationContext();
@@ -162,13 +163,14 @@ public class NewTasks extends ListActivity{
 		
 		// http servlet call
 		HttpClient httpclient = new DefaultHttpClient(httpParameters);
-		String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/pages/ProviderServlet";
+		String providerURL = AppConstants.ip+"/McSenseWEB/pages/ProviderServlet";
 		providerURL = providerURL + "?type=mobile&id="+id;
 		HttpGet httpget = new HttpGet(providerURL);
 		HttpResponse response = null;
 		InputStream is = null;
 		StringBuilder sb = new StringBuilder();
 		
+		String serverMessage = "";
 		// Execute HTTP Get Request
 		try {
 			response = httpclient.execute(httpget);
@@ -209,15 +211,18 @@ public class NewTasks extends ListActivity{
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			serverMessage = "Server not reachable";
 //			showToast("Server temporarily not available!!");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			serverMessage = "Server not reachable";
 //			showToast("Server temporarily not available!!");
 		}
 		
 		if(jTaskList==null){
 			JTask t = new JTask(0,"No New Tasks"); 
+			t.setTaskType(serverMessage);
 			jTaskList = new ArrayList<JTask>();
 			jTaskList.add(t);
 		}
@@ -295,7 +300,7 @@ public class NewTasks extends ListActivity{
 				Context context = getApplicationContext();
 				// http servlet call
 				HttpClient httpclient = new DefaultHttpClient();
-				String providerURL = "http://"+AppConstants.ip+":10080/McSenseWEB/pages/ProviderServlet";
+				String providerURL = AppConstants.ip+"/McSenseWEB/pages/ProviderServlet";
 				providerURL = providerURL + "?type=mobile&id="+id;
 				HttpGet httpget = new HttpGet(providerURL);
 				HttpResponse response = null;

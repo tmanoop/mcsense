@@ -80,7 +80,7 @@ public class PendingTasks extends ListActivity {
 		    TextView tt = (TextView) view.findViewById(R.id.toptext);
 //		      showToast("Selected: "+tt.getText());
 		      JTask t = taskList.get(position);
-		      if(!t.getTaskDescription().equals("No Tasks"))
+		      if(!t.getTaskDescription().equals("No Accepted Tasks"))
 		    	  loadTask(t);
 		      else
 		    	  showToast(""+tt.getText());

@@ -40,7 +40,7 @@ public class AcelSensor implements SensorEventListener {
     	
     	Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
     	
-    	String acelVals = "Timestamp:"+currentTimestamp+",TaskId:"+currentTask.getTaskId()+",ProviderId:"+currentTask.getProviderPersonId()+",x:"+x+",y:"+y+",z:"+z+"; \n";
+    	String acelVals = "Timestamp:"+currentTimestamp+",TaskId:"+currentTask.getTaskId()+",ProviderId:"+AppConstants.providerId+",x:"+x+",y:"+y+",z:"+z+"; \n";
     	
     	AppUtils.writeToFile(context, acelVals,"sensing_file"+currentTask.getTaskId());
 //    	AppUtils.writeToXFile(acelVals,"sensing_file"+currentTask.getTaskId());

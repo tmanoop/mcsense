@@ -229,7 +229,7 @@ public class Main extends TabActivity {
 
 		intent = new Intent().setClass(this, TotalEarningsActivity.class);
 		spec = tabHost.newTabSpec("earnings").setIndicator("Earnings",
-				res.getDrawable(R.drawable.ic_tab_earnings)).setContent(intent);
+				res.getDrawable(R.drawable.ic_tab_dollar)).setContent(intent);
 		tabHost.addTab(spec);
 
 		tabHost.setCurrentTab(1);
