@@ -93,7 +93,7 @@ public class LoginServices implements LoginServicesLocal {
 		boolean exist = false;
 		try {
 
-			Query q = dataServicesLocal.getEM().createNamedQuery("People.emailIdCheck").setParameter("emailId", emailId);//.setParameter("meid", meid)
+			Query q = dataServicesLocal.getEM().createNamedQuery("People.emailIdCheck").setParameter("emailId", emailId).setParameter("meid", meid);
 			
 			pList = (List<People>)q.getResultList();
 						
@@ -106,5 +106,25 @@ public class LoginServices implements LoginServicesLocal {
 			exist = true;
 		}
 		return exist;
+	}
+
+	@Override
+	public People loginCheck(String emailId, String password, String meid) {
+		People p = null;
+		try {
+
+			Query q = dataServicesLocal.getEM().createNamedQuery("People.loginCheckwMeid").setParameter("emailId", emailId).setParameter("password", password).setParameter("meid", meid);
+			
+			p = (People)q.getSingleResult();
+						
+		} catch (Exception e) {
+			System.out.println("PersonID not found.");
+//			e.printStackTrace();
+		}
+		
+		if (p==null) {
+			System.out.println("PersonID not found.");
+		}
+		return p;
 	}
 }

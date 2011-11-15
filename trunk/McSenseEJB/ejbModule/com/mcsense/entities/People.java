@@ -21,11 +21,13 @@ import java.util.Set;
   @NamedQuery(name="People.findByLName",
               query="Select e from People e where e.personLname = :name"),
   @NamedQuery(name="People.emailIdCheck",
-          	  query="Select e from People e where e.emailId = :emailId"),
+          	  query="Select e from People e where e.emailId = :emailId or e.meid = :meid"),
   @NamedQuery(name="People.findByPrimaryKey",
               query="SELECT e FROM People e WHERE e.personId = :id"),
   @NamedQuery(name="People.loginCheck",
           	  query="SELECT e FROM People e WHERE e.emailId = :emailId and e.password = :password"),
+  @NamedQuery(name="People.loginCheckwMeid",
+		  	  query="SELECT e FROM People e WHERE e.emailId = :emailId and e.password = :password and e.meid = :meid"),
 })
 public class People implements Entity,Serializable {
 	private static final long serialVersionUID = 1L;
@@ -68,6 +70,9 @@ public class People implements Entity,Serializable {
 	
 	@Column(name="AGE_GROUP")
 	private String ageGroup;
+	
+	@Column(name="MEID")
+	private String meid;
 	
 	//bi-directional many-to-one association to Bank
 	@OneToMany(mappedBy="people")
@@ -177,6 +182,14 @@ public class People implements Entity,Serializable {
 
 	public void setAgeGroup(String ageGroup) {
 		this.ageGroup = ageGroup;
+	}
+
+	public String getMeid() {
+		return meid;
+	}
+
+	public void setMeid(String meid) {
+		this.meid = meid;
 	}
 
 	public Set<Bank> getBanks() {
