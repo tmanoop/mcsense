@@ -3,6 +3,7 @@ package com.mcsense.entities;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 import javax.persistence.*;
 
@@ -13,9 +14,11 @@ import javax.persistence.*;
 @Entity
 @NamedQueries( {
 		@NamedQuery(name = "Task.findByID", query = "Select t from Task t where t.taskId = :taskId "),
+		@NamedQuery(name = "Task.findByIDAndProvider", query = "Select t from Task t where t.taskId = :taskId and t.providerPersonId = :providerId "),
 		@NamedQuery(name = "Task.findByStatusAndId", query = "Select t from Task t where t.taskStatus = :status and t.providerPersonId = :providerId ORDER BY t.taskId DESC "),
 		@NamedQuery(name = "Task.findByDesc", query = "Select t from Task t where t.taskName = :desc ORDER BY t.taskId DESC"),
-		@NamedQuery(name = "Task.findByStatus", query = "Select t from Task t where t.taskStatus = :status ORDER BY t.taskId DESC"),
+		@NamedQuery(name = "Task.findByStatus", query = "Select t from Task t where t.taskStatus = :status and t.taskExpirationTime >= CURRENT_TIMESTAMP ORDER BY t.taskId DESC"),
+		@NamedQuery(name = "Task.findCompleted", query = "Select t from Task t where t.taskStatus in :statuses and t.providerPersonId = :providerId ORDER BY t.taskId DESC "),
 		@NamedQuery(name = "Task.findAll", query = "Select t from Task t ORDER BY t.taskId DESC"), })
 public class Task implements Entity, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -82,6 +85,18 @@ public class Task implements Entity, Serializable {
 	
 	@Column(name = "AMBIENTLIGHTSENSOR")
 	private String ambientLightSensor;
+	
+	@Column(name = "TASK_ACCEPTED_TIME")
+	private Timestamp taskAcceptedTime;
+	
+	@Column(name = "TASK_COMPLETION_TIME")
+	private Timestamp taskCompletionTime;
+	
+	@Column(name = "TASK_EXPIRATION_TIME")
+	private Timestamp taskExpirationTime;
+	
+	@Column(name = "TASK_CREATED_TIME")
+	private Timestamp taskCreatedTime;
 	
 	// bi-directional many-to-one association to People
 	@ManyToOne
@@ -241,6 +256,38 @@ public class Task implements Entity, Serializable {
 
 	public void setAmbientLightSensor(String ambientLightSensor) {
 		this.ambientLightSensor = ambientLightSensor;
+	}
+
+	public Timestamp getTaskAcceptedTime() {
+		return taskAcceptedTime;
+	}
+
+	public void setTaskAcceptedTime(Timestamp taskAcceptedTime) {
+		this.taskAcceptedTime = taskAcceptedTime;
+	}
+
+	public Timestamp getTaskCompletionTime() {
+		return taskCompletionTime;
+	}
+
+	public void setTaskCompletionTime(Timestamp taskCompletionTime) {
+		this.taskCompletionTime = taskCompletionTime;
+	}
+
+	public Timestamp getTaskExpirationTime() {
+		return taskExpirationTime;
+	}
+
+	public void setTaskExpirationTime(Timestamp taskExpirationTime) {
+		this.taskExpirationTime = taskExpirationTime;
+	}
+
+	public Timestamp getTaskCreatedTime() {
+		return taskCreatedTime;
+	}
+
+	public void setTaskCreatedTime(Timestamp taskCreatedTime) {
+		this.taskCreatedTime = taskCreatedTime;
 	}
 
 	public People getPeople() {

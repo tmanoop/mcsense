@@ -1,6 +1,7 @@
 package com.mcsense.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -114,6 +115,33 @@ public class TaskServices implements TaskServicesLocal {
 	}
 
 	@Override
+	public List<Task> getTasksbyStatus(String status, String providerId) {
+		List<Task> tList = new ArrayList<Task>();
+		
+		try {
+			if(status.equals("IP")){
+				System.out.println("Status:"+status+" providerId:"+providerId);
+				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatusAndId").setParameter("status", status).setParameter("providerId", new Integer(providerId));				
+				tList = (List<Task>) q.getResultList();
+			} else if(status.equals("P")) {
+				System.out.println("Status:"+status);
+				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatus").setParameter("status", status);				
+				tList = (List<Task>) q.getResultList();
+			} else if(status.equals("C")) {
+				System.out.println("Status:"+status);
+				List<String> statuses = Arrays.asList("C", "E");
+				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findCompleted").setParameter("statuses", statuses).setParameter("providerId", new Integer(providerId));				
+				tList = (List<Task>) q.getResultList();
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return tList;
+	}
+	@Override
 	public Task getTaskById(String taskId){
 		Task t = null;
 		try {
@@ -130,6 +158,23 @@ public class TaskServices implements TaskServicesLocal {
 	}
 	
 	@Override
+	public Task getTaskByIdAndProvider(String providerId, String taskId){
+		Task t = null;
+		try {
+			
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByIDAndProvider").setParameter("taskId", new Integer(taskId)).setParameter("providerId", new Integer(providerId));
+			
+			t = (Task) q.getSingleResult();	
+			
+		} catch (Exception e) {
+			System.out.println("Task not found.");
+			e.printStackTrace();
+		}
+		return t;
+	}
+	
+	
+	@Override
 	public void acceptTask(String providerId, String taskId) {
 		Task t = null;
 		try {
@@ -138,6 +183,7 @@ public class TaskServices implements TaskServicesLocal {
 			
 			t = (Task) q.getSingleResult();		
 			t.setProviderPersonId(new Integer(providerId));
+			t.setTaskAcceptedTime(McUtility.getTimestamp());
 			t.setTaskStatus("IP");	//IP - in progress
 			
 			dataServicesLocal.merge(t);
@@ -157,7 +203,29 @@ public class TaskServices implements TaskServicesLocal {
 			
 			t = (Task) q.getSingleResult();		
 			t.setProviderPersonId(new Integer(providerId));
+			t.setTaskCompletionTime(McUtility.getTimestamp());
 			t.setTaskStatus("C");	//IP - in progress
+			
+			dataServicesLocal.merge(t);
+			
+		} catch (Exception e) {
+			System.out.println("Task not found.");
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void completeTask(String providerId, String taskId,
+			String completionStatus) {
+		Task t = null;
+		try {
+			
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByID").setParameter("taskId", new Integer(taskId));
+			
+			t = (Task) q.getSingleResult();		
+			t.setProviderPersonId(new Integer(providerId));
+			t.setTaskCompletionTime(McUtility.getTimestamp());
+			t.setTaskStatus(completionStatus);	//IP - in progress
 			
 			dataServicesLocal.merge(t);
 			

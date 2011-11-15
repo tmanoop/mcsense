@@ -24,4 +24,10 @@ public interface TaskServicesLocal {
 
 	Task getTaskById(String taskId);
 
+	void completeTask(String providerId, String taskId, String completionStatus);
+
+	List<Task> getTasksbyStatus(String status, String providerId);
+
+	Task getTaskByIdAndProvider(String providerId, String taskId);
+
 }

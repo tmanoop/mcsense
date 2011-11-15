@@ -7,6 +7,8 @@ import com.mcsense.entities.People;
 public interface LoginServicesLocal {
 
 	People loginCheck(String emailId, String password);
+	
+	People loginCheck(String emailId, String password, String meid);
 
 	People register(People p);
 
