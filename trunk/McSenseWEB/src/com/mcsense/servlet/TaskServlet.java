@@ -54,7 +54,7 @@ public class TaskServlet extends HttpServlet {
 		if(htmlFormName.equals("tasklookup")){
 			String status = request.getParameter("status");
 			String providerId = request.getParameter("providerId");
-			List<Task> tList = taskServicesLocal.getTasks(status,providerId);
+			List<Task> tList = taskServicesLocal.getTasksbyStatus(status,providerId);
 			
 			if (type!=null && type.equals("mobile")){
 				if (tList!=null) {
@@ -62,6 +62,7 @@ public class TaskServlet extends HttpServlet {
 					for (int i = 0; i < tList.size(); i++) {
 						Task t = tList.get(i);
 						JTask jTask = WebUtil.mapToJsonTask(t);
+						System.out.println("Exp time: "+jTask.getTaskExpirationTime());
 						jTaskList.add(jTask);
 					}
 					out.println(new Gson().toJson(jTaskList));
@@ -71,7 +72,7 @@ public class TaskServlet extends HttpServlet {
 			} else {
 				for(int i=0;i<tList.size();i++){
 					Task t = tList.get(i);
-					out.println("<BR> TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Description: " + t.getTaskType());
+					out.println("<BR> TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Name: " + t.getTaskName() + "| Task Accepted time: " + t.getTaskAcceptedTime() + "| Task Completion time: " + t.getTaskCompletionTime() + "| Task Expiration time: " + t.getTaskExpirationTime() + "| Task Created time: " + t.getTaskCreatedTime());
 				}
 			}
 			

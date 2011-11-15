@@ -138,36 +138,49 @@ public class ProviderServlet extends HttpServlet {
 		String providerId = request.getParameter("providerId");
 		String taskId = request.getParameter("taskId");
 		String taskStatus = request.getParameter("taskStatus");
-
+		System.out.println("TaskID"+taskId);
 		if (taskStatus != null){ 
 			if(taskStatus.equals("Accepted")) {
 				Task t = taskServicesLocal.getTaskById(taskId);
-				if(t.getTaskStatus().equals("P")){
+				if(t!=null && t.getTaskStatus().equals("P")){
 					taskServicesLocal.acceptTask(providerId,taskId);
 					out.println("Accepted");
 				} else{
 					out.println("Task not available.");
 				}
-			} else if (taskStatus.equals("Completed")){
-				System.out.println("Sensed Data Recieved");
-				String sensedData = request.getParameter("sensedData");
-				
-				FileOutputStream f =null;
-				try {
-					byte[] sensedDataByteArray = Base64.decode(sensedData);
-					System.out.println("sensedDataByteArray length: " + sensedDataByteArray.length);
-					
-					f = new FileOutputStream(SENSING_DESTINATION_DIR_PATH+"\\"+taskId+".txt");
-//					f = new FileOutputStream(DESTINATION_DIR_PATH+"/ProviderImage.jpg");
-					f.write(sensedDataByteArray);
-					
-					taskServicesLocal.completeTask(providerId,taskId);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			} else if(taskStatus.equals("Pending")) {
+				Task t = taskServicesLocal.getTaskById(taskId);
+				if(t!=null && t.getTaskStatus().equals("IP")){
+					long currentTime = WebUtil.getCurrentTime();
+					out.println(currentTime);
+				} else{
+					out.println("0");
 				}
-			    f.close();
-				System.out.println("Task: " + taskId);
+			} else if (taskStatus.equals("Completed")){
+				Task t = taskServicesLocal.getTaskByIdAndProvider(providerId,taskId);
+				if(t!=null && t.getTaskStatus().equals("IP")){
+					System.out.println("Sensed Data Recieved");
+					String sensedData = request.getParameter("sensedData");
+					String completionStatus = request.getParameter("completionStatus");
+					
+					FileOutputStream f =null;
+					try {
+						byte[] sensedDataByteArray = Base64.decode(sensedData);
+						System.out.println("sensedDataByteArray length: " + sensedDataByteArray.length);
+						
+						f = new FileOutputStream(SENSING_DESTINATION_DIR_PATH+"\\"+taskId+".txt");
+//						f = new FileOutputStream(DESTINATION_DIR_PATH+"/ProviderImage.jpg");
+						f.write(sensedDataByteArray);
+						
+						taskServicesLocal.completeTask(providerId,taskId,completionStatus);
+						
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				    f.close();
+					System.out.println("Task: " + taskId);
+				}				
 			}
 		} else if(htmlFormName == null || htmlFormName.equals("completetask")){
 			String taskid = request.getParameter("taskid");
