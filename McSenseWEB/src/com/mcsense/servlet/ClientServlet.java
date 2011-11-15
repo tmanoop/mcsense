@@ -3,6 +3,7 @@ package com.mcsense.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 import javax.ejb.EJB;
 import javax.jms.JMSException;
@@ -15,6 +16,7 @@ import com.mcsense.entities.Task;
 import com.mcsense.mqservice.Producer;
 import com.mcsense.services.TaskServicesLocal;
 import com.mcsense.util.McUtility;
+import com.mcsense.util.WebUtil;
 
 /**
  * Servlet implementation class ClientServlet
@@ -99,6 +101,7 @@ public class ClientServlet extends HttpServlet {
 		String magnetometer = request.getParameter("magnetometer");
 		String proximity = request.getParameter("proximity");
 		String ambient = request.getParameter("ambient");
+		String expiration = request.getParameter("expiration");
 		
 		Task t = new Task();
 		t.setClientPersonId(new Integer(clientId));
@@ -116,6 +119,8 @@ public class ClientServlet extends HttpServlet {
 		t.setBluetooth(bluetooth);
 		t.setProximitySensor(proximity);
 		t.setAmbientLightSensor(ambient);
+		t.setTaskCreatedTime(WebUtil.getTimestamp());
+		t.setTaskExpirationTime(WebUtil.getTimestamp(expiration));
 		return t;
 	}
 

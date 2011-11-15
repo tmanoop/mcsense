@@ -72,8 +72,9 @@ public class LoginServlet extends HttpServlet {
 			if(reqType.equals("login")){
 				String emailId = request.getParameter("emailId");
 				String password = request.getParameter("password");
+				String meid = request.getParameter("meid");
 				String encryptPassword = getEncryptPassword(password);
-				People p = loginServicesLocal.loginCheck(emailId,encryptPassword);
+				People p = loginServicesLocal.loginCheck(emailId,encryptPassword,meid);
 				if(p != null){
 					out.println(p.getPersonId());
 				} else {
@@ -89,7 +90,7 @@ public class LoginServlet extends HttpServlet {
 					People p = new People();
 					p.setEmailId(emailId);
 					p.setPassword(password);
-					
+					p.setMeid(meid);
 					try {
 						People newPerson = loginServicesLocal.register(p);
 						out.println(newPerson.getPersonId());

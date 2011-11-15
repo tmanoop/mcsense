@@ -10,9 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.mcsense.entities.Task;
 import com.mcsense.services.TaskServicesLocal;
 import com.mcsense.util.Base64;
 import com.mcsense.util.McUtility;
+import com.mcsense.util.WebUtil;
 
 /**
  * Servlet implementation class PhotoServlet
@@ -50,26 +52,30 @@ public class PhotoServlet extends HttpServlet {
 		String providerId = request.getParameter("providerId");
 		String imageString = request.getParameter("image");
 		
-		FileOutputStream f =null;
-		try {
-			byte[] imageByteArray = Base64.decode(imageString);
-			System.out.println("imageByteArray length: " + imageByteArray.length);
+		Task t = taskServicesLocal.getTaskByIdAndProvider(providerId,taskId);
+		if(t!=null && t.getTaskStatus().equals("IP")){
 			
-			String realPath = getServletContext().getRealPath(DESTINATION_DIR_PATH);
-			File destinationDir = new File(realPath);
-			
-			File file = new File(destinationDir,"/"+taskId+".jpg");
-			f = new FileOutputStream(DESTINATION_DIR_PATH+"\\"+taskId+".jpg");
-//			f = new FileOutputStream(DESTINATION_DIR_PATH+"/ProviderImage.jpg");
-			f.write(imageByteArray);
-			
-			taskServicesLocal.completeTask(providerId,taskId);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    f.close();
-		System.out.println("Task: " + taskId);
+			FileOutputStream f =null;
+			try {
+				byte[] imageByteArray = Base64.decode(imageString);
+				System.out.println("imageByteArray length: " + imageByteArray.length);
+				
+				String realPath = getServletContext().getRealPath(DESTINATION_DIR_PATH);
+				File destinationDir = new File(realPath);
+				
+				File file = new File(destinationDir,"/"+taskId+".jpg");
+				f = new FileOutputStream(DESTINATION_DIR_PATH+"\\"+taskId+".jpg");
+//				f = new FileOutputStream(DESTINATION_DIR_PATH+"/ProviderImage.jpg");
+				f.write(imageByteArray);
+				String completionStatus = WebUtil.getComplationStatus(t);
+				taskServicesLocal.completeTask(providerId,taskId,completionStatus);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    f.close();
+			System.out.println("Task: " + taskId);
+		}		
 	}
 
 }

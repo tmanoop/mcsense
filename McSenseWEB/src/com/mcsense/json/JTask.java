@@ -1,6 +1,7 @@
 package com.mcsense.json;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 
@@ -24,6 +25,10 @@ public class JTask {
 	String magnetometer;
 	String proximitySensor;
 	String ambientLightSensor;
+	Timestamp taskAcceptedTime;
+	Timestamp taskCompletionTime;
+	Timestamp taskExpirationTime;
+	Timestamp taskCreatedTime;
 	
 	public JTask(int id, String taskDesc){
 		taskId = id;
@@ -164,6 +169,38 @@ public class JTask {
 
 	public void setAmbientLightSensor(String ambientLightSensor) {
 		this.ambientLightSensor = ambientLightSensor;
+	}
+
+	public Timestamp getTaskAcceptedTime() {
+		return taskAcceptedTime;
+	}
+
+	public void setTaskAcceptedTime(Timestamp taskAcceptedTime) {
+		this.taskAcceptedTime = taskAcceptedTime;
+	}
+
+	public Timestamp getTaskCompletionTime() {
+		return taskCompletionTime;
+	}
+
+	public void setTaskCompletionTime(Timestamp taskCompletionTime) {
+		this.taskCompletionTime = taskCompletionTime;
+	}
+
+	public Timestamp getTaskExpirationTime() {
+		return taskExpirationTime;
+	}
+
+	public void setTaskExpirationTime(Timestamp taskExpirationTime) {
+		this.taskExpirationTime = taskExpirationTime;
+	}
+
+	public Timestamp getTaskCreatedTime() {
+		return taskCreatedTime;
+	}
+
+	public void setTaskCreatedTime(Timestamp taskCreatedTime) {
+		this.taskCreatedTime = taskCreatedTime;
 	}
 	
 }
