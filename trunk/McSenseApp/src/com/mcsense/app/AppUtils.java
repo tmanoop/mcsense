@@ -14,17 +14,24 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -37,6 +44,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
@@ -264,6 +272,32 @@ public class AppUtils {
 	    return isServiceFound;
 	}
 	
+	public static boolean isNotifiyServiceRunning(Context context){
+        final ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+        final List<RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
+
+
+	    boolean isServiceFound = false;
+	
+	    for (int i = 0; i < services.size(); i++) {
+	        //Log.d(Global.TAG, "Service Nr. " + i + " :" + services.get(i).service);
+	        //Log.d(Global.TAG, "Service Nr. " + i + " package name : " + services.get(i).service.getPackageName());
+	        Log.d("McSense", "Service Name " + i + " class name : " + services.get(i).service.getClassName());
+	
+	        if ("com.mcsense.app".equals(services.get(i).service.getPackageName())){
+	            Log.d("McSense", "packagename is found !!!");
+	            // Log.d(LOG_TAG, "SpotService" + " : " +
+	            // services.get(i).service.getClassName());
+	
+	            if ("com.mcsense.app.NotificationService".equals(services.get(i).service.getClassName())){
+	                Log.d("McSense", "getClassName is found !!!");
+	                isServiceFound = true;
+	            }
+	        }
+	    }
+	    return isServiceFound;
+	}
+	
 	public static void writeToXFile(String values, String fileName) {
 		String FILENAME = fileName;//"accel_file"
 		String acelValues = values;
@@ -355,4 +389,171 @@ public class AppUtils {
 	    return sdf.format(cal.getTime());
 	
 	  }
+	  
+	  public static String formatTime(String time) {
+		    Calendar cal = Calendar.getInstance();
+		    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+		    return sdf.format(new Date(time));
+		
+		  }
+	  
+	  public static String currentTime(long serverTime) {
+		    Calendar cal = Calendar.getInstance();
+		    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+		    Date dt = new Date(serverTime);
+		    return sdf.format(dt);
+		
+		  }
+	  
+	  public static long getServerTime(int taskId){
+			//Set http params for timeouts
+			HttpParams httpParameters = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpParameters, AppConstants.timeoutConnection);
+			HttpConnectionParams.setSoTimeout(httpParameters, AppConstants.timeoutSocket);
+		// http servlet call
+			HttpClient httpclient = new DefaultHttpClient(httpParameters);
+			String providerURL = AppConstants.ip+"/McSenseWEB/pages/ProviderServlet";
+			HttpPost httppost = new HttpPost(providerURL);
+			HttpResponse response = null;
+			InputStream is = null;
+			StringBuilder sb = new StringBuilder();
+			
+			// Add your data
+	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+	        nameValuePairs.add(new BasicNameValuePair("taskStatus", "Pending"));
+	        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
+	        nameValuePairs.add(new BasicNameValuePair("taskId", taskId+""));
+	        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
+	        
+			// Execute HTTP Get Request
+			try {
+				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				
+				response = httpclient.execute(httppost);
+				System.out.println("Reading response...");
+				HttpEntity entity = response.getEntity();
+				is = entity.getContent();
+
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(is, "iso-8859-1"), 8);
+
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
+					System.out.println(sb);
+				}
+				is.close();
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// read task from servlet
+			String resp = sb.toString();
+			System.out.println(resp);
+			long elapsedTime = System.currentTimeMillis();
+			if(!resp.equals(""))
+				elapsedTime = Long.parseLong(resp.trim());
+			return elapsedTime;
+//			showToast("Submitted: " + resp + " \r\n");
+	  }
+	  
+	  public static Timestamp getTimestamp(String time){
+			SimpleDateFormat datetimeFormatter1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+			//2011-11-13 23:09:36.0  "yyyy-MM-dd HH:mm:ss.S"
+			Date lFromDate1 = null;
+			try {
+				System.out.println("time string :" + time);
+				lFromDate1 = datetimeFormatter1.parse(time.trim());
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("formated date :" + lFromDate1);
+			
+			Timestamp fromTS1 = null;
+			if(lFromDate1!=null)
+				fromTS1 = new Timestamp(lFromDate1.getTime());
+			return fromTS1;
+		}
+	  
+	  public static String getFormatedTime(Timestamp fromTS1){
+		  String timeformat = fromTS1.toString();
+			String finalFormat = timeformat.substring(0,timeformat.length() - 5);
+			System.out.println("Timestamp format :" + finalFormat);
+			return finalFormat;
+	  }
+	  public static String getMeid(Context context){
+		  TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+	        String MEID = telephonyManager.getDeviceId();
+	        return MEID;
+	  }
+	  
+	  public static boolean checkCompletionStatus(Context context) {
+			SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+			String elapsedMins = settings.getString("elapsedMins", "");	
+			int mins = Integer.parseInt(elapsedMins);
+			int hours = mins / 60;
+			if(hours < AppConstants.SENSING_THRESHOLD)
+				return false;
+			else
+				return true;
+	  }
+	  
+	  public static void uploadSensedData(Context context, String status, int taskId) {
+			// "accel_file"+taskId
+			// http servlet call
+			HttpClient httpclient = new DefaultHttpClient();
+			String providerURL = AppConstants.ip+"/McSenseWEB/pages/ProviderServlet";
+			HttpPost httppost = new HttpPost(providerURL);
+			HttpResponse response = null;
+			InputStream is = null;
+			StringBuilder sb = new StringBuilder();
+			
+			//read sensed data file and set as string
+			String sensedData = AppUtils.readFile(context,"sensing_file"+taskId);
+//			String sensedData = AppUtils.readXFile("sensing_file"+taskId);
+			
+			// Add your data
+	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+	        nameValuePairs.add(new BasicNameValuePair("taskStatus", "Completed"));
+	        nameValuePairs.add(new BasicNameValuePair("completionStatus", status));
+	        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
+	        nameValuePairs.add(new BasicNameValuePair("taskId", taskId+""));
+	        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
+	        nameValuePairs.add(new BasicNameValuePair("sensedData", sensedData));
+	        
+			// Execute HTTP Get Request
+			try {
+				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				
+				response = httpclient.execute(httppost);
+				System.out.println("Reading response...");
+				HttpEntity entity = response.getEntity();
+				is = entity.getContent();
+
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(is, "iso-8859-1"), 8);
+
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
+					System.out.println(sb);
+				}
+				is.close();
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// read task from servlet
+			String resp = sb.toString();
+			System.out.println(resp);
+		}
 }

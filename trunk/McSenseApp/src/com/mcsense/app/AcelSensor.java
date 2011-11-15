@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -21,9 +22,12 @@ import com.mcsense.json.JTask;
 public class AcelSensor implements SensorEventListener {
 	Context context;
 	JTask currentTask;
+	String taskIDString;
 	public AcelSensor(Context cntxt, JTask currTask){
 		context = cntxt;
 		currentTask = currTask;
+		SharedPreferences settings = cntxt.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+		taskIDString = settings.getString("taskID", "");
 	}
 	
 	@Override
@@ -40,9 +44,9 @@ public class AcelSensor implements SensorEventListener {
     	
     	Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
     	
-    	String acelVals = "Timestamp:"+currentTimestamp+",TaskId:"+currentTask.getTaskId()+",ProviderId:"+AppConstants.providerId+",x:"+x+",y:"+y+",z:"+z+"; \n";
+    	String acelVals = "Timestamp:"+currentTimestamp+",TaskId:"+taskIDString+",ProviderId:"+AppConstants.providerId+",x:"+x+",y:"+y+",z:"+z+"; \n";
     	
-    	AppUtils.writeToFile(context, acelVals,"sensing_file"+currentTask.getTaskId());
+    	AppUtils.writeToFile(context, acelVals,"sensing_file"+taskIDString);
 //    	AppUtils.writeToXFile(acelVals,"sensing_file"+currentTask.getTaskId());
 	}
 

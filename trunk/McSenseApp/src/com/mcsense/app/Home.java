@@ -222,7 +222,7 @@ public class Home extends Activity {
 			editor.commit();
 		} catch (Exception e) {
 			if(result.equals("exist"))
-				showToast("EmailId already registered!!");
+				showToast("Email or Phone already registered!!");
 			return false;
 		}
 		return true;
@@ -237,11 +237,15 @@ public class Home extends Activity {
 		InputStream is = null;
 		StringBuilder sb = new StringBuilder();
 		
+		//get meid
+		String meid = AppUtils.getMeid(getApplicationContext());
+		
 		// Add your data
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 //        nameValuePairs.add(new BasicNameValuePair("taskDesc", currentTask.getTaskDescription()));
         nameValuePairs.add(new BasicNameValuePair("emailId", emailId));
         nameValuePairs.add(new BasicNameValuePair("password", password));
+        nameValuePairs.add(new BasicNameValuePair("meid", meid));
         nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
         nameValuePairs.add(new BasicNameValuePair("reqType", reqType));
         

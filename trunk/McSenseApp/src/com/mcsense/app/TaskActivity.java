@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -63,6 +65,7 @@ import com.mcsense.json.JTask;
 
 public class TaskActivity extends Activity {
 	private static final int PICTURE_RESULT = 9;
+	private static final boolean test = false;
 	LinearLayout linear;
 	Bitmap bitmap;
 	JTask currentTask;
@@ -131,44 +134,88 @@ public class TaskActivity extends Activity {
 			TextView clientPayTextView = (TextView) findViewById(R.id.clientPayTextView); 
 			clientPayTextView.setText("Dollars earned:");
 			
-			String startTime = settings.getString("startTime", "");			
+			String startTime = settings.getString("acceptTime", "");			
 			TextView start = (TextView) findViewById(R.id.start); 
-			start.setText(startTime);
+			
 			
 			TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
 			textElapsed.setText("Task Completed on: ");
 			
+			TextView textDuration = (TextView) findViewById(R.id.duration);
+			TextView duration = (TextView) findViewById(R.id.textView7);
+			textDuration.setVisibility(View.INVISIBLE);
+			duration.setVisibility(View.INVISIBLE);
+			
 			String completedTime = settings.getString("completedTime", "");
 
 			TextView elapsed = (TextView) findViewById(R.id.elapsed);
-			elapsed.setText(completedTime);
+
+			if(jTask.getTaskCompletionTime() != null)
+				elapsed.setText(AppUtils.getFormatedTime(jTask.getTaskCompletionTime()));
+			
+			if(jTask.getTaskAcceptedTime() != null)
+				start.setText(AppUtils.getFormatedTime(jTask.getTaskAcceptedTime()));
+			
+			
 		} else if(tab_type.equals("pending")){
-			String taskIDString = settings.getString("taskID", "");
-			String status = settings.getString("status", "");
-			int sensingTaskID = 0;
-			if(!taskIDString.equals(""))
-				sensingTaskID = Integer.parseInt(taskIDString);
-			if(jTask.getTaskId() == sensingTaskID){//&& status.equals("IP")
-				String startTime = settings.getString("startTime", "");
-				String elapsedTime = settings.getString("elapsedTime", "");			
+//			String taskIDString = settings.getString("taskID", "");
+//			String status = settings.getString("status", "");
+//			int sensingTaskID = 0;
+//			if(!taskIDString.equals(""))
+//				sensingTaskID = Integer.parseInt(taskIDString);
+			if(jTask.getTaskType().equals("campusSensing")){//&& status.equals("IP")
+//				String startTime = settings.getString("acceptTime", "");
+//				String elapsedTime = settings.getString("elapsedTime", "");			
 				
 				TextView start = (TextView) findViewById(R.id.start); 
-				start.setText(startTime);
+//				start.setText(startTime);
+				if(jTask.getTaskAcceptedTime() != null)
+					start.setText(AppUtils.getFormatedTime(jTask.getTaskAcceptedTime()));
 				
-				if(!elapsedTime.equals("") && status.equals("IP")){
-					TextView elapsed = (TextView) findViewById(R.id.elapsed);
-					float elapsedTimeMin = Long.parseLong(elapsedTime)/(60*1000F);
-					int min = Math.round(elapsedTimeMin);
-					if(min < 60 )
-						elapsed.setText(min +" mins");
-					else{
-						int hour = min / 60;
-						int rem_min = min % 60;
-						elapsed.setText(hour +" Hours " + rem_min +" mins");
-					}
-						
-				}
+				
+				TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
+				TextView elapsed = (TextView) findViewById(R.id.elapsed);
+				textElapsed.setVisibility(View.INVISIBLE);
+				elapsed.setVisibility(View.INVISIBLE);
+			
+				
+//				if(!elapsedTime.equals("") && status.equals("IP")){
+//					TextView elapsed = (TextView) findViewById(R.id.elapsed);
+//					float elapsedTimeMin = Long.parseLong(elapsedTime)/(60*1000F);
+//					int min = Math.round(elapsedTimeMin);
+//					if(min < 60 )
+//						elapsed.setText(min +" mins");
+//					else{
+//						int hour = min / 60;
+//						int rem_min = min % 60;
+//						elapsed.setText(hour +" Hours " + rem_min +" mins");
+//					}
+//						
+//				}
 			}
+			
+			if(jTask.getTaskType().equals("photo")){
+				TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
+				textElapsed.setText("Task Expires on: ");
+				TextView elapsed = (TextView) findViewById(R.id.elapsed);
+				if(jTask.getTaskExpirationTime() != null)
+					elapsed.setText(AppUtils.getFormatedTime(jTask.getTaskExpirationTime()));
+				
+				TextView start = (TextView) findViewById(R.id.start); 
+//				start.setText(startTime);
+				if(jTask.getTaskAcceptedTime() != null)
+					start.setText(AppUtils.getFormatedTime(jTask.getTaskAcceptedTime()));
+				
+				TextView textDuration = (TextView) findViewById(R.id.duration);
+				TextView durationVal = (TextView) findViewById(R.id.textView7);
+				textDuration.setVisibility(View.INVISIBLE);
+				durationVal.setVisibility(View.INVISIBLE);
+			}
+		}  else if(tab_type.equals("new")){
+			TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
+			TextView elapsed = (TextView) findViewById(R.id.elapsed);
+			textElapsed.setVisibility(View.INVISIBLE);
+			elapsed.setVisibility(View.INVISIBLE);
 		}
 		
 		TextView clientPay = (TextView) findViewById(R.id.clientPay); 
@@ -181,15 +228,42 @@ public class TaskActivity extends Activity {
 		else if(tskStat.equals("IP"))
 			tskStat = "Accepted";
 		else if(tskStat.equals("C"))
-			tskStat = "Completed";
+			tskStat = "Success";
+		else if(tskStat.equals("E"))
+			tskStat = "Failed";
 		taskStatus.setText(tskStat);
 		
 		TextView taskType = (TextView) findViewById(R.id.taskType); 
 		taskType.setText(jTask.getTaskType());
 		
 		TextView duration = (TextView) findViewById(R.id.duration); 
-		duration.setText(jTask.getTaskDuration()+" mins");
+		int sensingDuration = 0;
 		
+		if(tskStat.equals("Available")){
+			TextView durationText = (TextView) findViewById(R.id.textView7); 
+			durationText.setText("Task Expire at:");
+//			duration.setText("10 PM");	
+			
+			if(jTask.getTaskExpirationTime() != null)
+				duration.setText(AppUtils.getFormatedTime(jTask.getTaskExpirationTime()));
+			
+		} else if(tskStat.equals("Accepted")) {
+			long currentTime = AppUtils.getServerTime(jTask.getTaskId());
+			Date acceptDate = new Date();
+			if(currentTime != 0)
+				acceptDate = new Date(currentTime);
+			Calendar acceptCal=Calendar.getInstance();
+			acceptCal.setTime(acceptDate);
+			int hour = acceptCal.get(Calendar.HOUR_OF_DAY);
+			int totalMins = (22 - hour) * 60;
+			int hourMins = acceptCal.get(Calendar.MINUTE);
+			
+			sensingDuration = totalMins - hourMins;
+			if(sensingDuration < 0)
+				sensingDuration = 0;
+//			String durationMins = settings.getString("duration", "");
+			duration.setText(sensingDuration+" mins");
+		}
 		
 		final TextView taskDesc = (TextView) findViewById(R.id.taskDescription); 
 		taskDesc.setText(jTask.getTaskDescription());
@@ -206,14 +280,19 @@ public class TaskActivity extends Activity {
         	buttonName = "Accept Task";
         } else if(tab_type.equals("pending")){
 			if(tskType.equals("campusSensing")){
-				if(AppUtils.isServiceRunning(getApplicationContext()))
-					buttonName = "Stop Sensing";
-				else
-					buttonName = "Re-start Sensing";
+				if(sensingDuration == 0)
+					buttonName = "Upload Sensed Data";
+				else{
+					if(AppUtils.isServiceRunning(getApplicationContext()))
+						buttonName = "Stop Sensing";
+					else
+						buttonName = "Re-start Sensing";
+				}				
 			} else if(tskType.equals("photo")){
 				buttonName = "Take Photo";
 			}
 		}
+		
 		button.setText(buttonName);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -237,6 +316,8 @@ public class TaskActivity extends Activity {
                     		if(tskType.equals("campusSensing"))
                         		iniSensingService();
                 		}
+                		logAcceptTime(taskID);
+
                 		finish();
             		}          		
             	} else if(tab_type.equals("pending")){
@@ -248,23 +329,35 @@ public class TaskActivity extends Activity {
             			String buttonName = button.getText().toString();
             			if(buttonName.equals("Stop Sensing")){
             				stopService(new Intent(TaskActivity.this, SensingService.class));
-            				SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
-            				String startTimeMillisecs = settings.getString("startTimeMillisecs", "");
-            				long start = Long.parseLong(startTimeMillisecs);
-            				long elapsedTimeMillis = System.currentTimeMillis()-start;
-            				float elapsedTimeMin = elapsedTimeMillis/(60*1000F);
-            				int min = Math.round(elapsedTimeMin);
-            				if(min<3){
-            					AppConstants.status = "E";
-            					AppConstants.failedTaskList.add(currentTask.getTaskId()+"");
-            					System.out.println("currentTaskId: "+currentTask.getTaskId()+" min: "+min+" status: "+AppConstants.status);
-            				}
-            					logSensingElapsedTime(elapsedTimeMillis, currentTask.getTaskId(), "E");
-            				uploadSensedData();
+            				
+//            				if(test == true){
+//            					SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
+//                				String startTimeMillisecs = settings.getString("startTimeMillisecs", "");
+//                				long start = Long.parseLong(startTimeMillisecs);
+//                				long elapsedTimeMillis = System.currentTimeMillis()-start;
+//                				float elapsedTimeMin = elapsedTimeMillis/(60*1000F);
+//                				int min = Math.round(elapsedTimeMin);
+//                				if(min<3){
+//                					AppConstants.status = "E";
+//                					AppConstants.failedTaskList.add(currentTask.getTaskId()+"");
+//                					System.out.println("currentTaskId: "+currentTask.getTaskId()+" min: "+min+" status: "+AppConstants.status);
+//                				}
+//                				logSensingElapsedTime(elapsedTimeMillis, currentTask.getTaskId(), "E");
+//                				uploadSensedData();
+//            				}
+            				
             				button.setText("Re-start Sensing");
             			} else if(buttonName.equals("Re-start Sensing")){
             				iniSensingService();
             				button.setText("Stop Sensing");
+            			} else if(buttonName.equals("Upload Sensed Data")){
+            				stopService(new Intent(TaskActivity.this, SensingService.class));
+            				String status = "C";
+		       				if(!AppUtils.checkCompletionStatus(context)){
+		       					status = "E";
+		       				}
+		       				AppUtils.uploadSensedData(context,status,currentTask.getTaskId());
+            				finish();
             			}
             		}
             	}
@@ -277,6 +370,19 @@ public class TaskActivity extends Activity {
 		
 	}
 	
+	protected void logAcceptTime(String taskID) {
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		long serverTime = AppUtils.getServerTime(Integer.parseInt(taskID));
+		editor.putString("acceptTime", AppUtils.currentTime(serverTime));
+		editor.putString("acceptTimeMillis", serverTime+"");
+		editor.putString("taskID", taskID + "");
+		editor.putString("status", "IP");
+		AppConstants.status = "IP";
+		editor.commit();
+	}
+
 	protected void logSensingElapsedTime(long elapsed,int taskID, String status) {
 		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME,
 				Context.MODE_PRIVATE);

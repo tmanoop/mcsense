@@ -57,7 +57,8 @@ public class TotalEarningsActivity extends Activity {
 				AppConstants.jTaskCompletedList = AppUtils.loadTasks("C",getApplicationContext());
 			ArrayList<JTask> jTaskList = AppConstants.jTaskCompletedList;
 			for(JTask task : jTaskList){
-				totalEarnings = totalEarnings + task.getClientPay();
+				if(task.getTaskStatus().equals("C"))
+					totalEarnings = totalEarnings + task.getClientPay();
 			}
 			textview.setText("Below are the Total Earnings: \r\n $"+totalEarnings+" \r\n");
 		} catch (Exception e) {
