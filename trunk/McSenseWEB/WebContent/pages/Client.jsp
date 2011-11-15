@@ -7,7 +7,10 @@
 <title>Client</title>
 
 <SCRIPT TYPE="text/javascript">
-
+function getDate() {
+	var currentTime = new Date()
+	document.getElementById("expiration").value = currentTime; 
+}
 </SCRIPT>
 </head>
 <body>
@@ -15,12 +18,14 @@
 <table align="center" style="border:1px solid #000000;">
 <%
 String clientID = "";
+java.util.Date dt = new java.util.Date();
+String now = dt.toString();
 if(session.getAttribute("emailID")!=null && session.getAttribute("emailID")!="")
 {
 String user = session.getAttribute("emailID").toString();
 clientID = session.getAttribute("clientID").toString(); 
 %>
-<tr><td align="center"><h1>Welcome <b><%= user%></b></h1><a href="login.jsp">Logout</a></td></tr>
+<tr><td align="center"><h1>Welcome <b><%= user%></b></h1><a href="../login.jsp">Logout</a></td></tr>
 <%
 } else {
 	response.sendRedirect("../login.jsp");
@@ -40,7 +45,7 @@ Enter McSense ID:
 <br>
 Task Name:
 <br>
-<input name="name" type="text" size="30" MAXLENGTH=30 value="">
+<input name="name" type="text" size="30" MAXLENGTH=30 value="" onkeyup="getDate();" > </input>
 <br>
 <br>
 Task Type:
@@ -60,6 +65,11 @@ $<input name="pay" size="5" MAXLENGTH=3 onkeyup="this.value=this.value.replace(/
 Duration:
 <br>
 <input name="duration" size="5" MAXLENGTH=3 onkeyup="this.value=this.value.replace(/[^\d]/,'')"> Minutes
+<br>
+<br>
+Expiration time:
+<br>
+<input name="expiration" type="text" size=30 value="" > 
 <br>
 <br>
 Sensors:<br>
