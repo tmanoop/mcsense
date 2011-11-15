@@ -38,6 +38,7 @@ public class Main extends TabActivity {
 				enableWiFi();				
 			}
 			loadTabs();
+//			iniNotificationService(this.getApplicationContext());
 		}
 	}
 	
@@ -66,6 +67,14 @@ public class Main extends TabActivity {
 	    }
 	}
 
+	private void iniNotificationService(Context context) {
+		if(!AppUtils.isNotifiyServiceRunning(context)){
+			Intent intentNotify = new Intent(context, NotificationService.class);
+//			intent.putExtra("JTask", currentTask);
+			context.startService(intentNotify);
+		}		
+	}
+	
 	private void settings() {
 		Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
         startActivity(i);

@@ -1,6 +1,9 @@
 package com.mcsense.json;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+
+import com.mcsense.app.AppUtils;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -25,6 +28,10 @@ public class JTask implements Parcelable {
 	String magnetometer;
 	String proximitySensor;
 	String ambientLightSensor;
+	Timestamp taskAcceptedTime;
+	Timestamp taskCompletionTime;
+	Timestamp taskExpirationTime;
+	Timestamp taskCreatedTime;
 	
 	public JTask(Parcel in){
 		readFromParcel(in);
@@ -180,6 +187,38 @@ public class JTask implements Parcelable {
 		this.ambientLightSensor = ambientLightSensor;
 	}
 
+	public Timestamp getTaskAcceptedTime() {
+		return taskAcceptedTime;
+	}
+
+	public void setTaskAcceptedTime(Timestamp taskAcceptedTime) {
+		this.taskAcceptedTime = taskAcceptedTime;
+	}
+
+	public Timestamp getTaskCompletionTime() {
+		return taskCompletionTime;
+	}
+
+	public void setTaskCompletionTime(Timestamp taskCompletionTime) {
+		this.taskCompletionTime = taskCompletionTime;
+	}
+
+	public Timestamp getTaskExpirationTime() {
+		return taskExpirationTime;
+	}
+
+	public void setTaskExpirationTime(Timestamp taskExpirationTime) {
+		this.taskExpirationTime = taskExpirationTime;
+	}
+
+	public Timestamp getTaskCreatedTime() {
+		return taskCreatedTime;
+	}
+
+	public void setTaskCreatedTime(Timestamp taskCreatedTime) {
+		this.taskCreatedTime = taskCreatedTime;
+	}
+
 	@Override
 	public int describeContents() {
 		// TODO Auto-generated method stub
@@ -206,6 +245,10 @@ public class JTask implements Parcelable {
     	dest.writeString(magnetometer);
     	dest.writeString(proximitySensor);
     	dest.writeString(ambientLightSensor);
+    	dest.writeString((taskAcceptedTime != null)? taskAcceptedTime.toString() : "");
+    	dest.writeString((taskCompletionTime != null)? taskCompletionTime.toString() : "");
+    	dest.writeString((taskExpirationTime != null)? taskExpirationTime.toString() : "");
+    	dest.writeString((taskCreatedTime != null)? taskCreatedTime.toString() : "");
 	}
 	
 	private void readFromParcel(Parcel in) {
@@ -228,6 +271,10 @@ public class JTask implements Parcelable {
 		magnetometer= in.readString();
 		proximitySensor= in.readString();
 		ambientLightSensor= in.readString();
+		taskAcceptedTime= AppUtils.getTimestamp(in.readString());
+		taskCompletionTime= AppUtils.getTimestamp(in.readString());
+		taskExpirationTime= AppUtils.getTimestamp(in.readString());
+		taskCreatedTime= AppUtils.getTimestamp(in.readString());
 	}
 
 }

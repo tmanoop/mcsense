@@ -51,22 +51,22 @@ public class TaskAdapter extends ArrayAdapter<JTask> {
                     	}	
                     }
                     if(iv != null){
-                    	SharedPreferences settings = getContext().getSharedPreferences(AppConstants.PREFS_NAME, 0);
-                    	String taskID = settings.getString("taskID", "");
-                    	String status = settings.getString("status", "");
+//                    	SharedPreferences settings = getContext().getSharedPreferences(AppConstants.PREFS_NAME, 0);
+//                    	String taskID = settings.getString("taskID", "");
+//                    	String status = settings.getString("status", "");
                     	
 //                    	String elapsedTime = settings.getString("elapsedTime", "");
 //        				long elapsedTimeMillis = Long.parseLong(elapsedTime);
 //        				float elapsedTimeMin = elapsedTimeMillis/(60*1000F);
 //        				int min = Math.round(elapsedTimeMin);
-        				System.out.println("taskID: "+taskID.trim()+" status: "+AppConstants.status);
+//        				System.out.println("taskID: "+taskID.trim()+" status: "+AppConstants.status);
 //        				if(min<3){
 //        					iv.setImageResource(R.drawable.ic_menu_stop);
 //        				}
 
 //                    	int tID = Integer.parseInt(taskID);
-                    	if(AppConstants.failedTaskList.contains(t.getTaskId()+"")){
-                    		System.out.println("failed taskID: "+taskID.trim());
+                    	if(t.getTaskStatus()!=null && t.getTaskStatus().equals("E")){
+//                    		System.out.println("failed taskID: "+taskID.trim());
                     		iv.setImageResource(R.drawable.ic_menu_stop);
                     	}
 //                    	if(AppConstants.status.equals("E") && tID == t.getTaskId())
@@ -74,7 +74,7 @@ public class TaskAdapter extends ArrayAdapter<JTask> {
                     	else if(t.getTaskStatus()!=null && t.getTaskStatus().equals("C"))
                     		iv.setImageResource(R.drawable.ic_menu_tick);
                     	if(t.getTaskType()!=null && t.getTaskType().equals("photo") &&
-                    			t.getTaskStatus()!=null && !t.getTaskStatus().equals("C"))
+                    			t.getTaskStatus()!=null && (t.getTaskStatus().equals("P") || t.getTaskStatus().equals("IP")))
                     		iv.setImageResource(R.drawable.ic_action_photo);
                     }
             }

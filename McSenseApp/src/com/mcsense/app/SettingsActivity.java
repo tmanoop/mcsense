@@ -1,9 +1,11 @@
 package com.mcsense.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
@@ -27,7 +29,8 @@ public class SettingsActivity extends Activity {
         
         SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
 		String login = settings.getString("login", "");
-        TextView emailId = new TextView(this);
+        
+		TextView emailId = new TextView(this);
         emailId.setText(login);
         emailId.setTextColor(Color.YELLOW);
 
@@ -41,9 +44,21 @@ public class SettingsActivity extends Activity {
         TextView providerId = new TextView(this);
         providerId.setText(provId);
         providerId.setTextColor(Color.YELLOW);
-
+        
         tb.addView(providerIdText,  new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         tb.addView(providerId,  new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+        TextView meidText = new TextView(this);
+        meidText.setText("MEID: ");
+        
+        TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        String MEID = telephonyManager.getDeviceId();
+        TextView meidView = new TextView(this);
+        meidView.setText(MEID);
+        meidView.setTextColor(Color.YELLOW);
+        
+        tb.addView(meidText,  new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        tb.addView(meidView,  new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
 	}
 

@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -56,6 +57,8 @@ public class SensingService extends Service {
 	private static LocationManager mlocManager;
     private static LocationListener mlocListener;
 	private JTask currentTask;
+	private static int taskId;
+	private static long serverTime;
 	Context appContext;
 	int sensingDuration;
 	private static final int NOTIFICATION_EX = 1;
@@ -79,9 +82,11 @@ public class SensingService extends Service {
 	public void onDestroy() {
 		Log.d("McSense", "stopping srvice");
 		showToast("sensing service stopped");
-		mSensorManager.unregisterListener(acelSensorListener);
+		if(mSensorManager!=null)
+			mSensorManager.unregisterListener(acelSensorListener);
 //        mlocManager.removeUpdates(mlocListener);
-	    notificationManager.cancel(NOTIFICATION_EX);
+		if(notificationManager!=null)
+			notificationManager.cancel(NOTIFICATION_EX);
 	}
 	
 	@Override
@@ -89,58 +94,154 @@ public class SensingService extends Service {
 		Log.d("McSense", "starting srvice");
 		showToast("sensing service started");
 		
+		boolean startSensing = true;
+		
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
+		Calendar cal=Calendar.getInstance();
+		 
 		//get task details
-		JTask jTaskObjInToClass = intent.getExtras().getParcelable("JTask");
-		currentTask = jTaskObjInToClass;
-		sensingDuration = jTaskObjInToClass.getTaskDuration();
-//		startGPSSensing();
-		startSensing();
-		loadNotificationIcon();
-		Thread t = new Thread(new Runnable() {
-	    	 public void run() {
-						//check time and stop service
-						// Get current time
-						 long start = System.currentTimeMillis();
-						 logSensingStartTime(start, currentTask.getTaskId(), "IP");
-						// Get elapsed time in milliseconds
-						 long elapsedTimeMillis = System.currentTimeMillis()-start;
-						// Get elapsed time in minutes
-						 float elapsedTimeMin = elapsedTimeMillis/(60*1000F);
-						 float nextTrigger = 1;
-						 logSensingElapsedTime(elapsedTimeMillis, currentTask.getTaskId(), "IP");
-						 while(elapsedTimeMin < sensingDuration){
-							 elapsedTimeMillis = System.currentTimeMillis()-start;
-
-							 elapsedTimeMin = elapsedTimeMillis/(60*1000F);
-							 //trigger sensing at every min
-							 if(elapsedTimeMin - nextTrigger == 0){
-								 if(!AppUtils.isServiceRunning(getApplicationContext()))
-									 break;
-								 logSensingElapsedTime(elapsedTimeMillis, currentTask.getTaskId(), "IP");
-								 startHandler.sendEmptyMessage(0);
-								 nextTrigger++;
-							 }		
-							//stop sensing after 15secs secs
-							 if(nextTrigger - elapsedTimeMin == 0.75){
-								 stopHandler.sendEmptyMessage(0);
+		if(intent.hasExtra("JTask")){
+			JTask jTaskObjInToClass = intent.getExtras().getParcelable("JTask");
+			currentTask = jTaskObjInToClass;
+			sensingDuration = jTaskObjInToClass.getTaskDuration();
+			taskId = currentTask.getTaskId();
+		} else{
+			//load taskId
+			String taskIDString = settings.getString("taskID", "");
+			String status = settings.getString("status", "");
+			sensingDuration = Integer.parseInt(settings.getString("duration", ""));
+//			int sensingTaskID = 0;
+			if(!taskIDString.equals(""))
+				taskId = Integer.parseInt(taskIDString);
+			if(status.equals("C"))
+				stopService(new Intent(SensingService.this, SensingService.class));
+		}
+		
+		//get server time
+		serverTime = AppUtils.getServerTime(taskId);
+		Log.d(AppConstants.TAG, "Server time: "+serverTime);
+		Date serverDate = new Date(serverTime);
+		cal.setTime(serverDate);
+		
+		//get prev start time
+		String prevStartTime = settings.getString("startTimeMillisecs", "");
+		Date prevStartDate = new Date();
+		if(!prevStartTime.equals(""))
+			prevStartDate = new Date(Long.parseLong(prevStartTime.trim()));
+		Calendar prevCal=Calendar.getInstance();
+		prevCal.setTime(prevStartDate);
+		
+		calculateElapsedMins();
+		
+		//call server to get time, if not 10pm continue sensing.
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		Log.d(AppConstants.TAG, "Server time hour: "+hour);
+		//if server time greater than 10pm, stop sensing
+		if(cal.get(Calendar.DAY_OF_MONTH) == prevCal.get(Calendar.DAY_OF_MONTH) 
+				&& hour<22){
+			startSensing = true;
+			int totalMins = (22 - hour) * 60;
+			int hourMins = cal.get(Calendar.MINUTE);
+			sensingDuration = totalMins - hourMins;
+			Log.d(AppConstants.TAG,"sensingDuration: "+sensingDuration);
+		} else {
+//			stop sensing
+			startSensing = false;
+		}	
+		
+		if(startSensing){
+//			startGPSSensing();
+			startSensing();
+			loadNotificationIcon();
+			Thread t = new Thread(new Runnable() {
+		    	 public void run() {
+							//check time and stop service
+							// Get current time
+							 long start = System.currentTimeMillis();
+							 logSensingStartTime(serverTime, taskId, "IP");
+							// Get elapsed time in milliseconds
+							 long elapsedTimeMillis = System.currentTimeMillis()-start;
+							// Get elapsed time in minutes
+							 float elapsedTimeMin = elapsedTimeMillis/(60*1000F);
+							 float nextTrigger = 1;
+							 logSensingElapsedTime(elapsedTimeMillis, taskId, "IP");
+							 while(elapsedTimeMin < sensingDuration){
+								 elapsedTimeMillis = System.currentTimeMillis()-start;
+								 
+								 elapsedTimeMin = elapsedTimeMillis/(60*1000F);
+								 //trigger sensing at every min
+								 if(elapsedTimeMin - nextTrigger >= 0){
+									 Log.d(AppConstants.TAG, "Elapsed time: "+elapsedTimeMin);
+									 if(!AppUtils.isServiceRunning(getApplicationContext()))
+										 break;
+									 logSensingElapsedTime(elapsedTimeMillis, taskId, "IP");
+									 startHandler.sendEmptyMessage(0);
+									 nextTrigger++;
+								 }		
+								 
+								//stop sensing after 15secs secs
+								 if(nextTrigger - elapsedTimeMin <= 0.75){
+									 stopHandler.sendEmptyMessage(0);
+								 }
 							 }
-						 }
-						 
-						 if(AppUtils.isServiceRunning(getApplicationContext())){
-							 stopService(new Intent(SensingService.this, SensingService.class));
-							 uploadSensedData();
-							 logSensingElapsedTime(elapsedTimeMillis, currentTask.getTaskId(), "C");
-						 } 
-		    		}     
-		    	 });
-		t.start();
+							 
+							 if(AppUtils.isServiceRunning(getApplicationContext())){
+								 stopService(new Intent(SensingService.this, SensingService.class));
+								 calculateElapsedMins();
+								 String status = "C";
+								 if(!AppUtils.checkCompletionStatus(getApplicationContext())){
+									 status = "E";
+								 }
+								 AppUtils.uploadSensedData(appContext,status,taskId);
+								 logSensingElapsedTime(0, taskId, status);
+							 } 
+			    		}     
+			    	 });
+			t.start();
+		} else {
+			if(AppUtils.isServiceRunning(getApplicationContext())){
+				 stopService(new Intent(SensingService.this, SensingService.class));
+				 String status = "C";
+				 if(!AppUtils.checkCompletionStatus(getApplicationContext())){
+					 status = "E";
+				 }
+				 AppUtils.uploadSensedData(appContext,status,taskId);
+				 logSensingElapsedTime(0, taskId, status);
+			} 
+		}
+		
 	}
 	
+	private void calculateElapsedMins() {
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
+		//calculate sensed time in minutes
+		String elapsedTime = settings.getString("elapsedTime", "");	
+		int mins = 0;
+		if(!elapsedTime.equals("")){
+			float elapsedTimeMin = Long.parseLong(elapsedTime)/(60*1000F);
+			mins = Math.round(elapsedTimeMin);
+		}
+		
+		//elapsedTotalMins and append. save it
+		String elapsedTotalMins = settings.getString("elapsedMins", "0");	
+		mins = mins + Integer.parseInt(elapsedTotalMins);
+		logSensedMins(mins);
+	}
+
+	private void logSensedMins(int min) {
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("elapsedMins", min+"");
+		editor.commit();
+	}
+
 	protected void logSensingStartTime(long start,int taskID, String status) {
 		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME,
 				Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("startTime", AppUtils.currentTime());
+		editor.putString("startTime", AppUtils.currentTime(start));
+		editor.putString("duration", sensingDuration+"");
 		editor.putString("startTimeMillisecs", start+"");
 		editor.putString("taskID", taskID + "");
 		editor.putString("status", status);
@@ -155,7 +256,13 @@ public class SensingService extends Service {
 		editor.putString("taskID", taskID + "");
 		editor.putString("status", status);
 		AppConstants.status = status;
-		editor.putString("elapsedTime", elapsed+"");
+		if(elapsed == 0){
+			editor.putString("elapsedTime", "");
+			editor.putString("elapsedMins", "0");
+		}
+		else
+			editor.putString("elapsedTime", elapsed+"");
+		
 		editor.commit();
 	}
 
@@ -227,58 +334,59 @@ public class SensingService extends Service {
 		alert.show();
 	}
 
-	protected void uploadSensedData() {
-		// "accel_file"+currentTask.getTaskId()
-		// http servlet call
-		HttpClient httpclient = new DefaultHttpClient();
-		String providerURL = AppConstants.ip+"/McSenseWEB/pages/ProviderServlet";
-		HttpPost httppost = new HttpPost(providerURL);
-		HttpResponse response = null;
-		InputStream is = null;
-		StringBuilder sb = new StringBuilder();
-		
-		//read sensed data file and set as string
-		String sensedData = AppUtils.readFile(appContext,"sensing_file"+currentTask.getTaskId());
-//		String sensedData = AppUtils.readXFile("sensing_file"+currentTask.getTaskId());
-		
-		// Add your data
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-        nameValuePairs.add(new BasicNameValuePair("taskStatus", "Completed"));
-        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
-        nameValuePairs.add(new BasicNameValuePair("taskId", currentTask.getTaskId()+""));
-        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
-        nameValuePairs.add(new BasicNameValuePair("sensedData", sensedData));
-        
-		// Execute HTTP Get Request
-		try {
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-			
-			response = httpclient.execute(httppost);
-			System.out.println("Reading response...");
-			HttpEntity entity = response.getEntity();
-			is = entity.getContent();
-
-			BufferedReader reader = new BufferedReader(
-					new InputStreamReader(is, "iso-8859-1"), 8);
-
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				sb.append(line + "\n");
-				System.out.println(sb);
-			}
-			is.close();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// read task from servlet
-		String resp = sb.toString();
-		System.out.println(resp);
-	}
+//	protected void uploadSensedData(String status) {
+//		// "accel_file"+taskId
+//		// http servlet call
+//		HttpClient httpclient = new DefaultHttpClient();
+//		String providerURL = AppConstants.ip+"/McSenseWEB/pages/ProviderServlet";
+//		HttpPost httppost = new HttpPost(providerURL);
+//		HttpResponse response = null;
+//		InputStream is = null;
+//		StringBuilder sb = new StringBuilder();
+//		
+//		//read sensed data file and set as string
+//		String sensedData = AppUtils.readFile(appContext,"sensing_file"+taskId);
+////		String sensedData = AppUtils.readXFile("sensing_file"+taskId);
+//		
+//		// Add your data
+//        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+//        nameValuePairs.add(new BasicNameValuePair("taskStatus", "Completed"));
+//        nameValuePairs.add(new BasicNameValuePair("completionStatus", status));
+//        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
+//        nameValuePairs.add(new BasicNameValuePair("taskId", taskId+""));
+//        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
+//        nameValuePairs.add(new BasicNameValuePair("sensedData", sensedData));
+//        
+//		// Execute HTTP Get Request
+//		try {
+//			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//			
+//			response = httpclient.execute(httppost);
+//			System.out.println("Reading response...");
+//			HttpEntity entity = response.getEntity();
+//			is = entity.getContent();
+//
+//			BufferedReader reader = new BufferedReader(
+//					new InputStreamReader(is, "iso-8859-1"), 8);
+//
+//			String line = null;
+//			while ((line = reader.readLine()) != null) {
+//				sb.append(line + "\n");
+//				System.out.println(sb);
+//			}
+//			is.close();
+//		} catch (ClientProtocolException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		// read task from servlet
+//		String resp = sb.toString();
+//		System.out.println(resp);
+//	}
 
 	private void loadNotificationIcon() {
 		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -314,10 +422,10 @@ public class SensingService extends Service {
 	        //Got the location!
 	    	Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
 //			String gpsVals = "My current location is: " +	"\n Latitude = " + loc.getLatitude() +	"\n Longitude = " + loc.getLongitude();
-			String gpsVals = "Timestamp:"+currentTimestamp+",TaskId:"+currentTask.getTaskId()+",ProviderId:"+AppConstants.providerId+",Latitude:" + loc.getLatitude() +	",Longitude:" + loc.getLongitude()+ ",Speed:" + loc.getSpeed()+" \n";
+			String gpsVals = "Timestamp:"+currentTimestamp+",TaskId:"+taskId+",ProviderId:"+AppConstants.providerId+",Latitude:" + loc.getLatitude() +	",Longitude:" + loc.getLongitude()+ ",Speed:" + loc.getSpeed()+" \n";
 			
-			AppUtils.writeToFile(getApplicationContext(), gpsVals,"sensing_file"+currentTask.getTaskId());
-//			AppUtils.writeToXFile(gpsVals,"sensing_file"+currentTask.getTaskId());
+			AppUtils.writeToFile(getApplicationContext(), gpsVals,"sensing_file"+taskId);
+//			AppUtils.writeToXFile(gpsVals,"sensing_file"+taskId);
 			AppConstants.gpsLocUpdated = true;
 	    }
 	});
