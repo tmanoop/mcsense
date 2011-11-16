@@ -142,11 +142,27 @@ public class ProviderServlet extends HttpServlet {
 		if (taskStatus != null){ 
 			if(taskStatus.equals("Accepted")) {
 				Task t = taskServicesLocal.getTaskById(taskId);
-				if(t!=null && t.getTaskStatus().equals("P")){
-					taskServicesLocal.acceptTask(providerId,taskId);
+				if(t!=null && t.getTaskStatus().equals("P") &&
+						!taskServicesLocal.hasPendingTask(providerId,t.getTaskType())){
+					
+					//identify long-term tasks
+					if(t.getTaskDuration() == 9999){
+						//update and accept parent task 
+						Task parent = taskServicesLocal.getTaskById(taskId);
+						String taskName = parent.getTaskName()+" Day 1";
+						taskServicesLocal.acceptParentTask(providerId, taskId, taskName);
+						//accept child tasks
+						List<Task> childTasks = taskServicesLocal.getChildTasks(taskId);
+						for(Task child : childTasks){
+							taskServicesLocal.acceptTask(providerId,child.getTaskId()+"");
+						}
+					} else {
+						//if daily sensing task or photo tasks, just accept.
+						taskServicesLocal.acceptTask(providerId,taskId);
+					}
 					out.println("Accepted");
 				} else{
-					out.println("Task not available.");
+					out.println("Task not available for your account.");
 				}
 			} else if(taskStatus.equals("Pending")) {
 				Task t = taskServicesLocal.getTaskById(taskId);

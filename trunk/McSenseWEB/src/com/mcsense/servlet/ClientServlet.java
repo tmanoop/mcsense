@@ -54,14 +54,22 @@ public class ClientServlet extends HttpServlet {
 		// C:\Program Files\apache-activemq-5.5.0\bin\activemq)
 //		Sensors requiredSensors = 
 //			getSensorsIndicators(request);
-		Producer p = new Producer();
+//		Producer p = new Producer();
 		int taskID =0;
 		try {
+			String longterm = request.getParameter("longterm");
 			//insert
 //			Task t = taskServicesLocal.createTask(clientId,taskName, taskType);
 			Task t = prepareTask(request);
+			if(longterm != null && longterm.equals("1")) {
+				t.setTaskDuration(9999);//set 9999 to indicate longterm task. set 2520 for 7 days. 360 mins each day				
+			}
 			t = taskServicesLocal.createTask(t);
 			taskID = t.getTaskId();
+			
+			if(longterm != null && longterm.equals("1")){
+				createLongTermTasks(request, taskID);
+			}
 //			p.send(taskDesc);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -82,6 +90,23 @@ public class ClientServlet extends HttpServlet {
 			out.println("<P>Providers can read from <A HREF=../pages/Provider.jsp>Providers Screen</A>");
 		}
 		out.close();
+	}
+
+	private void createLongTermTasks(HttpServletRequest request, int taskID) {
+		String daysText = request.getParameter("days");
+		int days = Integer.parseInt(daysText);
+		//create days# child tasks referring to above parent task ID
+		Timestamp tonight = WebUtil.getTonightTimestamp();
+		int dayCounter = 2;
+		for(int i = 0; i < days-1; i++){
+			Task child = prepareTask(request);
+			child.setParentTaskId(taskID);
+			//set exp date for each child till days#
+			tonight.setDate(tonight.getDate()+1);
+			child.setTaskExpirationTime(tonight);
+			child.setTaskName(child.getTaskName()+" Day "+dayCounter++);
+			child = taskServicesLocal.createTask(child);
+		}
 	}
 
 	private Task prepareTask(HttpServletRequest request) {

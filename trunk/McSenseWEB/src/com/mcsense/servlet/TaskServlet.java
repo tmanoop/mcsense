@@ -70,6 +70,7 @@ public class TaskServlet extends HttpServlet {
 					out.println("No Tasks");
 				}
 			} else {
+				tList = taskServicesLocal.getTasks(status,providerId);
 				for(int i=0;i<tList.size();i++){
 					Task t = tList.get(i);
 					out.println("<BR> TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Name: " + t.getTaskName() + "| Task Accepted time: " + t.getTaskAcceptedTime() + "| Task Completion time: " + t.getTaskCompletionTime() + "| Task Expiration time: " + t.getTaskExpirationTime() + "| Task Created time: " + t.getTaskCreatedTime());
