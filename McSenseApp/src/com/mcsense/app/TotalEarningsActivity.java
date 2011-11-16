@@ -56,10 +56,13 @@ public class TotalEarningsActivity extends Activity {
 			if(AppConstants.jTaskCompletedList==null)
 				AppConstants.jTaskCompletedList = AppUtils.loadTasks("C",getApplicationContext());
 			ArrayList<JTask> jTaskList = AppConstants.jTaskCompletedList;
-			for(JTask task : jTaskList){
-				if(task.getTaskStatus().equals("C"))
-					totalEarnings = totalEarnings + task.getClientPay();
-			}
+			if(jTaskList.size()!=0 && !jTaskList.get(0).getTaskDescription()
+					.equals("No Completed Tasks")){
+				for(JTask task : jTaskList){
+					if(task.getTaskStatus().equals("C"))
+						totalEarnings = totalEarnings + task.getClientPay();
+				}
+			}			
 			textview.setText("Below are the Total Earnings: \r\n $"+totalEarnings+" \r\n");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
