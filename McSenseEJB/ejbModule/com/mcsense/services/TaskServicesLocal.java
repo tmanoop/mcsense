@@ -1,4 +1,5 @@
 package com.mcsense.services;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -29,5 +30,13 @@ public interface TaskServicesLocal {
 	List<Task> getTasksbyStatus(String status, String providerId);
 
 	Task getTaskByIdAndProvider(String providerId, String taskId);
+
+	List<Task> getChildTasks(String taskId);
+
+	boolean hasPendingTask(String providerId, String taskType);
+
+	Task updateTask(Task t);
+
+	void acceptParentTask(String providerId, String taskId, String taskName);
 
 }
