@@ -68,4 +68,13 @@ public class WebUtil {
 		else
 			return "E";
 	}
+
+	public static Timestamp getTonightTimestamp() {
+		Timestamp now = getTimestamp();
+		now.setHours(22);
+		now.setMinutes(0);
+		now.setNanos(0);
+		now.setSeconds(0);
+		return now;
+	}
 }
