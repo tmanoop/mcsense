@@ -8,8 +8,8 @@
 
 <SCRIPT TYPE="text/javascript">
 function getDate() {
-	var currentTime = new Date()
-	document.getElementById("expiration").value = currentTime; 
+	var currentTime = new Date();
+	document.forms[0].expiration.value = currentTime; 
 }
 </SCRIPT>
 </head>
@@ -55,6 +55,10 @@ Task Type:
 <option value="photo">Photo Task</option>
 <option value="parking">Parking Sensing Task</option>
 </select>
+<input type="checkbox" name="longterm" value="1"> Long-Term 
+
+<input name="days" size="5" MAXLENGTH=2 onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+Days 
 <br>
 <br>
 Pay:
@@ -62,7 +66,7 @@ Pay:
 $<input name="pay" size="5" MAXLENGTH=3 onkeyup="this.value=this.value.replace(/[^\d]/,'')">
 <br>
 <br>
-Duration:
+Daily Duration:
 <br>
 <input name="duration" size="5" MAXLENGTH=3 onkeyup="this.value=this.value.replace(/[^\d]/,'')"> Minutes
 <br>
