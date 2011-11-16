@@ -45,7 +45,7 @@ Enter McSense ID:
 <br>
 Task Name:
 <br>
-<input name="name" type="text" size="30" MAXLENGTH=30 value="" onkeyup="getDate();" > </input>
+<input name="name" type="text" size="30" MAXLENGTH=30 value="" > </input>
 <br>
 <br>
 Task Type:
@@ -71,9 +71,9 @@ Daily Duration:
 <input name="duration" size="5" MAXLENGTH=3 onkeyup="this.value=this.value.replace(/[^\d]/,'')"> Minutes
 <br>
 <br>
-Expiration time:
+Expiration time: 
 <br>
-<input name="expiration" type="text" size=30 value="" > 
+<input name="expiration" type="text" size=30 value="<%= now%>"></input>
 <br>
 <br>
 Sensors:<br>
