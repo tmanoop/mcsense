@@ -15,9 +15,11 @@ import javax.persistence.*;
 @NamedQueries( {
 		@NamedQuery(name = "Task.findByID", query = "Select t from Task t where t.taskId = :taskId "),
 		@NamedQuery(name = "Task.findByIDAndProvider", query = "Select t from Task t where t.taskId = :taskId and t.providerPersonId = :providerId "),
-		@NamedQuery(name = "Task.findByStatusAndId", query = "Select t from Task t where t.taskStatus = :status and t.providerPersonId = :providerId ORDER BY t.taskId DESC "),
+		@NamedQuery(name = "Task.findByStatusAndId", query = "Select t from Task t where t.taskStatus = :status and t.providerPersonId = :providerId and t.taskExpirationTime BETWEEN :startDate AND :endDate ORDER BY t.taskId DESC "),
+		@NamedQuery(name = "Task.findByParentId", query = "Select t from Task t where t.taskStatus = :status and t.parentTaskId = :parentTaskId ORDER BY t.taskId DESC "),
+		@NamedQuery(name = "Task.findByTaskTypeAndId", query = "Select t from Task t where t.taskStatus = :status and t.taskType = :taskType and t.providerPersonId = :providerId ORDER BY t.taskId DESC "),
 		@NamedQuery(name = "Task.findByDesc", query = "Select t from Task t where t.taskName = :desc ORDER BY t.taskId DESC"),
-		@NamedQuery(name = "Task.findByStatus", query = "Select t from Task t where t.taskStatus = :status and t.taskExpirationTime >= CURRENT_TIMESTAMP ORDER BY t.taskId DESC"),
+		@NamedQuery(name = "Task.findByStatus", query = "Select t from Task t where t.taskStatus = :status and t.taskExpirationTime >= CURRENT_TIMESTAMP and t.parentTaskId = 0 ORDER BY t.taskId DESC"),
 		@NamedQuery(name = "Task.findCompleted", query = "Select t from Task t where t.taskStatus in :statuses and t.providerPersonId = :providerId ORDER BY t.taskId DESC "),
 		@NamedQuery(name = "Task.findAll", query = "Select t from Task t ORDER BY t.taskId DESC"), })
 public class Task implements Entity, Serializable {

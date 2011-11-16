@@ -1,5 +1,6 @@
 package com.mcsense.services;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -87,6 +88,22 @@ public class TaskServices implements TaskServicesLocal {
 		return t;
 	}
 	
+
+	@Override
+	public Task updateTask(Task t) {
+
+		try {
+						
+			t = dataServicesLocal.merge(t);
+			
+		} catch (Exception e) {
+			System.out.println("Task failed to merge.");
+			e.printStackTrace();
+		}
+		
+		return t;
+	}
+	
 	@Override
 	public List<Task> getTasks(String status, String providerId) {
 		List<Task> tList = new ArrayList<Task>();
@@ -120,8 +137,12 @@ public class TaskServices implements TaskServicesLocal {
 		
 		try {
 			if(status.equals("IP")){
-				System.out.println("Status:"+status+" providerId:"+providerId);
-				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatusAndId").setParameter("status", status).setParameter("providerId", new Integer(providerId));				
+				Timestamp endDate = getTonightTimestamp();
+				Timestamp now = getTonightTimestamp();
+				now.setDate(now.getDate()-1);
+				Timestamp startDate = now;
+				System.out.println("Status:"+status+" providerId:"+providerId+" start: "+now+" end: "+endDate);
+				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatusAndId").setParameter("status", status).setParameter("providerId", new Integer(providerId)).setParameter("startDate", startDate).setParameter("endDate", endDate);				
 				tList = (List<Task>) q.getResultList();
 			} else if(status.equals("P")) {
 				System.out.println("Status:"+status);
@@ -187,6 +208,7 @@ public class TaskServices implements TaskServicesLocal {
 			t.setTaskStatus("IP");	//IP - in progress
 			
 			dataServicesLocal.merge(t);
+			dataServicesLocal.getEM().flush();
 			
 		} catch (Exception e) {
 			System.out.println("Task not found.");
@@ -194,6 +216,28 @@ public class TaskServices implements TaskServicesLocal {
 		}
 	}
 
+	@Override
+	public void acceptParentTask(String providerId, String taskId, String taskName) {
+		Task t = null;
+		try {
+			
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByID").setParameter("taskId", new Integer(taskId));
+			
+			t = (Task) q.getSingleResult();		
+			t.setProviderPersonId(new Integer(providerId));
+			t.setTaskAcceptedTime(McUtility.getTimestamp());
+			t.setTaskName(taskName);
+			t.setTaskStatus("IP");	//IP - in progress
+			
+			dataServicesLocal.merge(t);
+			dataServicesLocal.getEM().flush();
+			
+		} catch (Exception e) {
+			System.out.println("Task not found.");
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void completeTask(String providerId, String taskId) {
 		Task t = null;
@@ -233,5 +277,55 @@ public class TaskServices implements TaskServicesLocal {
 			System.out.println("Task not found.");
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public List<Task> getChildTasks(String parentTaskId) {
+		List<Task> tList = new ArrayList<Task>();
+		
+		try {
+		
+			System.out.println("parentTaskId: "+parentTaskId);
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByParentId").setParameter("status", "P").setParameter("parentTaskId", new Integer(parentTaskId));				
+			tList = (List<Task>) q.getResultList();
+		
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return tList;
+	}
+
+	@Override
+	public boolean hasPendingTask(String providerId, String taskType) {
+		List<Task> tList = new ArrayList<Task>();
+		
+		try {
+		
+			System.out.println("providerId: "+providerId);
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByTaskTypeAndId").setParameter("status", "IP").setParameter("taskType", taskType).setParameter("providerId", new Integer(providerId));				
+			tList = (List<Task>) q.getResultList();
+		
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(tList.size()>0)
+			return true;
+		else
+			return false;
+	}
+	
+	private Timestamp getTonightTimestamp() {
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		now.setHours(23);
+		now.setMinutes(0);
+		now.setNanos(0);
+		now.setSeconds(0);
+		return now;
 	}
 }
