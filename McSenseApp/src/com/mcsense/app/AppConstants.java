@@ -6,7 +6,7 @@ import com.mcsense.json.JTask;
 
 public class AppConstants {
 //	protected static final String ip = "128.235.66.235";
-//	protected static final String ip = "http://10.1.168.138:10080";
+//	protected static final String ip = "http://10.1.169.151:10080";
 //	protected static final String ip = "http://manoop.dyndns.org:10080";
 	protected static final String ip = "http://mcsense.njit.edu:10080";
 	
@@ -95,5 +95,7 @@ public class AppConstants {
 	    "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Wallis and Futuna", "Western Sahara",
 	    "Yemen", "Yugoslavia", "Zambia", "Zimbabwe"
 	  };
+
+	public static final String imageFileName = "McSenseImage.jpg";
 
 }
