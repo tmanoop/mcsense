@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -483,11 +484,21 @@ public class TaskActivity extends Activity {
 	private void photo() {
 //		showToast("Photo");
 		Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		File image = new File(Environment.getExternalStorageDirectory(),"McSenseImage.jpg");
+//		File image = new File(Environment.getExternalStorageDirectory(),"McSenseImage.jpg");
+		try {
+			//create an internal writable file. This is to support phones, which do not have sdcard. 
+			FileOutputStream fos = context.openFileOutput(AppConstants.imageFileName, Context.MODE_WORLD_WRITEABLE);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		File image = new File(context.getFilesDir().toString(),AppConstants.imageFileName);
 		camera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(image));
 
         this.startActivityForResult(camera, PICTURE_RESULT);
 //        showToast("Photo Saved!!"+Uri.fromFile(image));
+//        String imageInSD = Environment.getDownloadCacheDirectory() + "/McSenseImage.jpg";
+//        showToast("imageInSD: "+imageInSD);
 //	    Intent myIntent = new Intent(item.getIntent());
 //        startActivity(myIntent);
 	}
@@ -501,7 +512,7 @@ public class TaskActivity extends Activity {
 	    if(requestCode == PICTURE_RESULT){
 	        if(resultCode == Activity.RESULT_OK) {
 	            if(data!=null){
-	                image = BitmapFactory.decodeFile(data.getExtras().get(MediaStore.Images.Media.TITLE).toString());
+//	                image = BitmapFactory.decodeFile(data.getExtras().get(MediaStore.Images.Media.TITLE).toString());
 //	                preview(image);
 //	                showToast("Photo Saved!!");
 //	                grid.add(image);            
@@ -530,8 +541,11 @@ public class TaskActivity extends Activity {
 		   bmOptions = new BitmapFactory.Options();
 		   bmOptions.inSampleSize = 8;
 		   bmOptions.requestCancelDecode();
-		   String imageInSD = "/sdcard/McSenseImage.jpg";
+//		   String imageInSD = "/sdcard/McSenseImage.jpg";
+		   String imageInSD = context.getFilesDir().toString()+"/"+AppConstants.imageFileName;
+//		   showToast("imageInSD: "+imageInSD);
 		   bitmap = BitmapFactory.decodeFile(imageInSD);
+//		   showToast("bitmap: "+bitmap);
 		   bmImage.setImageBitmap(bitmap);
 		   
 		   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -655,10 +669,14 @@ public class TaskActivity extends Activity {
 		// read task from servlet
 		String resp = sb.toString();
 		System.out.println(resp);
-		
+		deletePhoto();
 //		showToast("Uploaded: \r\n");
 	}
 	
+	private void deletePhoto() {
+		context.deleteFile(AppConstants.imageFileName);
+	}
+
 	private ArrayList<String> getBitmapEncodedString(byte[] ba) {
 		ArrayList<String> ba1 = new ArrayList<String>();
 		int chunkSize = 256;
