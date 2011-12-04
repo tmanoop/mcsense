@@ -57,6 +57,7 @@
 		</activity>
 		<service android:enabled="true" android:name=".SensingService" />
 		<service android:enabled="true" android:name=".NotificationService" />
+		<receiver android:enabled="true" android:name=".MyAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".MyStartupIntentReceiver">
  
             <intent-filter>
