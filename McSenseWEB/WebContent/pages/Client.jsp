@@ -11,6 +11,15 @@ function getDate() {
 	var currentTime = new Date();
 	document.forms[0].expiration.value = currentTime; 
 }
+function setPhotoDesc() {
+	document.forms[0].taskDesc.value = 'Capture a photo from Linkin Park music concert at Newark auditorium and earn $1.'; 
+}
+function setSensingDesc() {
+	document.forms[0].taskDesc.value = 'Accept this automated sensing task to start sensing the Accelerometer and GPS readings and earn $1.'; 
+}
+function setLongDesc() {
+	document.forms[0].taskDesc.value = 'Accept this automated sensing task to start sensing the Accelerometer and GPS readings and earn $1. This task is part of long-term task which end on above expiration date.'; 
+}
 </SCRIPT>
 </head>
 <body>
@@ -19,6 +28,9 @@ function getDate() {
 <%
 String clientID = "";
 java.util.Date dt = new java.util.Date();
+dt.setHours(22);
+dt.setMinutes(0);
+dt.setSeconds(0);
 String now = dt.toString();
 if(session.getAttribute("emailID")!=null && session.getAttribute("emailID")!="")
 {
@@ -45,17 +57,17 @@ Enter McSense ID:
 <br>
 Task Name:
 <br>
-<input name="name" type="text" size="30" MAXLENGTH=30 value="" > </input>
+<input name="name" type="text" size="30" MAXLENGTH=30 value="" onkeydown="setSensingDesc();"> </input>
 <br>
 <br>
 Task Type:
 <br>
-<select name="taskType">
+<select name="taskType" onchange="setPhotoDesc();">
 <option value="campusSensing">Campus Sensing Task</option>
 <option value="photo">Photo Task</option>
 <option value="parking">Parking Sensing Task</option>
 </select>
-<input type="checkbox" name="longterm" value="1"> Long-Term 
+<input type="checkbox" name="longterm" value="1" onclick="setLongDesc();"> Long-Term 
 
 <input name="days" size="5" MAXLENGTH=2 onkeyup="this.value=this.value.replace(/[^\d]/,'')">
 Days 
