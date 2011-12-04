@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.widget.Toast;
  
  
@@ -29,6 +30,14 @@ public class MyStartupIntentReceiver extends BroadcastReceiver  {
 		
 		//start notification service always on reboot
 //		iniNotificationService(context);
+		if(!AppUtils.isAlarmExist(context))
+			iniNotificationAlarm(context);
+	}
+	
+	private void iniNotificationAlarm(Context context) {
+		Bundle bundle = new Bundle();
+		// add extras here..
+		MyAlarm alarm = new MyAlarm(context, bundle, 30);
 	}
 	
 	private void iniNotificationService(Context context) {

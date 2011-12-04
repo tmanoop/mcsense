@@ -1,11 +1,11 @@
 package com.mcsense.app;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,21 +37,24 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.mcsense.apache.ObjectSerializer;
 import com.mcsense.json.JTask;
 
 public class AppUtils {
@@ -162,7 +165,7 @@ public class AppUtils {
 			if(!status.equals("P"))
 				jTaskList = getLastSavedTabList(status, context);
 		} else {
-			if(!status.equals("P"))
+//			if(!status.equals("P"))
 				cacheTabList(jTaskList, status, context);
 //				saveArrayList(jTaskList, status, context);
 		}
@@ -556,4 +559,97 @@ public class AppUtils {
 			String resp = sb.toString();
 			System.out.println(resp);
 		}
+	  
+	  public static void uploadPhoto(Context context, int taskId){
+//			showToast("uploading!!");
+			// http servlet call
+			HttpClient httpclient = new DefaultHttpClient();
+			String providerURL = AppConstants.ip+"/McSenseWEB/pages/PhotoServlet";
+			HttpPost httppost = new HttpPost(providerURL);
+			HttpResponse response = null;
+			InputStream is = null;
+			StringBuilder sb = new StringBuilder();
+			
+			//read data
+//			TextView taskIDTxt = (TextView) findViewById(R.id.taskID);;
+//			TextView taskDescTxt = (TextView) findViewById(R.id.txtTest);
+			
+//			String imageInSD = Environment.getExternalStorageDirectory()+"/McSenseImage.jpg";
+//			String imageInSD = "/sdcard/McSenseImage.jpg";
+			//Bitmap bitmap = BitmapFactory.decodeFile(imageInSD);
+//			bitmap = BitmapFactory.decodeFile(imageInSD);
+			String imageInSD = context.getFilesDir().toString()+"/"+AppConstants.imageFileName+taskId;
+//			   showToast("imageInSD: "+imageInSD);
+			Bitmap bitmap = BitmapFactory.decodeFile(imageInSD);
+			ByteArrayOutputStream bao = new ByteArrayOutputStream();
+			
+			String ba1="";
+			try {
+				bitmap.compress(Bitmap.CompressFormat.JPEG, 70, bao);
+		        byte [] ba = bao.toByteArray();
+				ba1 = Base64.encodeToString(ba,0);
+//		        ArrayList<String> baList = getBitmapEncodedString(ba);
+//		        ba1 = baList.get(0);
+		        
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+//				showToast("uploading error!! "+e1.getMessage());
+			}
+			
+			// Add your data
+	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+//	        nameValuePairs.add(new BasicNameValuePair("taskDesc", currentTask.getTaskDescription()));
+	        nameValuePairs.add(new BasicNameValuePair("taskId", taskId +""));
+	        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
+	        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
+	        nameValuePairs.add(new BasicNameValuePair("image",ba1));
+	        
+			// Execute HTTP Get Request
+			try {
+				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				
+				response = httpclient.execute(httppost);
+				System.out.println("Reading response...");
+				HttpEntity entity = response.getEntity();
+				is = entity.getContent();
+
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(is, "iso-8859-1"), 8);
+
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
+					System.out.println(sb);
+				}
+				is.close();
+				bao.close();
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// read task from servlet
+			String resp = sb.toString();
+			System.out.println(resp);
+			deletePhoto(context);
+//			showToast("Uploaded: \r\n");
+		}
+	  
+	  	public static void deletePhoto(Context context) {
+			context.deleteFile(AppConstants.imageFileName);
+		}
+	  	
+	  	public static boolean isAlarmExist(Context context){
+	  		AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE); 
+//	  		String ALARM_ACTION = AAAlarmReceiver.ACTION_LOAD_LISTVIEW; 
+//	  		Intent intentToFire = new Intent(ALARM_ACTION); 
+	  		Intent intentToFire = new Intent(context, MyAlarm.class);
+	  		boolean alarmUp = (PendingIntent.getBroadcast(context,0, intentToFire, PendingIntent.FLAG_NO_CREATE) != null) ;
+	  		
+	  		return alarmUp;
+	  	}
 }

@@ -277,4 +277,14 @@ public class JTask implements Parcelable {
 		taskCreatedTime= AppUtils.getTimestamp(in.readString());
 	}
 
+	public boolean equals(Object  obj)
+	{
+				if(this == obj)
+					return true;
+				if((obj == null) || (obj.getClass() != this.getClass()))
+					return false;
+				// object must be Test at this point
+				JTask task = (JTask)obj;
+				return taskId == task.taskId;
+	}
 }

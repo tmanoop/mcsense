@@ -39,9 +39,17 @@ public class Main extends TabActivity {
 			}
 			loadTabs();
 //			iniNotificationService(this.getApplicationContext());
+			if(!AppUtils.isAlarmExist(getApplicationContext()))
+				iniNotificationAlarm();
 		}
 	}
 	
+	private void iniNotificationAlarm() {
+		Bundle bundle = new Bundle();
+		// add extras here..
+		MyAlarm alarm = new MyAlarm(this, bundle, 30);
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();

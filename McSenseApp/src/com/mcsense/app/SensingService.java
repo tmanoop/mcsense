@@ -109,7 +109,7 @@ public class SensingService extends Service {
 			//load taskId
 			String taskIDString = settings.getString("taskID", "");
 			String status = settings.getString("status", "");
-			sensingDuration = Integer.parseInt(settings.getString("duration", ""));
+			sensingDuration = Integer.parseInt(settings.getString("duration", "0"));
 //			int sensingTaskID = 0;
 			if(!taskIDString.equals(""))
 				taskId = Integer.parseInt(taskIDString);
