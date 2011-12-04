@@ -25,6 +25,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.R.color;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -33,6 +34,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -290,7 +292,10 @@ public class TaskActivity extends Activity {
 						buttonName = "Re-start Sensing";
 				}				
 			} else if(tskType.equals("photo")){
-				buttonName = "Take Photo";
+				if(bitmap!=null)
+					buttonName = "Upload Photo";
+				else
+					buttonName = "Take Photo";
 			}
 		}
 		
@@ -322,12 +327,18 @@ public class TaskActivity extends Activity {
                 		finish();
             		}          		
             	} else if(tab_type.equals("pending")){
+            		String buttonName = button.getText().toString();
             		if(tskType.equals("photo")){
-//            			showToast("Start Camera");
-                		bitmap = null;
-                		photo();
+            			if(buttonName.equals("Upload Photo"))
+                    		uploadProgress();
+            			else{
+
+//                			showToast("Start Camera");
+                    		bitmap = null;
+                    		photo();
+            			}
             		} else if(tskType.equals("campusSensing")){
-            			String buttonName = button.getText().toString();
+//            			String buttonName = button.getText().toString();
             			if(buttonName.equals("Stop Sensing")){
             				stopService(new Intent(TaskActivity.this, SensingService.class));
             				
@@ -487,12 +498,12 @@ public class TaskActivity extends Activity {
 //		File image = new File(Environment.getExternalStorageDirectory(),"McSenseImage.jpg");
 		try {
 			//create an internal writable file. This is to support phones, which do not have sdcard. 
-			FileOutputStream fos = context.openFileOutput(AppConstants.imageFileName, Context.MODE_WORLD_WRITEABLE);
+			FileOutputStream fos = context.openFileOutput(AppConstants.imageFileName+currentTask.getTaskId(), Context.MODE_WORLD_WRITEABLE);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		File image = new File(context.getFilesDir().toString(),AppConstants.imageFileName);
+		File image = new File(context.getFilesDir().toString(),AppConstants.imageFileName+currentTask.getTaskId());
 		camera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(image));
 
         this.startActivityForResult(camera, PICTURE_RESULT);
@@ -542,7 +553,7 @@ public class TaskActivity extends Activity {
 		   bmOptions.inSampleSize = 8;
 		   bmOptions.requestCancelDecode();
 //		   String imageInSD = "/sdcard/McSenseImage.jpg";
-		   String imageInSD = context.getFilesDir().toString()+"/"+AppConstants.imageFileName;
+		   String imageInSD = context.getFilesDir().toString()+"/"+AppConstants.imageFileName+currentTask.getTaskId();
 //		   showToast("imageInSD: "+imageInSD);
 		   bitmap = BitmapFactory.decodeFile(imageInSD);
 //		   showToast("bitmap: "+bitmap);
@@ -557,22 +568,17 @@ public class TaskActivity extends Activity {
 	private void addUploadButton() {
 		RelativeLayout rl = (RelativeLayout) findViewById(R.id.relativeLayout1);
 		System.out.println("adding upload button");
-		Button button = new Button(this); 
-		button.setText("Upload Photo");
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            	uploadProgress();
-            }
-        });
-        RelativeLayout.LayoutParams p = new 
+		//add upload notification text
+		TextView uploadTextView = new TextView(this); 
+		uploadTextView.setText("On upload, the photo below will be used to complete the task.");
+		uploadTextView.setTextColor(Color.YELLOW);
+        RelativeLayout.LayoutParams t = new 
         RelativeLayout.LayoutParams( 
         		RelativeLayout.LayoutParams.FILL_PARENT, 
         		RelativeLayout.LayoutParams.WRAP_CONTENT 
                     ); 
-		rl.addView(button,p);
-		//hide take photo button
-		Button takePhotoButton = (Button) findViewById(R.id.button1);
-		takePhotoButton.setVisibility(View.INVISIBLE);
+        rl.addView(uploadTextView,t);
+        //upload button name is handled on loading task details.
 	}
 
 	public void uploadProgress() {
@@ -674,7 +680,8 @@ public class TaskActivity extends Activity {
 	}
 	
 	private void deletePhoto() {
-		context.deleteFile(AppConstants.imageFileName);
+		context.deleteFile(AppConstants.imageFileName+currentTask.getTaskId());
+		bitmap = null;
 	}
 
 	private ArrayList<String> getBitmapEncodedString(byte[] ba) {
