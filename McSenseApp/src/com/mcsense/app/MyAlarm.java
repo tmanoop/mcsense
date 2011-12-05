@@ -42,14 +42,14 @@ public class MyAlarm extends BroadcastReceiver {
 		time.add(Calendar.SECOND, timeoutInSeconds);
 		alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), 60*1000, 
 				pendingIntent);
-//		Toast.makeText(context, "Alarm is set", Toast.LENGTH_SHORT).show();
+//		Toast.makeText(context, "Notification Alarm is set", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
 	public void onReceive(Context context, Intent arg1) {
 		try {
 			String PENDING = "P";
-//			Toast.makeText(context, "Alarm went off", Toast.LENGTH_SHORT).show();
+//			Toast.makeText(context, "Notification Alarm went off", Toast.LENGTH_SHORT).show();
 			ArrayList<JTask> savedList = AppUtils.getLastSavedTabList(PENDING, context);
 			
 			ArrayList<JTask> taskList = AppUtils.loadTasks(PENDING, context);
@@ -84,6 +84,7 @@ public class MyAlarm extends BroadcastReceiver {
 	
 	    notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 	    notification.defaults |= Notification.DEFAULT_VIBRATE;
+	    notification.flags = Notification.FLAG_AUTO_CANCEL;
 //	    long[] vibrate = {0,100,200,300};
 //	    notification.vibrate = vibrate;
 	    notificationManager.notify(NOTIFICATION_EX, notification);

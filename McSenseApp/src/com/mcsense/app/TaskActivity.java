@@ -132,10 +132,14 @@ public class TaskActivity extends Activity {
 		//get calling tab type
 		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
 		final String tab_type = getIntent().getExtras().getString("tab_type");
+		String tskStat = jTask.getTaskStatus();
 		
 		if(tab_type.equals("completed")){
 			TextView clientPayTextView = (TextView) findViewById(R.id.clientPayTextView); 
-			clientPayTextView.setText("Dollars earned:");
+			if(tskStat.equals("C"))
+				clientPayTextView.setText("Dollars earned:");
+			else if(tskStat.equals("U"))
+				clientPayTextView.setText("Dollars pending:");
 			
 			String startTime = settings.getString("acceptTime", "");			
 			TextView start = (TextView) findViewById(R.id.start); 
@@ -225,7 +229,7 @@ public class TaskActivity extends Activity {
 		clientPay.setText("$"+jTask.getClientPay());
 		
 		TextView taskStatus = (TextView) findViewById(R.id.taskStatus);
-		String tskStat = jTask.getTaskStatus();
+		
 		if(tskStat.equals("P"))
 			tskStat = "Available";
 		else if(tskStat.equals("IP"))
@@ -234,6 +238,8 @@ public class TaskActivity extends Activity {
 			tskStat = "Success";
 		else if(tskStat.equals("E"))
 			tskStat = "Failed";
+		else if(tskStat.equals("U"))
+			tskStat = "Pending Upload";
 		taskStatus.setText(tskStat);
 		
 		TextView taskType = (TextView) findViewById(R.id.taskType); 
@@ -586,9 +592,12 @@ public class TaskActivity extends Activity {
 	    pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 	    Thread thread = new Thread(new Runnable() {
 	    	 public void run() {
-	    		// add downloading code here
-	    		 	uploadPhoto();
-	    		    handler.sendEmptyMessage(0);
+		    		 // add upload code here
+		    		 if(AppUtils.checkInternetConnection(context))
+		    		 	uploadPhoto();
+		    		 else
+		    			 AppUtils.addToUploadList(currentTask, context);
+		    		 handler.sendEmptyMessage(0);
 	    		}     
 	    	 });
 	    thread.start();
