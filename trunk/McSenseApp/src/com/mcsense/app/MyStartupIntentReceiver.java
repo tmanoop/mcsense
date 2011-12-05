@@ -32,8 +32,16 @@ public class MyStartupIntentReceiver extends BroadcastReceiver  {
 //		iniNotificationService(context);
 		if(!AppUtils.isAlarmExist(context))
 			iniNotificationAlarm(context);
+		if(!AppUtils.isUploadAlarmExist(context))
+			iniUploadAlarm(context);
 	}
 	
+	private void iniUploadAlarm(Context context) {
+		Bundle bundle = new Bundle();
+		// add extras here..
+		UploadAlarm alarm = new UploadAlarm(context, bundle, 30);
+	}
+
 	private void iniNotificationAlarm(Context context) {
 		Bundle bundle = new Bundle();
 		// add extras here..

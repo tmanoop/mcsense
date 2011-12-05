@@ -1,0 +1,68 @@
+package com.mcsense.app;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+
+import com.mcsense.json.JTask;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Toast;
+
+public class UploadAlarm extends BroadcastReceiver {
+	private final String REMINDER_BUNDLE = "UploadReminderBundle";
+	
+	// this constructor is called by the alarm manager.
+	public UploadAlarm() {
+	}
+
+	// you can use this constructor to create the alarm.
+	// Just pass in the main activity as the context,
+	// any extras you'd like to get later when triggered
+	// and the timeout
+	public UploadAlarm(Context context, Bundle extras, int timeoutInSeconds) {
+		AlarmManager alarmMgr = (AlarmManager) context
+				.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(context, UploadAlarm.class);
+		intent.putExtra(REMINDER_BUNDLE, extras);
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
+				intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		Calendar time = Calendar.getInstance();
+		time.setTimeInMillis(System.currentTimeMillis());
+		time.add(Calendar.SECOND, timeoutInSeconds);
+		alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), 30*1000, 
+				pendingIntent);
+//		Toast.makeText(context, "Upload Alarm is set", Toast.LENGTH_SHORT).show();
+	}
+	
+	@Override
+	public void onReceive(Context context, Intent intent) {
+//		Toast.makeText(context, "Upload Alarm went off", Toast.LENGTH_SHORT).show();
+		//write the upload code here
+		//check for network availability
+		if(AppUtils.checkInternetConnection(context)){
+			//check for completed task that are waiting for upload
+			ArrayList<JTask> jTaskList = AppUtils.getLastSavedTabList(AppConstants.UPLOAD_PENDING, context);
+			//upload files for each task
+			if(jTaskList != null && jTaskList.size()>0){
+				for(JTask task : jTaskList){
+					if(task.getTaskType().equals("photo")){
+						//perform photo upload
+						AppUtils.uploadPhoto(context, task.getTaskId());
+					} else if(task.getTaskType().equals("campusSensing")){
+						//perform sensing file upload
+						AppUtils.uploadSensedData(context, task.getTaskStatus(), task.getTaskId());
+					}
+				}
+				//remove all upload pending tasks after completing upload
+				AppUtils.removeUploadList(context);
+			}
+		}
+		
+	}
+
+}

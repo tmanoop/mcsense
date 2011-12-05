@@ -193,7 +193,10 @@ public class AppUtils {
 		SharedPreferences prefs = context.getSharedPreferences(AppConstants.PREFS_NAME, Context.MODE_PRIVATE);
 		Editor editor = prefs.edit();
 		try {
-			editor.putString(tabName, new Gson().toJson(jTaskList));
+			if(jTaskList !=null)
+				editor.putString(tabName, new Gson().toJson(jTaskList));
+			else
+				editor.putString(tabName, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -652,4 +655,61 @@ public class AppUtils {
 	  		
 	  		return alarmUp;
 	  	}
+	  	
+	  	public static boolean isUploadAlarmExist(Context context){
+	  		AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE); 
+//	  		String ALARM_ACTION = AAAlarmReceiver.ACTION_LOAD_LISTVIEW; 
+//	  		Intent intentToFire = new Intent(ALARM_ACTION); 
+	  		Intent intentToFire = new Intent(context, UploadAlarm.class);
+	  		boolean alarmUp = (PendingIntent.getBroadcast(context,0, intentToFire, PendingIntent.FLAG_NO_CREATE) != null) ;
+	  		
+	  		return alarmUp;
+	  	}
+	  	
+	  	public static void addToUploadList(JTask currentTask, Context context) {
+			Log.d(AppConstants.TAG, "start addToUploadList");
+			//get last upload pening list
+			ArrayList<JTask> jTaskList = getLastSavedTabList(AppConstants.UPLOAD_PENDING, context);
+			//add new task
+			if(jTaskList == null){
+				jTaskList = new ArrayList<JTask>();
+			}
+			jTaskList.add(currentTask);
+			//cache it
+			cacheTabList(jTaskList, AppConstants.UPLOAD_PENDING, context);
+			//remove from pending tab and move to completed tab
+			removeFromAcceptedTab(currentTask, context);
+			addToCompletedTab(currentTask, context);
+			Log.d(AppConstants.TAG, "End addToUploadList");
+		}
+
+		private static void addToCompletedTab(JTask currentTask, Context context) {
+			//get last completed list 
+			ArrayList<JTask> jTaskList = getLastSavedTabList("C", context);
+			if(jTaskList == null){
+				jTaskList = new ArrayList<JTask>();
+			}
+			currentTask.setTaskStatus("U");
+			//remove current completed task
+			jTaskList.add(currentTask);
+			//cache it
+			cacheTabList(jTaskList, "C", context);
+		}
+
+		private static void removeFromAcceptedTab(JTask currentTask,
+				Context context) {
+			//get last accepted list which are in progress IP
+			ArrayList<JTask> jTaskList = getLastSavedTabList("IP", context);
+			if(jTaskList != null){//this if should always be true in this case
+				//remove current completed task
+				jTaskList.remove(currentTask);
+				//cache it
+				cacheTabList(jTaskList, "IP", context);
+			}
+		}
+
+		public static void removeUploadList(Context context) {
+			// TODO Auto-generated method stub
+			cacheTabList(null, AppConstants.UPLOAD_PENDING, context);
+		}
 }

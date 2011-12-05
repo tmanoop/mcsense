@@ -192,7 +192,12 @@ public class SensingService extends Service {
 								 if(!AppUtils.checkCompletionStatus(getApplicationContext())){
 									 status = "E";
 								 }
-								 AppUtils.uploadSensedData(appContext,status,taskId);
+								 if(AppUtils.checkInternetConnection(getApplicationContext()))
+									AppUtils.uploadSensedData(appContext,status,taskId);
+					    		 else {
+					    			currentTask.setTaskStatus(status); 
+					    			AppUtils.addToUploadList(currentTask, getApplicationContext());
+					    		 }
 								 logSensingElapsedTime(0, taskId, status);
 							 } 
 			    		}     
@@ -205,7 +210,12 @@ public class SensingService extends Service {
 				 if(!AppUtils.checkCompletionStatus(getApplicationContext())){
 					 status = "E";
 				 }
-				 AppUtils.uploadSensedData(appContext,status,taskId);
+				 if(AppUtils.checkInternetConnection(getApplicationContext()))
+					 AppUtils.uploadSensedData(appContext,status,taskId);
+	    		 else {
+	    			 currentTask.setTaskStatus(status); 
+	    			 AppUtils.addToUploadList(currentTask, getApplicationContext());
+	    		 }
 				 logSensingElapsedTime(0, taskId, status);
 			} 
 		}

@@ -41,9 +41,17 @@ public class Main extends TabActivity {
 //			iniNotificationService(this.getApplicationContext());
 			if(!AppUtils.isAlarmExist(getApplicationContext()))
 				iniNotificationAlarm();
+			if(!AppUtils.isUploadAlarmExist(getApplicationContext()))
+				iniUploadAlarm();
 		}
 	}
 	
+	private void iniUploadAlarm() {
+		Bundle bundle = new Bundle();
+		// add extras here..
+		UploadAlarm alarm = new UploadAlarm(this, bundle, 30);
+	}
+
 	private void iniNotificationAlarm() {
 		Bundle bundle = new Bundle();
 		// add extras here..

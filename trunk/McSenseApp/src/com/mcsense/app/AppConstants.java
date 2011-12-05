@@ -98,4 +98,6 @@ public class AppConstants {
 
 	public static final String imageFileName = "McSenseImage.jpg";
 
+	public static final String UPLOAD_PENDING = "upload_pending";
+
 }
