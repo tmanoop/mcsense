@@ -213,8 +213,10 @@ public class SensingService extends Service {
 				 if(AppUtils.checkInternetConnection(getApplicationContext()))
 					 AppUtils.uploadSensedData(appContext,status,taskId);
 	    		 else {
-	    			 currentTask.setTaskStatus(status); 
-	    			 AppUtils.addToUploadList(currentTask, getApplicationContext());
+	    			 JTask newTask = new JTask(taskId, "");
+	    			 newTask.setTaskStatus(status);
+	    			 newTask.setTaskType("campusSensing");
+	    			 AppUtils.addToUploadList(newTask, getApplicationContext());
 	    		 }
 				 logSensingElapsedTime(0, taskId, status);
 			} 
