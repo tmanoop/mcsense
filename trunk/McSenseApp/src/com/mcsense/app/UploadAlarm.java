@@ -3,15 +3,19 @@ package com.mcsense.app;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import com.mcsense.json.JTask;
-
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.mcsense.json.JTask;
 
 public class UploadAlarm extends BroadcastReceiver {
 	private final String REMINDER_BUNDLE = "UploadReminderBundle";
@@ -50,6 +54,7 @@ public class UploadAlarm extends BroadcastReceiver {
 			//upload files for each task
 			if(jTaskList != null && jTaskList.size()>0){
 				for(JTask task : jTaskList){
+					Log.d(AppConstants.TAG, "Uploading: Task#" + task.getTaskId());
 					if(task.getTaskType().equals("photo")){
 						//perform photo upload
 						AppUtils.uploadPhoto(context, task.getTaskId());
@@ -62,7 +67,5 @@ public class UploadAlarm extends BroadcastReceiver {
 				AppUtils.removeUploadList(context);
 			}
 		}
-		
 	}
-
 }

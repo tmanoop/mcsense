@@ -666,6 +666,16 @@ public class AppUtils {
 	  		return alarmUp;
 	  	}
 	  	
+	  	public static boolean isServiceAlarmExist(Context context){
+	  		AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE); 
+//	  		String ALARM_ACTION = AAAlarmReceiver.ACTION_LOAD_LISTVIEW; 
+//	  		Intent intentToFire = new Intent(ALARM_ACTION); 
+	  		Intent intentToFire = new Intent(context, ServiceAlarm.class);
+	  		boolean alarmUp = (PendingIntent.getBroadcast(context,0, intentToFire, PendingIntent.FLAG_NO_CREATE) != null) ;
+	  		
+	  		return alarmUp;
+	  	}
+	  	
 	  	public static void addToUploadList(JTask currentTask, Context context) {
 			Log.d(AppConstants.TAG, "start addToUploadList");
 			//get last upload pening list
