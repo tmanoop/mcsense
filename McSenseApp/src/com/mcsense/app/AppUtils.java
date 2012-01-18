@@ -36,11 +36,13 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,6 +54,7 @@ import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -59,6 +62,7 @@ import com.mcsense.json.JTask;
 
 public class AppUtils {
 	private static ProgressDialog pDialog;
+	 private static final int REQUEST_ENABLE_BT = 2;
 	
 	public static boolean isServerAvailable(){
 		boolean isAvailable;
@@ -101,6 +105,12 @@ public class AppUtils {
 	public static ArrayList<JTask> loadTasks(String stat, Context context) {
 		String status = stat;
 		ArrayList<JTask> jTaskList = null;
+		
+		if(AppConstants.providerId == ""){
+			SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+			String providerId = settings.getString("providerId", "");
+			AppConstants.providerId = providerId;
+		}	
 		
 //		Context context = getApplicationContext();
 		
@@ -500,7 +510,7 @@ public class AppUtils {
 	  
 	  public static boolean checkCompletionStatus(Context context) {
 			SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
-			String elapsedMins = settings.getString("elapsedMins", "");	
+			String elapsedMins = settings.getString("elapsedMins", "0");	
 			int mins = Integer.parseInt(elapsedMins);
 			int hours = mins / 60;
 			if(hours < AppConstants.SENSING_THRESHOLD)
@@ -676,6 +686,30 @@ public class AppUtils {
 	  		return alarmUp;
 	  	}
 	  	
+	  	public static boolean isBluetoothAlarmExist(Context context){
+	  		
+	  		AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE); 
+//	  		String ALARM_ACTION = AAAlarmReceiver.ACTION_LOAD_LISTVIEW; 
+//	  		Intent intentToFire = new Intent(ALARM_ACTION); 
+	  		Intent intentToFire = new Intent(context, BluetoothAlarm.class);
+	  		boolean alarmUp = (PendingIntent.getBroadcast(context,0, intentToFire, PendingIntent.FLAG_NO_CREATE) != null) ;
+	  		Log.d(AppConstants.TAG, "isBluetoothAlarmExist "+alarmUp);
+	  		return alarmUp;
+	  	}
+		
+	  	public static void stopBluetoothAlarm(Context context) {
+			//stop existing bluetooth alarm
+			if(isBluetoothAlarmExist(context)){
+				Intent intentToStop = new Intent(context, BluetoothAlarm.class);
+				PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
+						intentToStop, PendingIntent.FLAG_NO_CREATE);
+				AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+				alarmManager.cancel(pendingIntent);
+				Log.d(AppConstants.TAG, "stopBluetoothAlarm");
+			}
+			isBluetoothAlarmExist(context);
+		}
+	  	
 	  	public static void addToUploadList(JTask currentTask, Context context) {
 			Log.d(AppConstants.TAG, "start addToUploadList");
 			//get last upload pening list
@@ -691,6 +725,33 @@ public class AppUtils {
 			removeFromAcceptedTab(currentTask, context);
 			addToCompletedTab(currentTask, context);
 			Log.d(AppConstants.TAG, "End addToUploadList");
+		}
+	  	
+	  	public static void addToSuspendedList(JTask currentTask, Context context) {
+			Log.d(AppConstants.TAG, "start addToSuspendedList");
+			//get last saved suspended list
+			ArrayList<JTask> jTaskList = getLastSavedTabList(AppConstants.SUSPENDED, context);
+			//add new task
+			if(jTaskList == null){
+				jTaskList = new ArrayList<JTask>();
+			}
+			if(!jTaskList.contains(currentTask))
+				jTaskList.add(currentTask);
+			//cache it
+			cacheTabList(jTaskList, AppConstants.SUSPENDED, context);
+			
+			Log.d(AppConstants.TAG, "End addToSuspendedList");
+		}
+	  	
+	  	public static void removeFromSuspendedList(JTask currentTask, Context context) {
+	  		//get last saved suspended list
+			ArrayList<JTask> jTaskList = getLastSavedTabList(AppConstants.SUSPENDED, context);
+			if(jTaskList != null){
+				//remove current task
+				jTaskList.remove(currentTask);
+				//cache it
+				cacheTabList(jTaskList, AppConstants.SUSPENDED, context);
+			}
 		}
 
 		private static void addToCompletedTab(JTask currentTask, Context context) {
@@ -722,4 +783,58 @@ public class AppUtils {
 			// TODO Auto-generated method stub
 			cacheTabList(null, AppConstants.UPLOAD_PENDING, context);
 		}
+		
+		public static boolean hasRequiredSensors(JTask task) {
+			boolean hasSensors = false;
+			
+			if(task.getTaskType().equals("bluetooth")){
+				// Get local Bluetooth adapter
+				BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();        
+		        
+		        // If the adapter is null, then Bluetooth is not supported
+		        if (mBluetoothAdapter != null) {
+		        	hasSensors = true;
+		        }
+			} else {
+				hasSensors = true;
+			}
+			
+			return hasSensors;
+		}
+
+		public static void enableBluetoothRadio(Context context){
+			BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			if (!mBluetoothAdapter.isEnabled()) {
+	            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+	            ((Activity) context).startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+	        } 
+		}
+		
+		public static void loadLoginUser(Context context) {
+			SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+			String login = settings.getString("login", "");
+			String providerId = settings.getString("providerId", "");
+			AppConstants.providerId = providerId;
+			//check for non student IDs 
+			if(!login.contains("njit")){
+				if(login.contains("@"))
+					login = login.substring(0,login.indexOf("@"));
+				//and truncate to 20char
+				if(login.length() > 20){
+					login = login.substring(0, 20);
+				}
+			}			
+			
+//			TextView loginEmailID = (TextView)findViewById(R.id.loginEmailID);		
+//			loginEmailID.setText(login);
+		}
+		
+		public static boolean isBluetoothEnabled(Context context) {
+			BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			if (mBluetoothAdapter.isEnabled()) {
+				return true;
+			}
+			return false;
+		}
+
 }

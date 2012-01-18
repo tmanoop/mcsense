@@ -38,6 +38,7 @@ public class UploadAlarm extends BroadcastReceiver {
 		Calendar time = Calendar.getInstance();
 		time.setTimeInMillis(System.currentTimeMillis());
 		time.add(Calendar.SECOND, timeoutInSeconds);
+		//Every 30secs - 30*1000
 		alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), 30*1000, 
 				pendingIntent);
 //		Toast.makeText(context, "Upload Alarm is set", Toast.LENGTH_SHORT).show();

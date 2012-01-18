@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.mcsense.app" android:versionCode="5" android:versionName="1.0.5">
+	package="com.mcsense.app" android:versionCode="10" android:versionName="1.0.10">
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
@@ -14,6 +14,8 @@
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 	<uses-permission android:name="android.permission.VIBRATE" />
+	<uses-permission android:name="android.permission.BLUETOOTH"></uses-permission>
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"></uses-permission>
 	<uses-feature android:name="android.hardware.camera" />
 	<uses-feature android:name="android.hardware.camera.autofocus" />
 	<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="11" />
@@ -57,9 +59,11 @@
 		</activity>
 		<service android:enabled="true" android:name=".SensingService" />
 		<service android:enabled="true" android:name=".NotificationService" />
+		<service android:enabled="true" android:name=".BluetoothService" />
 		<receiver android:enabled="true" android:name=".MyAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".UploadAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".ServiceAlarm"> </receiver>
+		<receiver android:enabled="true" android:name=".BluetoothAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".MyStartupIntentReceiver">
  
             <intent-filter>

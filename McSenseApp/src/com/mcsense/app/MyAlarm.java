@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -49,16 +50,20 @@ public class MyAlarm extends BroadcastReceiver {
 	public void onReceive(Context context, Intent arg1) {
 		try {
 			String PENDING = "P";
-//			Toast.makeText(context, "Notification Alarm went off", Toast.LENGTH_SHORT).show();
-			ArrayList<JTask> savedList = AppUtils.getLastSavedTabList(PENDING, context);
-			
-			ArrayList<JTask> taskList = AppUtils.loadTasks(PENDING, context);
-			if (taskList.size() > 0
-					&& !taskList.get(0).getTaskDescription()
-							.equals("No Available Tasks")) {
-				taskList.removeAll(savedList);
-				if(taskList.size()>0)
-					notifyUser(context);
+			SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+			String notify = settings.getString("notify", "");
+			if(!notify.equals("0")){
+//				Toast.makeText(context, "Notification Alarm went off", Toast.LENGTH_SHORT).show();
+				ArrayList<JTask> savedList = AppUtils.getLastSavedTabList(PENDING, context);
+				
+				ArrayList<JTask> taskList = AppUtils.loadTasks(PENDING, context);
+				if (taskList.size() > 0
+						&& !taskList.get(0).getTaskDescription()
+								.equals("No Available Tasks")) {
+					taskList.removeAll(savedList);
+					if(taskList.size()>0)
+						notifyUser(context);
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

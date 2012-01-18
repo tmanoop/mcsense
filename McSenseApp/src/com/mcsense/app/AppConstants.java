@@ -6,7 +6,7 @@ import com.mcsense.json.JTask;
 
 public class AppConstants {
 //	protected static final String ip = "128.235.66.235";
-//	protected static final String ip = "http://10.1.170.24:10080";
+//	protected static final String ip = "http://10.1.169.246:10080";
 //	protected static final String ip = "http://manoop.dyndns.org:10080";
 	protected static final String ip = "http://mcsense.njit.edu:10080";
 	
@@ -31,6 +31,8 @@ public class AppConstants {
 	protected static String status = "";
 	
 	protected static ArrayList failedTaskList = new ArrayList();
+
+	public static int BLScanCount = 0;
 	
 	static final String TAG = "McSense";
 	
@@ -99,5 +101,7 @@ public class AppConstants {
 	public static final String imageFileName = "McSenseImage.jpg";
 
 	public static final String UPLOAD_PENDING = "upload_pending";
+
+	public static final String SUSPENDED = "suspended";
 
 }

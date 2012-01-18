@@ -98,7 +98,7 @@ public class SensingService extends Service {
 		
 		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
 		Calendar cal=Calendar.getInstance();
-		 
+		boolean resumingTask = false;
 		//get task details
 		if(intent.hasExtra("JTask")){
 			JTask jTaskObjInToClass = intent.getExtras().getParcelable("JTask");
@@ -111,10 +111,12 @@ public class SensingService extends Service {
 			String status = settings.getString("status", "");
 			sensingDuration = Integer.parseInt(settings.getString("duration", "0"));
 //			int sensingTaskID = 0;
-			if(!taskIDString.equals(""))
+			if(!taskIDString.equals("")){
 				taskId = Integer.parseInt(taskIDString);
-			if(status.equals("C"))
-				stopService(new Intent(SensingService.this, SensingService.class));
+				if(status.equals("C"))
+					stopService(new Intent(SensingService.this, SensingService.class));
+				resumingTask = true;
+			}
 		}
 		
 		//get server time
@@ -126,7 +128,7 @@ public class SensingService extends Service {
 		//get prev start time
 		String prevStartTime = settings.getString("startTimeMillisecs", "");
 		Date prevStartDate = new Date();
-		if(!prevStartTime.equals(""))
+		if(resumingTask && !prevStartTime.equals(""))
 			prevStartDate = new Date(Long.parseLong(prevStartTime.trim()));
 		Calendar prevCal=Calendar.getInstance();
 		prevCal.setTime(prevStartDate);
@@ -152,7 +154,7 @@ public class SensingService extends Service {
 		if(startSensing){
 //			startGPSSensing();
 			startSensing();
-			loadNotificationIcon();
+//			loadNotificationIcon();
 			Thread t = new Thread(new Runnable() {
 		    	 public void run() {
 							//check time and stop service

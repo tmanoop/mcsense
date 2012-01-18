@@ -13,6 +13,7 @@ public class JTask implements Parcelable {
 	int taskId;
 	String taskDescription;
 	int providerPersonId;
+	int parentTaskId;
 	String taskStatus;
 	String taskType;
 	String taskName;
@@ -70,6 +71,15 @@ public class JTask implements Parcelable {
 	public void setProviderPersonId(int providerPersonId) {
 		this.providerPersonId = providerPersonId;
 	}
+	
+	public int getParentTaskId() {
+		return parentTaskId;
+	}
+
+	public void setParentTaskId(int parentTaskId) {
+		this.parentTaskId = parentTaskId;
+	}
+
 	public String getTaskStatus() {
 		return taskStatus;
 	}
@@ -230,6 +240,7 @@ public class JTask implements Parcelable {
 		dest.writeInt(taskId);
         dest.writeString(taskDescription);
         dest.writeInt(providerPersonId);
+        dest.writeInt(parentTaskId);
         dest.writeString(taskStatus);
         dest.writeString(taskType);
         dest.writeString(taskName);
@@ -256,6 +267,7 @@ public class JTask implements Parcelable {
 		taskId= in.readInt();
 		taskDescription= in.readString();
 		providerPersonId= in.readInt();
+		parentTaskId= in.readInt();
 		taskStatus= in.readString();
 		taskType= in.readString();
 		taskName= in.readString();
