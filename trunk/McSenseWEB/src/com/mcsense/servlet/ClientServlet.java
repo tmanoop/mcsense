@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.mcsense.entities.Task;
 import com.mcsense.mqservice.Producer;
 import com.mcsense.services.TaskServicesLocal;
+import com.mcsense.util.Emailer;
 import com.mcsense.util.McUtility;
 import com.mcsense.util.WebUtil;
 

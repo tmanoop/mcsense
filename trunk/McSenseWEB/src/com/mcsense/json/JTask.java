@@ -10,6 +10,7 @@ public class JTask {
 	int taskId;
 	String taskDescription;
 	int providerPersonId;
+	int parentTaskId;
 	String taskStatus;
 	String taskType;
 	String taskName;
@@ -54,6 +55,15 @@ public class JTask {
 	public void setProviderPersonId(int providerPersonId) {
 		this.providerPersonId = providerPersonId;
 	}
+	
+	public int getParentTaskId() {
+		return parentTaskId;
+	}
+
+	public void setParentTaskId(int parentTaskId) {
+		this.parentTaskId = parentTaskId;
+	}
+
 	public String getTaskStatus() {
 		return taskStatus;
 	}
