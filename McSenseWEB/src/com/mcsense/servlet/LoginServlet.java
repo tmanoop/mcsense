@@ -14,6 +14,7 @@ import com.mcsense.entities.People;
 import com.mcsense.security.SimpleCrypto;
 import com.mcsense.services.LoginServicesLocal;
 import com.mcsense.services.TaskServicesLocal;
+import com.mcsense.util.Emailer;
 import com.mcsense.util.McUtility;
 import com.mcsense.util.ServiceConstants;
 import com.mcsense.util.WebUtil;
@@ -93,6 +94,7 @@ public class LoginServlet extends HttpServlet {
 					p.setMeid(meid);
 					try {
 						People newPerson = loginServicesLocal.register(p);
+						emailToAdmin(emailId,password,meid);
 						out.println(newPerson.getPersonId());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -103,6 +105,14 @@ public class LoginServlet extends HttpServlet {
 			}
 		}
 		
+	}
+
+	private void emailToAdmin(String emailId, String password, String meid) {
+		String body = "User Details:" +
+						"\n\n Email Address: "+emailId +
+						"\n\n password: "+password +
+						"\n\n Meid: "+meid;
+		Emailer.sendEmail("mcsense.app@gmail.com", "mt57@njit.edu", "New McSense user registered", body);
 	}
 
 	private String getEncryptPassword(String password) {

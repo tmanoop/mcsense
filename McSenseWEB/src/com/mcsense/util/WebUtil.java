@@ -16,6 +16,7 @@ public class WebUtil {
 	public static JTask mapToJsonTask(Task t) {
 		JTask jTask = new JTask(t.getTaskId(),t.getTaskDesc());
 		jTask.setProviderPersonId(t.getProviderPersonId());
+		jTask.setParentTaskId(t.getParentTaskId());
 		jTask.setTaskStatus(t.getTaskStatus());
 		jTask.setTaskType(t.getTaskType());
 		jTask.setTaskName(t.getTaskName());
