@@ -20,6 +20,9 @@ function setSensingDesc() {
 function setLongDesc() {
 	document.forms[0].taskDesc.value = 'Accept this automated sensing task to start sensing the Accelerometer and GPS readings and earn $1. This task is part of long-term task which end on above expiration date.'; 
 }
+function setBLDesc() {
+	document.forms[0].taskDesc.value = 'Accept this automated sensing task to start sensing the Bluetooth devices and earn $1.'; 
+}
 </SCRIPT>
 </head>
 <body>
@@ -94,7 +97,7 @@ Sensors:<br>
 <input type="checkbox" name="camera" value="1"> Camera<br>
 <input type="checkbox" name="mic" value="1"> Mic<br>
 <input type="checkbox" name="wifi" value="1" > WiFi<br>
-<input type="checkbox" name="bluetooth" value="1"> Bluetooth<br>
+<input type="checkbox" name="bluetooth" value="1" onclick="setBLDesc();"> Bluetooth<br>
 <input type="checkbox" name="magnetometer" value="1"> Magnetometer<br>
 <input type="checkbox" name="proximity" value="1" > Proximity Sensor<br>
 <input type="checkbox" name="ambient" value="1"> Ambient Light Sensor<br>
