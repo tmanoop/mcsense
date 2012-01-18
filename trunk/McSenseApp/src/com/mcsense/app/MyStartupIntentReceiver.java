@@ -1,5 +1,9 @@
 package com.mcsense.app;
 
+import java.util.ArrayList;
+
+import com.mcsense.json.JTask;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -19,17 +23,27 @@ public class MyStartupIntentReceiver extends BroadcastReceiver  {
 	public void onReceive(Context context, Intent intent) {
 	    // call pending sensing service here ....
 		SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
-		String taskIDString = settings.getString("taskID", "");
-		String status = settings.getString("status", "");
-		int taskId = 0;
-//		int sensingTaskID = 0;
-		if(!taskIDString.equals(""))
-			taskId = Integer.parseInt(taskIDString);
-		if(status.equals("IP"))
-			iniSensingService(context);
+//		String taskIDString = settings.getString("taskID", "");
+//		String status = settings.getString("status", "");
+//		//get last saved suspended list
+//		ArrayList<JTask> suspendedList = AppUtils.getLastSavedTabList(AppConstants.SUSPENDED, context);
+//		int taskId = 0;
+////		int sensingTaskID = 0;
+//		if(!taskIDString.equals(""))
+//			taskId = Integer.parseInt(taskIDString);
+//		if(status.equals("IP")){
+//			boolean suspend = false;
+//			for(JTask temp : suspendedList){
+//				if(temp.getTaskId() == taskId)
+//					suspend = true;
+//			}
+//			if(suspend != true)
+//				iniSensingService(context);
+//		}
 		
 		//start notification service always on reboot
 //		iniNotificationService(context);
+		AppUtils.loadLoginUser(context);
 		if(!AppUtils.isAlarmExist(context))
 			iniNotificationAlarm(context);
 		if(!AppUtils.isUploadAlarmExist(context))
@@ -41,7 +55,7 @@ public class MyStartupIntentReceiver extends BroadcastReceiver  {
 	private void iniServiceAlarm(Context context) {
 		Bundle bundle = new Bundle();
 		// add extras here..
-		ServiceAlarm alarm = new ServiceAlarm(context, bundle, 30);
+		ServiceAlarm alarm = new ServiceAlarm(context, bundle, 120);
 	}
 
 	private void iniUploadAlarm(Context context) {

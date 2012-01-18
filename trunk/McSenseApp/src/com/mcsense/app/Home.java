@@ -148,12 +148,13 @@ public class Home extends Activity {
 
 		String result = bindToServer(username, pswd, "login");		
 		try {
-			// if login succeed
+			// if login succeed, then int is parsed, or exception is thrown. Make it more robust when get time. otherwise this may be vulnerable to some login attacks.
 			int providerId = Integer.parseInt(result);
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME,
 					Context.MODE_PRIVATE);
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putString("login", username);
+			editor.putString("emailID", username);
 			editor.putString("providerId", providerId + "");
 			editor.commit();
 			loginInd = true;

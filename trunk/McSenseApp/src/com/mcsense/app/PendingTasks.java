@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,6 +30,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -102,10 +104,28 @@ public class PendingTasks extends ListActivity {
 	    	 public void run() {
 	    		 	// add downloading code here
 	    		 	taskList = AppUtils.loadTasks("IP",getApplicationContext());
+	    		 	filterLongTermTasks();
 	    		    handler.sendEmptyMessage(0);
 	    		}     
 	    	 });
 	    thread.start();
+	}
+
+	protected void filterLongTermTasks() {
+		int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+		Log.d(AppConstants.TAG, "Hour: "+currentHour);
+		for(JTask temp : taskList){
+			//donot show longterm tasks before noon and they are started from 12 noon by service alarm
+			if(temp.getParentTaskId() != 0 && currentHour<12){
+				taskList.remove(temp);
+			}	
+		}
+		if(taskList.size()==0){
+			String desc = "No Accepted Tasks";
+			JTask t = new JTask(0,desc); 
+			taskList = new ArrayList<JTask>();
+			taskList.add(t);
+		}
 	}
 
 	private Handler handler = new Handler() {

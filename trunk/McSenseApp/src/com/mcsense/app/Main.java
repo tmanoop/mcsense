@@ -169,6 +169,13 @@ public class Main extends TabActivity {
 		
 		TextView loginEmailID = (TextView)findViewById(R.id.loginEmailID);		
 		loginEmailID.setText(login);
+		String autoLogin = settings.getString("autoLogin", "");
+		if(autoLogin.equals("0")){
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putString("login", "");
+			editor.commit();
+		}
+			
 	}
 
 	@Override

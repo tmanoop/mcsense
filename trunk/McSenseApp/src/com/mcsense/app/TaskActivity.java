@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +30,7 @@ import android.R.color;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -218,6 +220,20 @@ public class TaskActivity extends Activity {
 				textDuration.setVisibility(View.INVISIBLE);
 				durationVal.setVisibility(View.INVISIBLE);
 			}
+			
+			if(jTask.getTaskType().equals("bluetooth")){
+				TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
+				textElapsed.setText("Task Expires on: ");
+				TextView elapsed = (TextView) findViewById(R.id.elapsed);
+				if(jTask.getTaskExpirationTime() != null)
+					elapsed.setText(AppUtils.getFormatedTime(jTask.getTaskExpirationTime()));
+				
+				TextView start = (TextView) findViewById(R.id.start); 
+//				start.setText(startTime);
+				if(jTask.getTaskAcceptedTime() != null)
+					start.setText(AppUtils.getFormatedTime(jTask.getTaskAcceptedTime()));
+				
+			}
 		}  else if(tab_type.equals("new")){
 			TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
 			TextView elapsed = (TextView) findViewById(R.id.elapsed);
@@ -264,7 +280,20 @@ public class TaskActivity extends Activity {
 			Calendar acceptCal=Calendar.getInstance();
 			acceptCal.setTime(acceptDate);
 			int hour = acceptCal.get(Calendar.HOUR_OF_DAY);
-			int totalMins = (22 - hour) * 60;
+			
+			//get exp time
+			Timestamp expTime = currentTask.getTaskExpirationTime();
+			Log.d(AppConstants.TAG, "Exp time hour: "+expTime);
+			Date expDate = new Date();
+			int expHour = 22;
+			if(expTime != null){
+				expDate = new Date(expTime.getTime());
+				Calendar expCal=Calendar.getInstance();
+				expCal.setTime(expDate);
+				expHour = expCal.get(Calendar.HOUR_OF_DAY);
+			}
+						
+			int totalMins = (expHour - hour) * 60;
 			int hourMins = acceptCal.get(Calendar.MINUTE);
 			
 			sensingDuration = totalMins - hourMins;
@@ -297,6 +326,11 @@ public class TaskActivity extends Activity {
 					else
 						buttonName = "Re-start Sensing";
 				}				
+			} else if(tskType.equals("bluetooth")){
+				if(AppUtils.isBluetoothAlarmExist(getApplicationContext()))
+					buttonName = "Stop Sensing";
+				else
+					buttonName = "Re-start Sensing";			
 			} else if(tskType.equals("photo")){
 				if(bitmap!=null)
 					buttonName = "Upload Photo";
@@ -321,16 +355,22 @@ public class TaskActivity extends Activity {
 
             			taskDesc.append(WordtoSpan);
             		} else {
-            			//call server to accept the task and update its status
-                		String resp = acceptTask(taskID);
-                		showToast(resp);
-                		if(resp.equals("Accepted")){
-                    		if(tskType.equals("campusSensing"))
-                        		iniSensingService();
-                		}
-                		logAcceptTime(taskID);
-
-                		finish();
+            			if(AppUtils.hasRequiredSensors(currentTask)){
+            				//call server to accept the task and update its status
+                    		String resp = acceptTask(taskID);
+                    		showToast(resp);
+                    		if(resp.equals("Accepted")){
+                        		if(tskType.equals("campusSensing"))
+                            		iniSensingService();
+                        		if(tskType.equals("bluetooth"))
+                            		iniBluetoothAlarmService();
+                    		}
+                    		logAcceptTime(taskID);
+            			} else {
+            				showToast("Required Sensors or Radios not available!!");
+            			}
+            			
+//                		finish();
             		}          		
             	} else if(tab_type.equals("pending")){
             		String buttonName = button.getText().toString();
@@ -377,6 +417,15 @@ public class TaskActivity extends Activity {
 		       				AppUtils.uploadSensedData(context,status,currentTask.getTaskId());
             				finish();
             			}
+            		} else if(tskType.equals("bluetooth")){
+            			if(buttonName.equals("Stop Sensing")){
+            				//stop bluetooth alarm
+            				AppUtils.stopBluetoothAlarm(context);
+            				button.setText("Re-start Sensing");
+            			} else if(buttonName.equals("Re-start Sensing")){
+            				iniBluetoothAlarmService();
+            				button.setText("Stop Sensing");
+            			}
             		}
             	}
             }
@@ -387,7 +436,53 @@ public class TaskActivity extends Activity {
 //		linearLayout.addView(t);
 		
 	}
+
+	protected void iniBluetoothAlarmService() {
+//		AppUtils.enableBluetoothRadio(this);
+		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (!mBluetoothAdapter.isEnabled()) {
+			enableBluetoothRadio(context);
+		} else{
+			startBluetoothAlarmService();
+		}
+		
+	}
 	
+	private void startBluetoothAlarmService(){
+		AppUtils.removeFromSuspendedList(currentTask,context);
+		
+		Bundle bundle = new Bundle();
+		ArrayList<JTask> taskList = new ArrayList();
+		taskList.add(currentTask);
+		bundle.putParcelableArrayList("task", taskList);
+		// add extras here..
+		BluetoothAlarm alarm = new BluetoothAlarm(context, bundle, 30);
+		finish();
+	}
+	
+	private void enableBluetoothRadio(Context context){
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setTitle("Switch on Bluetooth?");
+		alert.setPositiveButton("Yes",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						AppUtils.enableBluetoothRadio(TaskActivity.this);
+						startBluetoothAlarmService();
+					}
+				});
+
+		alert.setNegativeButton("Suspend",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						showToast("Task Suspended!!");
+						stopService(new Intent(TaskActivity.this, SensingService.class));
+						AppUtils.addToSuspendedList(currentTask, getApplicationContext());
+					}
+				});
+
+		alert.show();
+	}
+
 	protected void logAcceptTime(String taskID) {
 		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME,
 				Context.MODE_PRIVATE);
@@ -420,11 +515,17 @@ public class TaskActivity extends Activity {
 		if(!isGPS)
 			enableGPSSettings();
 		else{
-			Intent intent = new Intent(this, SensingService.class);
-			intent.putExtra("JTask", currentTask);
-			startService(intent);
-			finish();
+			startSensingService();
 		}
+	}
+	
+	private void startSensingService(){
+		AppUtils.removeFromSuspendedList(currentTask,context);
+		
+		Intent intent = new Intent(this, SensingService.class);
+		intent.putExtra("JTask", currentTask);
+		startService(intent);
+		finish();
 	}
 
 	private void enableGPSSettings() {
@@ -434,14 +535,16 @@ public class TaskActivity extends Activity {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						TaskActivity.this.startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
+						startSensingService();
 					}
 				});
 
-		alert.setNegativeButton("No",
+		alert.setNegativeButton("Suspend",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-						showToast("McSense App cannot sense with out GPS!!");
+						showToast("Task Suspended!!");
 						stopService(new Intent(TaskActivity.this, SensingService.class));
+						AppUtils.addToSuspendedList(currentTask, getApplicationContext());
 					}
 				});
 

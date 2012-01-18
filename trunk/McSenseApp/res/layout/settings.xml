@@ -6,8 +6,8 @@
     <TableLayout android:layout_height="match_parent" android:id="@+id/tableLayout1" android:layout_width="match_parent">
         <TextView android:text="Settings:" android:id="@+id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
         <RelativeLayout android:id="@+id/relativeLayout1" android:layout_width="wrap_content" android:layout_height="wrap_content">
-            <CheckBox android:layout_alignParentLeft="true" android:layout_width="wrap_content" android:text="Auto Login" android:id="@+id/checkBox1" android:layout_height="wrap_content"></CheckBox>
+            <CheckBox android:layout_alignParentLeft="true" android:layout_width="wrap_content" android:text="Auto Login" android:id="@+id/autoLogin" android:layout_height="wrap_content" android:checked="true"></CheckBox>
         </RelativeLayout>
-        <CheckBox android:text="Notify New Tasks" android:id="@+id/checkBox2" android:layout_width="wrap_content" android:layout_height="wrap_content"></CheckBox>
+        <CheckBox android:text="Notify New Tasks" android:id="@+id/notify" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true"></CheckBox>
     </TableLayout>
 </LinearLayout>
