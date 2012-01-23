@@ -50,7 +50,7 @@ public class TotalEarningsActivity extends Activity {
 	}
 	
 	private void loadEarnings() {
-		int totalEarnings = 0;
+		Double totalEarnings = 0.0;
 
 		try {
 			if(AppConstants.jTaskCompletedList==null)
@@ -59,8 +59,10 @@ public class TotalEarningsActivity extends Activity {
 			if(jTaskList.size()!=0 && !jTaskList.get(0).getTaskDescription()
 					.equals("No Completed Tasks")){
 				for(JTask task : jTaskList){
-					if(task.getTaskStatus().equals("C"))
-						totalEarnings = totalEarnings + task.getClientPay();
+					if(task.getTaskStatus().equals("C")){
+						if(task.getClientPay() != null)
+							totalEarnings = totalEarnings + task.getClientPay();
+					}
 				}
 			}			
 			textview.setText("Below are the Total Earnings: \r\n $"+totalEarnings+" \r\n");

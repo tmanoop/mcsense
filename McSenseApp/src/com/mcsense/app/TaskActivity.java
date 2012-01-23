@@ -42,6 +42,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -66,6 +67,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.mcsense.app.MyLocation.LocationResult;
 import com.mcsense.json.JTask;
 
 public class TaskActivity extends Activity {
@@ -75,6 +77,7 @@ public class TaskActivity extends Activity {
 	Bitmap bitmap;
 	JTask currentTask;
 	Context context;
+	String currentLocation = "";
 	private ProgressDialog pDialog;
 
 	TextView text;
@@ -364,6 +367,8 @@ public class TaskActivity extends Activity {
                             		iniSensingService();
                         		if(tskType.equals("bluetooth"))
                             		iniBluetoothAlarmService();
+                        		if(tskType.equals("photo"))
+                        			finish();
                     		}
                     		logAcceptTime(taskID);
             			} else {
@@ -672,6 +677,15 @@ public class TaskActivity extends Activity {
 		   //add upload button
 		   addUploadButton();
 //		   uploadPhoto();
+		   
+		 //get GPS location
+			Runnable start = new Runnable( ) {
+			    public void run( ) {
+			    	MyLocation myLocation = new MyLocation();
+					myLocation.getLocation(context, locationResult);
+			    }
+			};
+			start.run();
 	}
 	
 	private void addUploadButton() {
@@ -756,6 +770,7 @@ public class TaskActivity extends Activity {
         nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
         nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
         nameValuePairs.add(new BasicNameValuePair("image",ba1));
+        nameValuePairs.add(new BasicNameValuePair("currentLocation",currentLocation));
         
 		// Execute HTTP Get Request
 		try {
@@ -911,4 +926,15 @@ public class TaskActivity extends Activity {
 		System.out.println(resp);
 		finish();
 	}
+	
+	public LocationResult locationResult = (new LocationResult(){
+	    @Override
+	    public void gotLocation(final Location loc){
+	        //Got the location!
+//	    	Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+	    	currentLocation = "Latitude:" + loc.getLatitude() +	",Longitude:" + loc.getLongitude()+ " \n";
+			
+			AppConstants.gpsLocUpdated = true;
+	    }
+	});
 }
