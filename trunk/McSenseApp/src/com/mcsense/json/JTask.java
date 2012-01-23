@@ -17,7 +17,7 @@ public class JTask implements Parcelable {
 	String taskStatus;
 	String taskType;
 	String taskName;
-	int clientPay;
+	Double clientPay;
 	int taskDuration;
 	String sensedDataFileLocation;
 	String accelerometer;
@@ -101,11 +101,11 @@ public class JTask implements Parcelable {
 		this.taskName = taskName;
 	}
 
-	public int getClientPay() {
+	public Double getClientPay() {
 		return clientPay;
 	}
 
-	public void setClientPay(int clientPay) {
+	public void setClientPay(Double clientPay) {
 		this.clientPay = clientPay;
 	}
 
@@ -244,7 +244,7 @@ public class JTask implements Parcelable {
         dest.writeString(taskStatus);
         dest.writeString(taskType);
         dest.writeString(taskName);
-        dest.writeInt(clientPay);
+        dest.writeDouble(clientPay);
     	dest.writeInt(taskDuration);
     	dest.writeString(sensedDataFileLocation);
     	dest.writeString(accelerometer);
@@ -271,7 +271,7 @@ public class JTask implements Parcelable {
 		taskStatus= in.readString();
 		taskType= in.readString();
 		taskName= in.readString();
-		clientPay=in.readInt();
+		clientPay=in.readDouble();
 		taskDuration= in.readInt();
 		sensedDataFileLocation= in.readString();
 		accelerometer= in.readString();
