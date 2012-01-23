@@ -78,7 +78,7 @@ Days
 <br>
 Pay:
 <br>
-$<input name="pay" size="5" MAXLENGTH=3 onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+$<input name="pay" size="5" MAXLENGTH=5 >
 <br>
 <br>
 Daily Duration:
