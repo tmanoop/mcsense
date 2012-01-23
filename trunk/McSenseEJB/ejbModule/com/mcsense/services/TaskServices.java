@@ -328,4 +328,26 @@ public class TaskServices implements TaskServicesLocal {
 		now.setSeconds(0);
 		return now;
 	}
+
+	@Override
+	public void completeTask(String providerId, String taskId,
+			String completionStatus, String currentLocation) {
+		Task t = null;
+		try {
+			
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByID").setParameter("taskId", new Integer(taskId));
+			
+			t = (Task) q.getSingleResult();		
+			t.setProviderPersonId(new Integer(providerId));
+			t.setTaskCompletionTime(McUtility.getTimestamp());
+			t.setTaskStatus(completionStatus);	//IP - in progress
+			t.setSensedDataFileLocation(currentLocation);
+			
+			dataServicesLocal.merge(t);
+			
+		} catch (Exception e) {
+			System.out.println("Task not found.");
+			e.printStackTrace();
+		}
+	}
 }

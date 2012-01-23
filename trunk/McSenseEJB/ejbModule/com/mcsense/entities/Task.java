@@ -53,7 +53,7 @@ public class Task implements Entity, Serializable {
 	private String taskDesc;
 	
 	@Column(name = "CLIENT_PAY")
-	private int clientPay;
+	private Double clientPay;
 	
 	@Column(name = "TASK_DURATION")
 	private int taskDuration;
@@ -164,11 +164,11 @@ public class Task implements Entity, Serializable {
 		this.taskDesc = taskDesc;
 	}
 
-	public int getClientPay() {
+	public Double getClientPay() {
 		return clientPay;
 	}
 
-	public void setClientPay(int clientPay) {
+	public void setClientPay(Double clientPay) {
 		this.clientPay = clientPay;
 	}
 

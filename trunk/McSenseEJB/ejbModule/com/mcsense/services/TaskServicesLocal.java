@@ -39,4 +39,7 @@ public interface TaskServicesLocal {
 
 	void acceptParentTask(String providerId, String taskId, String taskName);
 
+	void completeTask(String providerId, String taskId,
+			String completionStatus, String currentLocation);
+
 }
