@@ -51,6 +51,7 @@ public class PhotoServlet extends HttpServlet {
 		String taskId = request.getParameter("taskId");
 		String providerId = request.getParameter("providerId");
 		String imageString = request.getParameter("image");
+		String currentLocation = request.getParameter("currentLocation");
 		
 		Task t = taskServicesLocal.getTaskByIdAndProvider(providerId,taskId);
 		if(t!=null && t.getTaskStatus().equals("IP")){
@@ -68,7 +69,7 @@ public class PhotoServlet extends HttpServlet {
 //				f = new FileOutputStream(DESTINATION_DIR_PATH+"/ProviderImage.jpg");
 				f.write(imageByteArray);
 				String completionStatus = WebUtil.getComplationStatus(t);
-				taskServicesLocal.completeTask(providerId,taskId,completionStatus);
+				taskServicesLocal.completeTask(providerId,taskId,completionStatus,currentLocation);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

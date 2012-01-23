@@ -14,7 +14,7 @@ public class JTask {
 	String taskStatus;
 	String taskType;
 	String taskName;
-	int clientPay;
+	Double clientPay;
 	int taskDuration;
 	String sensedDataFileLocation;
 	String accelerometer;
@@ -85,11 +85,11 @@ public class JTask {
 		this.taskName = taskName;
 	}
 
-	public int getClientPay() {
+	public Double getClientPay() {
 		return clientPay;
 	}
 
-	public void setClientPay(int clientPay) {
+	public void setClientPay(Double clientPay) {
 		this.clientPay = clientPay;
 	}
 

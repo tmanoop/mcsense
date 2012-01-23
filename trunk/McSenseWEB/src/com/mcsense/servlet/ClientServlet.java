@@ -133,7 +133,7 @@ public class ClientServlet extends HttpServlet {
 		t.setClientPersonId(new Integer(clientId));
 		t.setTaskDesc(taskDesc);
 		t.setTaskType(taskType);
-		t.setClientPay(new Integer(clientPay));
+		t.setClientPay(new Double(clientPay));
 		t.setTaskDuration(new Integer(duration));
 		t.setTaskName(taskName);
 		t.setAccelerometer(accelerometer);
