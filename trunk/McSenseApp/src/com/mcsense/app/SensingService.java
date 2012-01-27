@@ -127,7 +127,7 @@ public class SensingService extends Service {
 		
 		//get prev start time
 		String prevStartTime = settings.getString("startTimeMillisecs", "");
-		Date prevStartDate = new Date();
+		Date prevStartDate = serverDate;
 		if(resumingTask && !prevStartTime.equals(""))
 			prevStartDate = new Date(Long.parseLong(prevStartTime.trim()));
 		Calendar prevCal=Calendar.getInstance();
