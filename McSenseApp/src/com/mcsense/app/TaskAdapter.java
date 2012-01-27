@@ -75,6 +75,8 @@ public class TaskAdapter extends ArrayAdapter<JTask> {
                     		iv.setImageResource(R.drawable.ic_menu_tick);
                     	else if(t.getTaskStatus()!=null && t.getTaskStatus().equals("U"))
                     		iv.setImageResource(R.drawable.ic_menu_upload);
+                    	else if(t.getTaskStatus()!=null && t.getTaskStatus().equals("V"))
+                    		iv.setImageResource(R.drawable.ic_menu_validation);
                     	if(t.getTaskType()!=null && t.getTaskType().equals("photo") &&
                     			t.getTaskStatus()!=null && (t.getTaskStatus().equals("P") || t.getTaskStatus().equals("IP")))
                     		iv.setImageResource(R.drawable.ic_action_photo);

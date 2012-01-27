@@ -96,6 +96,11 @@ public class BluetoothAlarm extends BroadcastReceiver {
 		JTask jTaskObjInToClass = intent.getExtras().getParcelable("JTask");
 		currentTask = jTaskObjInToClass;
 		
+		//add total sensed time criteria to identify completion status
+		 SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+		 String countString = settings.getString("BLScanCount", "0");
+		 int BLScanCount = Integer.parseInt(countString);
+		
 		//check if task expired or not and complete it if expires
 		if(!hasTaskExpired(context)){
 			if(AppUtils.isBluetoothEnabled(context)){
@@ -108,10 +113,7 @@ public class BluetoothAlarm extends BroadcastReceiver {
 			}			
 		} else {
 			 String status = "C";
-			 //add total sensed time criteria to identify completion status
-			 SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
-			 String countString = settings.getString("BLScanCount", "0");
-			 int BLScanCount = Integer.parseInt(countString);
+			 
 			 //if atleast 6 hours of BL scanning is not done, then task is not successfully complete. Mark it as "E".
 			 if(BLScanCount < 72)
 				 status = "E";
@@ -122,7 +124,10 @@ public class BluetoothAlarm extends BroadcastReceiver {
     			currentTask.setTaskStatus(status); 
     			AppUtils.addToUploadList(currentTask, context);
     		 }
-
+			 //reset BLScanCount for next task
+			 AppConstants.BLScanCount = 0;
+			 logBluetoothScanCount(AppConstants.BLScanCount, context);
+			 
 			//stop bluetooth alarm
 			AppUtils.stopBluetoothAlarm(context);
 		}		

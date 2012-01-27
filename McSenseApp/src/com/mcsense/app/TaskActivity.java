@@ -96,7 +96,7 @@ public class TaskActivity extends Activity {
 //        linear.addView(text);
 
 //        setContentView(linear);
-		
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		context = getApplicationContext();
         setContentView(R.layout.task);
         
@@ -115,6 +115,7 @@ public class TaskActivity extends Activity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		loadTaskDetails(currentTask);
 	}
 	
@@ -187,9 +188,13 @@ public class TaskActivity extends Activity {
 				
 				TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
 				TextView elapsed = (TextView) findViewById(R.id.elapsed);
-				textElapsed.setVisibility(View.INVISIBLE);
-				elapsed.setVisibility(View.INVISIBLE);
+//				textElapsed.setVisibility(View.INVISIBLE);
+//				elapsed.setVisibility(View.INVISIBLE);
 			
+				textElapsed.setText("Task Expire at:");
+				
+				if(jTask.getTaskExpirationTime() != null)
+					elapsed.setText(AppUtils.getFormatedTime(jTask.getTaskExpirationTime()));
 				
 //				if(!elapsedTime.equals("") && status.equals("IP")){
 //					TextView elapsed = (TextView) findViewById(R.id.elapsed);
@@ -259,16 +264,19 @@ public class TaskActivity extends Activity {
 			tskStat = "Failed";
 		else if(tskStat.equals("U"))
 			tskStat = "Pending Upload";
+		else if(tskStat.equals("V"))
+			tskStat = "Validation Pending";
 		taskStatus.setText(tskStat);
 		
 		TextView taskType = (TextView) findViewById(R.id.taskType); 
 		taskType.setText(jTask.getTaskType());
 		
+		TextView durationText = (TextView) findViewById(R.id.textView7); 
 		TextView duration = (TextView) findViewById(R.id.duration); 
 		int sensingDuration = 0;
 		
 		if(tskStat.equals("Available")){
-			TextView durationText = (TextView) findViewById(R.id.textView7); 
+			
 			durationText.setText("Task Expire at:");
 //			duration.setText("10 PM");	
 			
@@ -303,7 +311,15 @@ public class TaskActivity extends Activity {
 			if(sensingDuration < 0)
 				sensingDuration = 0;
 //			String durationMins = settings.getString("duration", "");
-			duration.setText(sensingDuration+" mins");
+			durationText.setText("Sensing Data Recorded for:");
+			if(jTask.getTaskType().equals("campusSensing")){
+				String elapsedTotalMins = settings.getString("elapsedMins", "0");
+				duration.setText(elapsedTotalMins+" mins");
+			} else if(jTask.getTaskType().equals("bluetooth")){
+				String countString = settings.getString("BLScanCount", "0");
+				int elapsedTotalMins = Integer.parseInt(countString) * 5;
+				duration.setText(elapsedTotalMins+" mins");
+			}
 		}
 		
 		final TextView taskDesc = (TextView) findViewById(R.id.taskDescription); 
@@ -330,10 +346,15 @@ public class TaskActivity extends Activity {
 						buttonName = "Re-start Sensing";
 				}				
 			} else if(tskType.equals("bluetooth")){
-				if(AppUtils.isBluetoothAlarmExist(getApplicationContext()))
-					buttonName = "Stop Sensing";
-				else
-					buttonName = "Re-start Sensing";			
+				if(sensingDuration == 0)
+					buttonName = "Upload Sensed Data";
+				else{
+
+					if(AppUtils.isBluetoothAlarmExist(getApplicationContext()))
+						buttonName = "Stop Sensing";
+					else
+						buttonName = "Re-start Sensing";
+				}			
 			} else if(tskType.equals("photo")){
 				if(bitmap!=null)
 					buttonName = "Upload Photo";
@@ -416,10 +437,16 @@ public class TaskActivity extends Activity {
             			} else if(buttonName.equals("Upload Sensed Data")){
             				stopService(new Intent(TaskActivity.this, SensingService.class));
             				String status = "C";
+            				calculateElapsedMins();
 		       				if(!AppUtils.checkCompletionStatus(context)){
 		       					status = "E";
 		       				}
-		       				AppUtils.uploadSensedData(context,status,currentTask.getTaskId());
+		       				if(AppUtils.checkInternetConnection(getApplicationContext()))
+								AppUtils.uploadSensedData(context,status,currentTask.getTaskId());
+				    		else {
+				    			currentTask.setTaskStatus(status); 
+				    			AppUtils.addToUploadList(currentTask, getApplicationContext());
+				    		 }
             				finish();
             			}
             		} else if(tskType.equals("bluetooth")){
@@ -430,6 +457,30 @@ public class TaskActivity extends Activity {
             			} else if(buttonName.equals("Re-start Sensing")){
             				iniBluetoothAlarmService();
             				button.setText("Stop Sensing");
+            			} else if(buttonName.equals("Upload Sensed Data")){
+            				String status = "C";
+            				//add total sensed time criteria to identify completion status
+            				 SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+            				 String countString = settings.getString("BLScanCount", "0");
+            				 int BLScanCount = Integer.parseInt(countString);
+            				 
+            				 //if atleast 6 hours of BL scanning is not done, then task is not successfully complete. Mark it as "E".
+            				 if(BLScanCount < 72)
+            					 status = "E";
+            				 //upload sensed data
+            				 if(AppUtils.checkInternetConnection(context))
+            					AppUtils.uploadSensedData(context, status, currentTask.getTaskId());
+            	    		 else {
+            	    			currentTask.setTaskStatus(status); 
+            	    			AppUtils.addToUploadList(currentTask, context);
+            	    		 }
+            				 //reset BLScanCount for next task
+            				 AppConstants.BLScanCount = 0;
+            				 logBluetoothScanCount(AppConstants.BLScanCount, context);
+            				 
+            				//stop bluetooth alarm
+            				AppUtils.stopBluetoothAlarm(context);
+            				finish();
             			}
             		}
             	}
@@ -661,6 +712,7 @@ public class TaskActivity extends Activity {
 	
 	private void preview(Bitmap image){
 //		showToast("preview!!");
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		ImageView bmImage = (ImageView)findViewById(R.id.imageView1);//new ImageView(this);//
 		   BitmapFactory.Options bmOptions;
 		   bmOptions = new BitmapFactory.Options();
@@ -673,7 +725,7 @@ public class TaskActivity extends Activity {
 //		   showToast("bitmap: "+bitmap);
 		   bmImage.setImageBitmap(bitmap);
 		   
-		   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		   
 		   //add upload button
 		   addUploadButton();
 //		   uploadPhoto();
@@ -937,4 +989,36 @@ public class TaskActivity extends Activity {
 			AppConstants.gpsLocUpdated = true;
 	    }
 	});
+	
+	protected void logBluetoothScanCount(int BLScanCount, Context context) {
+		SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("BLScanCount", BLScanCount+"");
+		editor.commit();
+	}
+	
+	private void calculateElapsedMins() {
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
+		//calculate sensed time in minutes
+		String elapsedTime = settings.getString("elapsedTime", "");	
+		int mins = 0;
+		if(!elapsedTime.equals("")){
+			float elapsedTimeMin = Long.parseLong(elapsedTime)/(60*1000F);
+			mins = Math.round(elapsedTimeMin);
+		}
+		
+		//elapsedTotalMins and append. save it
+		String elapsedTotalMins = settings.getString("elapsedMins", "0");	
+		mins = mins + Integer.parseInt(elapsedTotalMins);
+		logSensedMins(mins);
+	}
+	
+	private void logSensedMins(int min) {
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("elapsedMins", min+"");
+		editor.commit();
+	}
 }
