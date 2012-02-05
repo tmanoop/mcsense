@@ -27,6 +27,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -175,7 +176,7 @@ public class NewTasks extends ListActivity{
 		// Execute HTTP Get Request
 		try {
 			response = httpclient.execute(httpget);
-			System.out.println("Reading response...");
+			Log.d(AppConstants.TAG, "Reading response...");
 			HttpEntity entity = response.getEntity();
 			is = entity.getContent();
 
@@ -187,7 +188,7 @@ public class NewTasks extends ListActivity{
 				
 				if(!line.equals("No New Tasks")){
 					sb.append(line + "\n");
-					System.out.println(sb);
+					Log.d(AppConstants.TAG, ""+sb);
 					
 					//Parse Response into our object
 		            Type collectionType = new TypeToken<ArrayList<JTask>>(){}.getType();
@@ -311,7 +312,7 @@ public class NewTasks extends ListActivity{
 				// Execute HTTP Get Request
 				try {
 					response = httpclient.execute(httpget);
-					System.out.println("Reading response...");
+					Log.d(AppConstants.TAG, "Reading response...");
 					HttpEntity entity = response.getEntity();
 					is = entity.getContent();
 
@@ -321,13 +322,13 @@ public class NewTasks extends ListActivity{
 					String line = null;
 					while ((line = reader.readLine()) != null) {
 						sb.append(line + "\n");
-						System.out.println(sb);
+						Log.d(AppConstants.TAG, ""+sb);
 					}
 					is.close();
 
 					// read task from servlet
 					String task = sb.toString();
-					System.out.println(task);
+					Log.d(AppConstants.TAG, task);
 					
 					textview.append("Sensing Task Read: " + task + " \r\n");
 //					scrollDown();

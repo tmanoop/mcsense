@@ -48,8 +48,8 @@ public class ServiceAlarm extends BroadcastReceiver {
 		Calendar time = Calendar.getInstance();
 		time.setTimeInMillis(System.currentTimeMillis());
 		time.add(Calendar.SECOND, timeoutInSeconds);
-		//Every 1hour - 60*60*1000
-		alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), 60*60*1000, 
+		//Every 1 min - 60*1000
+		alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), 60*1000, 
 				pendingIntent);
 //		Toast.makeText(context, "Service Alarm is set", Toast.LENGTH_SHORT).show();
 	}
@@ -74,9 +74,24 @@ public class ServiceAlarm extends BroadcastReceiver {
 					if(!(acptTask.getParentTaskId() == 0 && currentHour<12)){
 						if(acptTask.getTaskType().equals("campusSensing")){
 							//stop the sensing service.  This alarm is set to do this every hour.
-							context.stopService(new Intent(context, SensingService.class));
+//							context.stopService(new Intent(context, SensingService.class));
 							//restart it for this task if not in suspended list
-							iniSensingService(context, acptTask);
+//							iniSensingService(context, acptTask);
+							if(AppUtils.isGPSEnabled(context)){
+								if(!AppUtils.isAccelGPSAlarmExist(context)){
+									Bundle bundle = new Bundle();
+									// add extras here..
+									ArrayList<JTask> taskList = new ArrayList();
+									taskList.add(acptTask);
+									bundle.putParcelableArrayList("task", taskList);
+									AccelGPSAlarm alarm = new AccelGPSAlarm(context, bundle, 30);
+									Log.d("McSense", "AccelGPSAlarm started.");
+								}
+							} else {
+								//stop bluetooth alarm
+								AppUtils.stopAccelGPSAlarm(context);
+								notifyUser(context,GPS_NOTIFICATION);
+							}
 						} else if(acptTask.getTaskType().equals("bluetooth")){
 							if(AppUtils.isBluetoothEnabled(context)){
 								if(!AppUtils.isBluetoothAlarmExist(context)){
@@ -87,6 +102,10 @@ public class ServiceAlarm extends BroadcastReceiver {
 									bundle.putParcelableArrayList("task", taskList);
 									BluetoothAlarm alarm = new BluetoothAlarm(context, bundle, 30);
 									Log.d("McSense", "BluetoothAlarm started.");
+								} else{
+									//upload data if task already expired. this scenario occurs, before BL task 5min period occurs after task expired.
+									if(AppUtils.hasTaskExpired(context, acptTask))
+										AppUtils.uploadBluetoothSensedData(context,acptTask);
 								}
 							} else {
 								//stop bluetooth alarm

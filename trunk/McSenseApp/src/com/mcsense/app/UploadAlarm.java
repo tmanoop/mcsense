@@ -62,6 +62,9 @@ public class UploadAlarm extends BroadcastReceiver {
 					} else if(task.getTaskType().equals("campusSensing")){
 						//perform sensing file upload
 						AppUtils.uploadSensedData(context, task.getTaskStatus(), task.getTaskId());
+					} else if(task.getTaskType().equals("bluetooth")){
+						//perform BL sensing file upload
+						AppUtils.uploadSensedData(context, task.getTaskStatus(), task.getTaskId());
 					}
 				}
 				//remove all upload pending tasks after completing upload

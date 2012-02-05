@@ -108,7 +108,7 @@ public class TaskService extends Service {
 			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			
 			response = httpclient.execute(httppost);
-			System.out.println("Reading response...");
+			Log.d(AppConstants.TAG, "Reading response...");
 			HttpEntity entity = response.getEntity();
 			is = entity.getContent();
 
@@ -118,7 +118,7 @@ public class TaskService extends Service {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				sb.append(line + "\n");
-				System.out.println(sb);
+				Log.d(AppConstants.TAG, ""+sb);
 			}
 			is.close();
 		} catch (ClientProtocolException e) {
@@ -131,7 +131,7 @@ public class TaskService extends Service {
 
 		// read task from servlet
 		String resp = sb.toString();
-		System.out.println(resp);
+		Log.d(AppConstants.TAG, resp);
 	}
 
 	private String readSensedDataFile(String fileName) {

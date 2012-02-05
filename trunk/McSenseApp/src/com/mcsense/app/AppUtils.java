@@ -49,6 +49,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
@@ -132,7 +133,7 @@ public class AppUtils {
 		// Execute HTTP Get Request
 		try {
 			response = httpclient.execute(httpget);
-			System.out.println("Reading response...");
+			Log.d(AppConstants.TAG, "Reading response...");
 			HttpEntity entity = response.getEntity();
 			is = entity.getContent();
 
@@ -143,7 +144,7 @@ public class AppUtils {
 			while ((line = reader.readLine()) != null) {
 				if (!line.equals("No Tasks")) {
 					sb.append(line + "\n");
-					System.out.println("sb:"+sb);
+					Log.d(AppConstants.TAG, "sb:"+sb);
 					//Parse Response into our object
 					Type collectionType = new TypeToken<ArrayList<JTask>>() {
 					}.getType();
@@ -154,7 +155,7 @@ public class AppUtils {
 
 			// read task from servlet
 //			String task = sb.toString();
-//			System.out.println(task);
+//			Log.d(AppConstants.TAG, task);
 //			
 //			textview.append(task + " \r\n");
 //			scrollDown();
@@ -446,7 +447,7 @@ public class AppUtils {
 				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 				
 				response = httpclient.execute(httppost);
-				System.out.println("Reading response...");
+				Log.d(AppConstants.TAG, "Reading response...");
 				HttpEntity entity = response.getEntity();
 				is = entity.getContent();
 
@@ -456,7 +457,7 @@ public class AppUtils {
 				String line = null;
 				while ((line = reader.readLine()) != null) {
 					sb.append(line + "\n");
-					System.out.println(sb);
+					Log.d(AppConstants.TAG, ""+sb);
 				}
 				is.close();
 			} catch (ClientProtocolException e) {
@@ -469,9 +470,9 @@ public class AppUtils {
 
 			// read task from servlet
 			String resp = sb.toString();
-			System.out.println(resp);
+			Log.d(AppConstants.TAG, resp);
 			long elapsedTime = System.currentTimeMillis();
-			if(!resp.equals(""))
+			if(!resp.equals("") && resp.matches("[\\d]+"))
 				elapsedTime = Long.parseLong(resp.trim());
 			return elapsedTime;
 //			showToast("Submitted: " + resp + " \r\n");
@@ -482,13 +483,14 @@ public class AppUtils {
 			//2011-11-13 23:09:36.0  "yyyy-MM-dd HH:mm:ss.S"
 			Date lFromDate1 = null;
 			try {
-				System.out.println("time string :" + time);
-				lFromDate1 = datetimeFormatter1.parse(time.trim());
+				Log.d(AppConstants.TAG, "time string :" + time);
+				if(!time.trim().equals(""))
+					lFromDate1 = datetimeFormatter1.parse(time.trim());
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("formated date :" + lFromDate1);
+			Log.d(AppConstants.TAG, "formated date :" + lFromDate1);
 			
 			Timestamp fromTS1 = null;
 			if(lFromDate1!=null)
@@ -499,7 +501,7 @@ public class AppUtils {
 	  public static String getFormatedTime(Timestamp fromTS1){
 		  String timeformat = fromTS1.toString();
 			String finalFormat = timeformat.substring(0,timeformat.length() - 5);
-			System.out.println("Timestamp format :" + finalFormat);
+			Log.d(AppConstants.TAG, "Timestamp format :" + finalFormat);
 			return finalFormat;
 	  }
 	  public static String getMeid(Context context){
@@ -508,12 +510,13 @@ public class AppUtils {
 	        return MEID;
 	  }
 	  
-	  public static boolean checkCompletionStatus(Context context) {
+	  public static boolean checkCompletionStatus(int sensingDuration, Context context) {
 			SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
 			String elapsedMins = settings.getString("elapsedMins", "0");	
 			int mins = Integer.parseInt(elapsedMins);
 			int hours = mins / 60;
-			if(hours < AppConstants.SENSING_THRESHOLD)
+//			if(hours < AppConstants.SENSING_THRESHOLD)
+			if(mins < sensingDuration)
 				return false;
 			else
 				return true;
@@ -547,7 +550,7 @@ public class AppUtils {
 				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 				
 				response = httpclient.execute(httppost);
-				System.out.println("Reading response...");
+				Log.d(AppConstants.TAG, "Reading response...");
 				HttpEntity entity = response.getEntity();
 				is = entity.getContent();
 
@@ -557,7 +560,7 @@ public class AppUtils {
 				String line = null;
 				while ((line = reader.readLine()) != null) {
 					sb.append(line + "\n");
-					System.out.println(sb);
+					Log.d(AppConstants.TAG, ""+sb);
 				}
 				is.close();
 			} catch (ClientProtocolException e) {
@@ -570,7 +573,7 @@ public class AppUtils {
 
 			// read task from servlet
 			String resp = sb.toString();
-			System.out.println(resp);
+			Log.d(AppConstants.TAG, resp);
 		}
 	  
 	  public static void uploadPhoto(Context context, int taskId){
@@ -623,7 +626,7 @@ public class AppUtils {
 				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 				
 				response = httpclient.execute(httppost);
-				System.out.println("Reading response...");
+				Log.d(AppConstants.TAG, "Reading response...");
 				HttpEntity entity = response.getEntity();
 				is = entity.getContent();
 
@@ -633,7 +636,7 @@ public class AppUtils {
 				String line = null;
 				while ((line = reader.readLine()) != null) {
 					sb.append(line + "\n");
-					System.out.println(sb);
+					Log.d(AppConstants.TAG, ""+sb);
 				}
 				is.close();
 				bao.close();
@@ -647,7 +650,7 @@ public class AppUtils {
 
 			// read task from servlet
 			String resp = sb.toString();
-			System.out.println(resp);
+			Log.d(AppConstants.TAG, resp);
 			deletePhoto(context);
 //			showToast("Uploaded: \r\n");
 		}
@@ -696,6 +699,17 @@ public class AppUtils {
 	  		Log.d(AppConstants.TAG, "isBluetoothAlarmExist "+alarmUp);
 	  		return alarmUp;
 	  	}
+	  	
+	  	public static boolean isAccelGPSAlarmExist(Context context){
+	  		
+	  		AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE); 
+//	  		String ALARM_ACTION = AAAlarmReceiver.ACTION_LOAD_LISTVIEW; 
+//	  		Intent intentToFire = new Intent(ALARM_ACTION); 
+	  		Intent intentToFire = new Intent(context, AccelGPSAlarm.class);
+	  		boolean alarmUp = (PendingIntent.getBroadcast(context,0, intentToFire, PendingIntent.FLAG_NO_CREATE) != null) ;
+	  		Log.d(AppConstants.TAG, "isAccelGPSAlarmExist "+alarmUp);
+	  		return alarmUp;
+	  	}
 		
 	  	public static void stopBluetoothAlarm(Context context) {
 			//stop existing bluetooth alarm
@@ -708,6 +722,19 @@ public class AppUtils {
 				Log.d(AppConstants.TAG, "stopBluetoothAlarm");
 			}
 			isBluetoothAlarmExist(context);
+		}
+	  	
+	  	public static void stopAccelGPSAlarm(Context context) {
+			//stop existing bluetooth alarm
+			if(isAccelGPSAlarmExist(context)){
+				Intent intentToStop = new Intent(context, AccelGPSAlarm.class);
+				PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
+						intentToStop, PendingIntent.FLAG_NO_CREATE);
+				AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+				alarmManager.cancel(pendingIntent);
+				Log.d(AppConstants.TAG, "stopAccelGPSAlarm");
+			}
+			isAccelGPSAlarmExist(context);
 		}
 	  	
 	  	public static void addToUploadList(JTask currentTask, Context context) {
@@ -835,6 +862,81 @@ public class AppUtils {
 				return true;
 			}
 			return false;
+		}
+		
+		public static boolean hasTaskExpired(Context context, JTask currentTask) {
+			SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+			
+			//get server time
+			Calendar cal=Calendar.getInstance();
+			if(AppUtils.checkInternetConnection(context)){
+				long serverTime = AppUtils.getServerTime(currentTask.getTaskId());
+				Log.d(AppConstants.TAG, "Server time: "+serverTime);
+				Date serverDate = new Date(serverTime);
+				cal.setTime(serverDate);
+			}
+			
+			//get exp time
+			Timestamp expTime = currentTask.getTaskExpirationTime();
+			Log.d(AppConstants.TAG, "Server time hour: "+expTime);
+			Date expDate = new Date();
+			if(expTime != null)
+				expDate = new Date(expTime.getTime());
+			Calendar expCal=Calendar.getInstance();
+			expCal.setTime(expDate);
+			
+			//call server to get time, if not expired continue sensing.
+			int serverHour = cal.get(Calendar.HOUR_OF_DAY);
+			int serverMin = cal.get(Calendar.MINUTE);
+			Log.d(AppConstants.TAG, "Server time hour: "+serverHour);
+			//if server time greater than exp time, stop sensing
+			if(cal.get(Calendar.DAY_OF_MONTH) == expCal.get(Calendar.DAY_OF_MONTH) 
+					&& serverHour >= expCal.get(Calendar.HOUR_OF_DAY)
+					&& serverMin >= expCal.get(Calendar.MINUTE)){
+				//stop Alarm
+				return true;
+			}
+			return false; 
+		}
+
+		public static boolean isGPSEnabled(Context context) {
+			LocationManager mlocManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+			boolean isGPS = mlocManager.isProviderEnabled (LocationManager.GPS_PROVIDER);
+			return isGPS;
+		}
+		
+		public static void uploadBluetoothSensedData(Context context, JTask currentTask){
+			String status = "C";
+			//add total sensed time criteria to identify completion status
+			 SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+			 String countString = settings.getString("BLScanCount", "0");
+			 int BLScanCount = Integer.parseInt(countString);
+			 
+			 //if atleast 6 hours of BL scanning is not done, then task is not successfully complete. Mark it as "E".
+			 if((BLScanCount -1) < currentTask.getTaskDuration())
+				 status = "E";
+			 //upload sensed data
+			 if(AppUtils.checkInternetConnection(context))
+				AppUtils.uploadSensedData(context, status, currentTask.getTaskId());
+    		 else {
+    			currentTask.setTaskStatus(status); 
+    			AppUtils.addToUploadList(currentTask, context);
+    		 }
+			 //reset BLScanCount for next task
+			 AppConstants.BLScanCount = 0;
+			 logBluetoothScanCount(AppConstants.BLScanCount, context);
+			 
+			//stop bluetooth alarm
+			AppUtils.stopBluetoothAlarm(context);
+//			finish();
+		}
+		
+		public static void logBluetoothScanCount(int BLScanCount, Context context) {
+			SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME,
+					Context.MODE_PRIVATE);
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putString("BLScanCount", BLScanCount+"");
+			editor.commit();
 		}
 
 }

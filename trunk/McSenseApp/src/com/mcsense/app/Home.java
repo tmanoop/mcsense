@@ -29,6 +29,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -256,7 +257,7 @@ public class Home extends Activity {
 			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			
 			response = httpclient.execute(httppost);
-			System.out.println("Reading response...");
+			Log.d(AppConstants.TAG, "Reading response...");
 			HttpEntity entity = response.getEntity();
 			is = entity.getContent();
 
@@ -266,7 +267,7 @@ public class Home extends Activity {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				sb.append(line + "\n");
-				System.out.println(sb);
+				Log.d(AppConstants.TAG, ""+sb);
 			}
 			is.close();
 		} catch (ClientProtocolException e) {
@@ -281,7 +282,7 @@ public class Home extends Activity {
 
 		// read task from servlet
 		String resp = sb.toString().trim();
-		System.out.println(resp);
+		Log.d(AppConstants.TAG, resp);
 		
 		return resp;
 //		showToast("Uploaded: \r\n");

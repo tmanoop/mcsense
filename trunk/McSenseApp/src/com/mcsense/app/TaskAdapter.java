@@ -30,7 +30,7 @@ public class TaskAdapter extends ArrayAdapter<JTask> {
                 v = vi.inflate(R.layout.list_item, null);
             }
             JTask t = items.get(position);
-            System.out.println("Task: "+t.getTaskDescription());
+//            System.out.println("Task: "+t.getTaskDescription());
             if (t != null) {
                     TextView tt = (TextView) v.findViewById(R.id.toptext);
                     TextView bt = (TextView) v.findViewById(R.id.bottomtext);
@@ -77,9 +77,11 @@ public class TaskAdapter extends ArrayAdapter<JTask> {
                     		iv.setImageResource(R.drawable.ic_menu_upload);
                     	else if(t.getTaskStatus()!=null && t.getTaskStatus().equals("V"))
                     		iv.setImageResource(R.drawable.ic_menu_validation);
-                    	if(t.getTaskType()!=null && t.getTaskType().equals("photo") &&
+                    	else if(t.getTaskType()!=null && t.getTaskType().equals("photo") &&
                     			t.getTaskStatus()!=null && (t.getTaskStatus().equals("P") || t.getTaskStatus().equals("IP")))
                     		iv.setImageResource(R.drawable.ic_action_photo);
+                    	else
+                    		iv.setImageResource(R.drawable.ic_action_task);
                     }
             }
             return v;
