@@ -31,7 +31,7 @@ public class AdminServlet extends HttpServlet {
      */
     public AdminServlet() {
         super();
-        // TODO Auto-generated constructor stub
+        dataServicesLocal = McUtility.lookupEJB("java:global/McSense/McSenseEJB/DataServices!com.mcsense.services.DataServicesLocal");
     }
 
 	/**
@@ -96,6 +96,11 @@ public class AdminServlet extends HttpServlet {
 			b.setPeople(t.getPeople());
 			bankAdminServicesLocal.deposit(b);
 			out.println("<P>Bank amount $"+amount+" is deposited for taskID: "+taskId+" and account#"+t.getPeople().getBankAccountId());
+		} else if(htmlFormName.equals("userlogin")){
+			String personId = request.getParameter("id");
+			log("PersonID: "+personId);
+			People p = dataServicesLocal.findEntity(People.class, new Integer(personId));
+			out.println("<br> Email: "+p.getEmailId()+"; Password: "+p.getPassword());
 		}
 		out.println("<P>Return to <A HREF=../pages/Admin.jsp>Admin Screen</A>");
 		out.close();

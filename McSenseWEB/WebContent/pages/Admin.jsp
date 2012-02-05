@@ -17,7 +17,7 @@ String user = session.getAttribute("emailID").toString();
 <tr><td align="center"><h1>Welcome <b><%= user%></b></h1></td></tr>
 <%
 } else {
-	response.sendRedirect("login.jsp");
+	response.sendRedirect("../login.jsp");
 }
 %>
 </table>
@@ -61,6 +61,14 @@ Person ID:
 
 <input type="hidden" name="htmlFormName" value="delete">
 <input type="submit" value="Delete" />
+</form>
+<br>
+<form name="userlogin" action="AdminServlet" method="post">
+Person ID:
+<input name="id" type="text" size="10" value="">
+
+<input type="hidden" name="htmlFormName" value="userlogin">
+<input type="submit" value="view user" />
 </form>
 <br>
 <i>Deposit in bank.</i>

@@ -65,7 +65,7 @@ public class WebUtil {
 		Timestamp exp = t.getTaskExpirationTime();
 		Timestamp cur = new Timestamp(Calendar.getInstance().getTime().getTime());
 		if(exp.after(cur))
-			return "C";
+			return "V";//pending validation. Mark "C" manually after checking the photo.
 		else
 			return "E";
 	}
@@ -77,5 +77,16 @@ public class WebUtil {
 		now.setNanos(0);
 		now.setSeconds(0);
 		return now;
+	}
+	
+	public static boolean hasEnoughSensingTime(int duration, Timestamp exp){
+				
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(exp);
+		cal.add(Calendar.MINUTE, -duration);
+		
+		Calendar calNow = Calendar.getInstance();
+
+		return calNow.before(cal);
 	}
 }

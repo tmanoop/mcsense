@@ -5,6 +5,15 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
+<SCRIPT TYPE="text/javascript">
+function viewPhoto() {
+	var taskNum = document.forms[0].taskId.value;
+	var image = document.getElementById("image_i_want_to_change");  
+	image.src = "C:\\Manoop\\McSense\\McSenseWEB\\WebContent\\files\\"+taskNum+".jpg"; // change the image source so a different image will be displayed
+	image.style.display = "";
+	//document.forms[0].expiration.value = currentTime; 
+}
+</SCRIPT>
 </head>
 <body>
 <br><br><br><br>
@@ -14,28 +23,33 @@ if(session.getAttribute("emailID")!=null && session.getAttribute("emailID")!="")
 {
 String user = session.getAttribute("emailID").toString();
 %>
-<tr><td align="center"><h1>Welcome <b><%= user%></b></h1></td></tr>
+<tr><td align="center"><h1>Welcome <b><%= user%></b></h1><a href="../login.jsp">Logout</a></td></tr>
 <%
 } else {
-	response.sendRedirect("login.jsp");
+	response.sendRedirect("../login.jsp");
 }
 %>
 </table>
 <b><big>McSense Task Services</big></b>
 <br>
 <br>
-<i>Create a McSense Task</i>
+<i>Enter Task ID and view photo:</i>
 <br>
+<input type="submit" value="View Photo" onclick="viewPhoto();"></p>
+<img name="image_i_want_to_change" id="image_i_want_to_change"   
+src="dont_really_care_since_were_not_using_it_anyway" style="display: none" width="500" height="500">  
 <form name="task" action="TaskServlet" method="post">
-<p align="left">McSense ID:
-<input name="id" type="text" size="15" value="">
+<p align="left">Task ID:
+<input name="taskId" type="text" size="15" value="">
 <br>
-Task Description:
+Task Status:
+<select name="status">
+<option value="C">Complete</option>
+<option value="E">Error</option>
+</select>
 <br>
-<textarea name="taskDesc" rows="10" cols="30"></textarea><br />
-<br>
-<input type="hidden" name="htmlFormName" value="task">
-<input type="submit" value="Create Task"></p>
+<input type="hidden" name="htmlFormName" value="updateTask">
+<input type="submit" value="Update Task"></p>
 </form>
 </body>
 </html>
