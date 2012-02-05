@@ -19,6 +19,7 @@ import com.mcsense.util.McUtility;
 @Stateless
 public class TaskServices implements TaskServicesLocal {
 
+	private static final int FIVE = 5;
 	@EJB(name="com.mcsense.services.DataServices")
 	DataServicesLocal dataServicesLocal;
 	@EJB(name="com.mcsense.services.BankAdminServices")
@@ -114,7 +115,11 @@ public class TaskServices implements TaskServicesLocal {
 					System.out.println("Status:"+status+" providerId:"+providerId);
 					Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatusAndId").setParameter("status", status).setParameter("providerId", new Integer(providerId));				
 					tList = (List<Task>) q.getResultList();
-				} else{
+				} else if(status.equals("V")) {
+					System.out.println("Status:"+status);
+					Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatus").setParameter("status", status);				
+					tList = (List<Task>) q.getResultList();
+				}else{
 					System.out.println("Status:"+status);
 					Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatus").setParameter("status", status);				
 					tList = (List<Task>) q.getResultList();
@@ -131,6 +136,27 @@ public class TaskServices implements TaskServicesLocal {
 		return tList;
 	}
 
+	@Override
+	public List<Task> getAllTasksbyStatus(String status) {
+		List<Task> tList = new ArrayList<Task>();
+		
+		try {			
+			if(status != null && !status.equals("") && !status.equals("ALL")){
+				System.out.println("Status:"+status);
+				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findAllByStatus").setParameter("status", status);				
+				tList = (List<Task>) q.getResultList();
+			} else {				
+				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findAll");
+				tList = (List<Task>) q.getResultList();
+			}			
+		} catch (Exception e) {
+			System.out.println("Task not found.");
+			e.printStackTrace();
+		}
+		
+		return tList;
+	}
+	
 	@Override
 	public List<Task> getTasksbyStatus(String status, String providerId) {
 		List<Task> tList = new ArrayList<Task>();
@@ -150,7 +176,7 @@ public class TaskServices implements TaskServicesLocal {
 				tList = (List<Task>) q.getResultList();
 			} else if(status.equals("C")) {
 				System.out.println("Status:"+status);
-				List<String> statuses = Arrays.asList("C", "E");
+				List<String> statuses = Arrays.asList("C", "E", "V");
 				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findCompleted").setParameter("statuses", statuses).setParameter("providerId", new Integer(providerId));				
 				tList = (List<Task>) q.getResultList();
 			}
@@ -270,6 +296,8 @@ public class TaskServices implements TaskServicesLocal {
 			t.setProviderPersonId(new Integer(providerId));
 			t.setTaskCompletionTime(McUtility.getTimestamp());
 			t.setTaskStatus(completionStatus);	//IP - in progress
+			if(completionStatus.equals("E"))
+				t.setTaskDesc(t.getTaskDesc()+"\nTask Failure Reason: *** Task failed for not recording at least 6 hours of sensing data. ***");	//Set failed reason
 			
 			dataServicesLocal.merge(t);
 			
@@ -305,7 +333,8 @@ public class TaskServices implements TaskServicesLocal {
 		try {
 		
 			System.out.println("providerId: "+providerId);
-			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByTaskTypeAndId").setParameter("status", "IP").setParameter("taskType", taskType).setParameter("providerId", new Integer(providerId));				
+			List<String> statuses = Arrays.asList("IP");
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByTaskTypeAndId").setParameter("statuses", statuses).setParameter("taskType", taskType).setParameter("providerId", new Integer(providerId));				
 			tList = (List<Task>) q.getResultList();
 		
 			
@@ -315,6 +344,29 @@ public class TaskServices implements TaskServicesLocal {
 		}
 		
 		if(tList.size()>0)
+			return true;
+		else
+			return false;
+	}
+
+	@Override
+	public boolean hasReachedPhotoLimit(String providerId) {
+		List<Task> tList = new ArrayList<Task>();
+		
+		try {
+		
+			System.out.println("providerId: "+providerId);
+			List<String> statuses = Arrays.asList("C", "V");
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByTaskTypeAndId").setParameter("statuses", statuses).setParameter("taskType", "photo").setParameter("providerId", new Integer(providerId));				
+			tList = (List<Task>) q.getResultList();
+		
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(tList.size()>=FIVE)
 			return true;
 		else
 			return false;
@@ -342,7 +394,8 @@ public class TaskServices implements TaskServicesLocal {
 			t.setTaskCompletionTime(McUtility.getTimestamp());
 			t.setTaskStatus(completionStatus);	//IP - in progress
 			t.setSensedDataFileLocation(currentLocation);
-			
+			if(completionStatus.equals("E"))
+				t.setTaskDesc(t.getTaskDesc()+"\nTask Failure Reason: *** Photo not uploaded before task expiration time. ***");	//Set failed reason
 			dataServicesLocal.merge(t);
 			
 		} catch (Exception e) {
