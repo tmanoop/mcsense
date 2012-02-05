@@ -42,4 +42,8 @@ public interface TaskServicesLocal {
 	void completeTask(String providerId, String taskId,
 			String completionStatus, String currentLocation);
 
+	boolean hasReachedPhotoLimit(String providerId);
+
+	List<Task> getAllTasksbyStatus(String status);
+
 }
