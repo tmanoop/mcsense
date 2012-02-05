@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.mcsense.app" android:versionCode="12" android:versionName="1.0.12">
+	package="com.mcsense.app" android:versionCode="17" android:versionName="1.0.17">
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
@@ -60,10 +60,12 @@
 		<service android:enabled="true" android:name=".SensingService" />
 		<service android:enabled="true" android:name=".NotificationService" />
 		<service android:enabled="true" android:name=".BluetoothService" />
+		<service android:enabled="true" android:name=".CampusSenseService" />
 		<receiver android:enabled="true" android:name=".MyAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".UploadAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".ServiceAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".BluetoothAlarm"> </receiver>
+		<receiver android:enabled="true" android:name=".AccelGPSAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".MyStartupIntentReceiver">
  
             <intent-filter>
