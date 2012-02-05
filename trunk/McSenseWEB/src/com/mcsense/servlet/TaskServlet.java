@@ -2,6 +2,7 @@ package com.mcsense.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,9 +51,9 @@ public class TaskServlet extends HttpServlet {
 		String type = "";
 		type = request.getParameter("type");
 		System.out.println("type: "+type);
-		
+		String status = request.getParameter("status");	
 		if(htmlFormName.equals("tasklookup")){
-			String status = request.getParameter("status");
+			
 			String providerId = request.getParameter("providerId");
 			List<Task> tList = taskServicesLocal.getTasksbyStatus(status,providerId);
 			
@@ -63,21 +64,25 @@ public class TaskServlet extends HttpServlet {
 						Task t = tList.get(i);
 						JTask jTask = WebUtil.mapToJsonTask(t);
 						System.out.println("Exp time: "+jTask.getTaskExpirationTime());
-						jTaskList.add(jTask);
+//						Timestamp now = new Timestamp(System.currentTimeMillis());
+						//Filter new sensing tasks after 4pm
+						if(!status.equals("P") || (jTask.getTaskType().equals("photo") || WebUtil.hasEnoughSensingTime(jTask.getTaskDuration(),jTask.getTaskExpirationTime())))
+							jTaskList.add(jTask);
 					}
 					out.println(new Gson().toJson(jTaskList));
 				} else {
 					out.println("No Tasks");
 				}
-			} else {
-				tList = taskServicesLocal.getTasks(status,providerId);
-				for(int i=0;i<tList.size();i++){
-					Task t = tList.get(i);
-					out.println("<BR> TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Name: " + t.getTaskName() + "| Task Accepted time: " + t.getTaskAcceptedTime() + "| Task Completion time: " + t.getTaskCompletionTime() + "| Task Expiration time: " + t.getTaskExpirationTime() + "| Task Created time: " + t.getTaskCreatedTime());
-				}
-			}
+			} 
 			
-		}	
+		} else if(htmlFormName.equals("tasklookupHtml")){
+
+			List<Task> tList = taskServicesLocal.getAllTasksbyStatus(status);
+			for(int i=0;i<tList.size();i++){
+				Task t = tList.get(i);
+				out.println("<BR> TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Name: " + t.getTaskName() + "| Task Accepted time: " + t.getTaskAcceptedTime() + "| Task Completion time: " + t.getTaskCompletionTime() + "| Task Expiration time: " + t.getTaskExpirationTime() + "| Task Created time: " + t.getTaskCreatedTime());
+			}
+		} 
 		if (type==null)
 			out.println("<P>Return to <A HREF=../pages/TaskLookup.jsp>Task Lookup Screen</A>");
 		out.close();
@@ -107,8 +112,25 @@ public class TaskServlet extends HttpServlet {
 			out.print("<br> Below McSense Task is created successfully.");
 			out.print("<br> Your McSense ID: " + t.getTaskId());
 			out.println("<P>Return to <A HREF=../pages/Task.jsp>Task Screen</A>");
+		} else if(htmlFormName.equals("updateTask")){
+			String status = request.getParameter("status");
+			String taskId = request.getParameter("taskId");
+			Task t = taskServicesLocal.getTaskById(taskId);
+			t.setTaskStatus(status);
+			taskServicesLocal.updateTask(t);
+			out.print("<br> McSense Task ID: " + t.getTaskId() + " is updated successfully.");
+			out.println("<P>Return to <A HREF=../pages/Task.jsp>Task Service Screen</A>");
 		}
 		out.close();
 	}
 
+	private Timestamp getSensingFilterTimestamp() {
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		now.setHours(16);
+		now.setMinutes(0);
+		now.setNanos(0);
+		now.setSeconds(0);
+		return now;
+	}
+	
 }

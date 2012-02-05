@@ -142,7 +142,9 @@ public class ProviderServlet extends HttpServlet {
 		if (taskStatus != null){ 
 			if(taskStatus.equals("Accepted")) {
 				Task t = taskServicesLocal.getTaskById(taskId);
-				if(t!=null && t.getTaskStatus().equals("P") &&
+				if(t.getTaskType().equals("photo") && taskServicesLocal.hasReachedPhotoLimit(providerId)){
+					out.println("Account reached the daily photo task limit.");
+				} else if(t!=null && t.getTaskStatus().equals("P") &&
 						!taskServicesLocal.hasPendingTask(providerId,t.getTaskType())){
 					
 					//identify long-term tasks

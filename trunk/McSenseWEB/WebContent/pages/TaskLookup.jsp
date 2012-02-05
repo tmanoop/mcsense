@@ -14,10 +14,10 @@ if(session.getAttribute("emailID")!=null && session.getAttribute("emailID")!="")
 {
 String user = session.getAttribute("emailID").toString();
 %>
-<tr><td align="center"><h1>Welcome <b><%= user%></b></h1><a href="login.jsp">Logout</a></td></tr>
+<tr><td align="center"><h1>Welcome <b><%= user%></b></h1><a href="../login.jsp">Logout</a></td></tr>
 <%
 } else {
-	response.sendRedirect("login.jsp");
+	response.sendRedirect("../login.jsp");
 }
 %>
 </table>
@@ -29,6 +29,7 @@ String user = session.getAttribute("emailID").toString();
 <form name="tasklookup" action="TaskServlet" method="get">
 Task Status:
 <select name="status">
+<option value="V">Validation Pending</option>
   <option value="P">Pending</option>
   <option value="IP">In Progress</option>
   <option value="C">Complete</option>
@@ -38,7 +39,7 @@ ID:
 <input name="id" type="text" size="10" value="">
 <br>
 <br>
-<input type="hidden" name="htmlFormName" value="tasklookup">
+<input type="hidden" name="htmlFormName" value="tasklookupHtml">
 <input type="submit" value="Task Lookup" />
 </form>
 </body>
