@@ -104,8 +104,8 @@ public class BluetoothAlarm extends BroadcastReceiver {
 		//check if task expired or not and complete it if expires
 		if(!hasTaskExpired(context)){
 			if(AppUtils.isBluetoothEnabled(context)){
-				AppConstants.BLScanCount++;
-				logBluetoothScanCount(AppConstants.BLScanCount, context);
+				BLScanCount++;
+				logBluetoothScanCount(BLScanCount, context);
 				iniBluetoothSensingService(context);
 			} else{
 				//stop bluetooth alarm
@@ -115,7 +115,10 @@ public class BluetoothAlarm extends BroadcastReceiver {
 			 String status = "C";
 			 
 			 //if atleast 6 hours of BL scanning is not done, then task is not successfully complete. Mark it as "E".
-			 if(BLScanCount < 72)
+			 //TODO change it to actual threshold in final version
+//			 if(BLScanCount < AppConstants.BL_SENSING_THRESHOLD_15MINS)
+			 //multiply count with 5 to calculate minutes sensed. Becoz bluetooth sensing is done every 5 mins
+			 if(((BLScanCount -1) * 5) < currentTask.getTaskDuration())
 				 status = "E";
 			 //upload sensed data
 			 if(AppUtils.checkInternetConnection(context))

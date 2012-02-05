@@ -74,7 +74,7 @@ public class SensingService extends Service {
 	public void onCreate() {
 		appContext = this.getApplicationContext();
 		startAccelerometerSensing();
-		myLocation = new MyLocation();
+//		myLocation = new MyLocation();
 //		startGPSSensing();
 	}
 
@@ -100,7 +100,7 @@ public class SensingService extends Service {
 		Calendar cal=Calendar.getInstance();
 		boolean resumingTask = false;
 		//get task details
-		if(intent.hasExtra("JTask")){
+		if(intent!=null && intent.hasExtra("JTask")){
 			JTask jTaskObjInToClass = intent.getExtras().getParcelable("JTask");
 			currentTask = jTaskObjInToClass;
 			sensingDuration = jTaskObjInToClass.getTaskDuration();
@@ -139,10 +139,13 @@ public class SensingService extends Service {
 		int hour = cal.get(Calendar.HOUR_OF_DAY);
 		Log.d(AppConstants.TAG, "Server time hour: "+hour);
 		//if server time greater than 10pm, stop sensing
+//		int SENSING_STOP_TIME = 22; //TODO replace 10pm code if necessary
+		int SENSING_STOP_TIME = currentTask.getTaskExpirationTime().getHours();
 		if(cal.get(Calendar.DAY_OF_MONTH) == prevCal.get(Calendar.DAY_OF_MONTH) 
-				&& hour<22){
+				&& hour<=SENSING_STOP_TIME){
 			startSensing = true;
-			int totalMins = (22 - hour) * 60;
+			int totalMins = (SENSING_STOP_TIME - hour) * 60;
+			totalMins = totalMins + currentTask.getTaskExpirationTime().getMinutes();
 			int hourMins = cal.get(Calendar.MINUTE);
 			sensingDuration = totalMins - hourMins;
 			Log.d(AppConstants.TAG,"sensingDuration: "+sensingDuration);
@@ -191,7 +194,7 @@ public class SensingService extends Service {
 								 stopService(new Intent(SensingService.this, SensingService.class));
 								 calculateElapsedMins();
 								 String status = "C";
-								 if(!AppUtils.checkCompletionStatus(getApplicationContext())){
+								 if(!AppUtils.checkCompletionStatus(currentTask.getTaskDuration(),getApplicationContext())){
 									 status = "E";
 								 }
 								 if(AppUtils.checkInternetConnection(getApplicationContext()))
@@ -209,7 +212,7 @@ public class SensingService extends Service {
 			if(AppUtils.isServiceRunning(getApplicationContext())){
 				 stopService(new Intent(SensingService.this, SensingService.class));
 				 String status = "C";
-				 if(!AppUtils.checkCompletionStatus(getApplicationContext())){
+				 if(!AppUtils.checkCompletionStatus(currentTask.getTaskDuration(),getApplicationContext())){
 					 status = "E";
 				 }
 				 if(AppUtils.checkInternetConnection(getApplicationContext()))
@@ -297,23 +300,28 @@ public class SensingService extends Service {
 	};
 	
 	protected void stopSensing() {
-		mSensorManager.unregisterListener(acelSensorListener);
+		if(mSensorManager!=null)
+			mSensorManager.unregisterListener(acelSensorListener,mAccelerometer);
+		mSensorManager = null;
 //        mlocManager.removeUpdates(mlocListener);
 	}
 
 	private void startSensing() {
+		startAccelerometerSensing();
 		acelSensorListener = new AcelSensor(getApplicationContext(),currentTask);
 		mSensorManager.registerListener(acelSensorListener, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 		
-		myLocation.getLocation(this, locationResult);
+//		myLocation.getLocation(this, locationResult);
 //		mlocListener = new MyLocationListener(getApplicationContext(),currentTask);
 		//can set the min time to 60000.
 //		mlocManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 0 , 0, mlocListener);
 	}
 
 	private void startAccelerometerSensing() {
-    	mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		if(mSensorManager==null){
+			mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+			mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		}
         
 	}
 	

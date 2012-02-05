@@ -130,6 +130,9 @@ public class TaskActivity extends Activity {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
+		ImageView bmImage = (ImageView)findViewById(R.id.imageView1);//new ImageView(this);//
+		bmImage.setImageBitmap(null);
+		bmImage = null;
 		System.gc();
 	}
 	
@@ -305,6 +308,7 @@ public class TaskActivity extends Activity {
 			}
 						
 			int totalMins = (expHour - hour) * 60;
+			totalMins = totalMins + currentTask.getTaskExpirationTime().getMinutes();
 			int hourMins = acceptCal.get(Calendar.MINUTE);
 			
 			sensingDuration = totalMins - hourMins;
@@ -313,11 +317,20 @@ public class TaskActivity extends Activity {
 //			String durationMins = settings.getString("duration", "");
 			durationText.setText("Sensing Data Recorded for:");
 			if(jTask.getTaskType().equals("campusSensing")){
-				String elapsedTotalMins = settings.getString("elapsedMins", "0");
+//				int elapsedTotalMins = findElapsedMins();
+//				String elapsedTotalMins = settings.getString("elapsedMins", "0");
+				String countString = settings.getString("CampusSenseCount", "0");
+				int CampusSenseCount = Integer.parseInt(countString);
+				int elapsedTotalMins = (CampusSenseCount -1);
+				if(elapsedTotalMins<0)
+					elapsedTotalMins = 0;
 				duration.setText(elapsedTotalMins+" mins");
 			} else if(jTask.getTaskType().equals("bluetooth")){
 				String countString = settings.getString("BLScanCount", "0");
-				int elapsedTotalMins = Integer.parseInt(countString) * 5;
+				int BLScanCount = Integer.parseInt(countString);
+				int elapsedTotalMins = (BLScanCount -1) * 5;
+				if(elapsedTotalMins<0)
+					elapsedTotalMins = 0;
 				duration.setText(elapsedTotalMins+" mins");
 			}
 		}
@@ -340,7 +353,7 @@ public class TaskActivity extends Activity {
 				if(sensingDuration == 0)
 					buttonName = "Upload Sensed Data";
 				else{
-					if(AppUtils.isServiceRunning(getApplicationContext()))
+					if(AppUtils.isAccelGPSAlarmExist(getApplicationContext()))
 						buttonName = "Stop Sensing";
 					else
 						buttonName = "Re-start Sensing";
@@ -386,9 +399,9 @@ public class TaskActivity extends Activity {
                     		if(resp.equals("Accepted")){
                         		if(tskType.equals("campusSensing"))
                             		iniSensingService();
-                        		if(tskType.equals("bluetooth"))
+                        		else if(tskType.equals("bluetooth"))
                             		iniBluetoothAlarmService();
-                        		if(tskType.equals("photo"))
+                        		else if(tskType.equals("photo"))
                         			finish();
                     		}
                     		logAcceptTime(taskID);
@@ -412,41 +425,48 @@ public class TaskActivity extends Activity {
             		} else if(tskType.equals("campusSensing")){
 //            			String buttonName = button.getText().toString();
             			if(buttonName.equals("Stop Sensing")){
-            				stopService(new Intent(TaskActivity.this, SensingService.class));
-            				
-//            				if(test == true){
-//            					SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
-//                				String startTimeMillisecs = settings.getString("startTimeMillisecs", "");
-//                				long start = Long.parseLong(startTimeMillisecs);
-//                				long elapsedTimeMillis = System.currentTimeMillis()-start;
-//                				float elapsedTimeMin = elapsedTimeMillis/(60*1000F);
-//                				int min = Math.round(elapsedTimeMin);
-//                				if(min<3){
-//                					AppConstants.status = "E";
-//                					AppConstants.failedTaskList.add(currentTask.getTaskId()+"");
-//                					System.out.println("currentTaskId: "+currentTask.getTaskId()+" min: "+min+" status: "+AppConstants.status);
-//                				}
-//                				logSensingElapsedTime(elapsedTimeMillis, currentTask.getTaskId(), "E");
-//                				uploadSensedData();
-//            				}
-            				
+//            				stopService(new Intent(TaskActivity.this, SensingService.class));   
+            				AppUtils.stopAccelGPSAlarm(context);
             				button.setText("Re-start Sensing");
             			} else if(buttonName.equals("Re-start Sensing")){
             				iniSensingService();
             				button.setText("Stop Sensing");
             			} else if(buttonName.equals("Upload Sensed Data")){
-            				stopService(new Intent(TaskActivity.this, SensingService.class));
             				String status = "C";
-            				calculateElapsedMins();
-		       				if(!AppUtils.checkCompletionStatus(context)){
-		       					status = "E";
-		       				}
-		       				if(AppUtils.checkInternetConnection(getApplicationContext()))
-								AppUtils.uploadSensedData(context,status,currentTask.getTaskId());
-				    		else {
-				    			currentTask.setTaskStatus(status); 
-				    			AppUtils.addToUploadList(currentTask, getApplicationContext());
-				    		 }
+            				
+            				//add total sensed time criteria to identify completion status
+            				 SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+            				 String countString = settings.getString("CampusSenseCount", "0");
+            				 int CampusSenseCount = Integer.parseInt(countString);
+            				 
+		       				 //if atleast 6 hours of BL scanning is not done, then task is not successfully complete. Mark it as "E".
+		       				 if(CampusSenseCount < currentTask.getTaskDuration())
+		       					 status = "E";
+		       				 //upload sensed data
+		       				 if(AppUtils.checkInternetConnection(context))
+		       					AppUtils.uploadSensedData(context, status, currentTask.getTaskId());
+		       	    		 else {
+		       	    			currentTask.setTaskStatus(status); 
+		       	    			AppUtils.addToUploadList(currentTask, context);
+		       	    		 }
+		       				 //reset BLScanCount for next task
+		       				 logCampusSenseCount(0, context);
+		       				 
+		       				//stop bluetooth alarm
+		       				AppUtils.stopAccelGPSAlarm(context);
+//            				stopService(new Intent(TaskActivity.this, SensingService.class));   
+//            				String status = "C";
+//            				calculateElapsedMins();
+//		       				if(!AppUtils.checkCompletionStatus(currentTask.getTaskDuration(),context)){
+//		       					status = "E";
+//		       				}
+//		       				if(AppUtils.checkInternetConnection(getApplicationContext()))
+//								AppUtils.uploadSensedData(context,status,currentTask.getTaskId());
+//				    		else {
+//				    			currentTask.setTaskStatus(status); 
+//				    			AppUtils.addToUploadList(currentTask, getApplicationContext());
+//				    		 }
+//		       				logSensingElapsedTime(0, currentTask.getTaskId(), status);
             				finish();
             			}
             		} else if(tskType.equals("bluetooth")){
@@ -465,7 +485,7 @@ public class TaskActivity extends Activity {
             				 int BLScanCount = Integer.parseInt(countString);
             				 
             				 //if atleast 6 hours of BL scanning is not done, then task is not successfully complete. Mark it as "E".
-            				 if(BLScanCount < 72)
+            				 if((BLScanCount -1) < currentTask.getTaskDuration())
             					 status = "E";
             				 //upload sensed data
             				 if(AppUtils.checkInternetConnection(context))
@@ -516,6 +536,18 @@ public class TaskActivity extends Activity {
 		finish();
 	}
 	
+	private void startAccelGPSAlarmService(){
+		AppUtils.removeFromSuspendedList(currentTask,context);
+		
+		Bundle bundle = new Bundle();
+		ArrayList<JTask> taskList = new ArrayList();
+		taskList.add(currentTask);
+		bundle.putParcelableArrayList("task", taskList);
+		// add extras here..
+		AccelGPSAlarm alarm = new AccelGPSAlarm(context, bundle, 30);
+		finish();
+	}
+	
 	private void enableBluetoothRadio(Context context){
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("Switch on Bluetooth?");
@@ -531,7 +563,7 @@ public class TaskActivity extends Activity {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						showToast("Task Suspended!!");
-						stopService(new Intent(TaskActivity.this, SensingService.class));
+						AppUtils.stopBluetoothAlarm(getApplicationContext());
 						AppUtils.addToSuspendedList(currentTask, getApplicationContext());
 					}
 				});
@@ -559,7 +591,7 @@ public class TaskActivity extends Activity {
 		editor.putString("taskID", taskID + "");
 		editor.putString("status", status);
 		editor.putString("elapsedTime", elapsed+"");
-		System.out.println("status: "+status+"taskID: "+ taskID);
+		Log.d(AppConstants.TAG, "status: "+status+"taskID: "+ taskID);
 		AppConstants.status = status;
 		editor.putString("completedTime", AppUtils.currentTime());
 		editor.commit();
@@ -571,7 +603,8 @@ public class TaskActivity extends Activity {
 		if(!isGPS)
 			enableGPSSettings();
 		else{
-			startSensingService();
+//			startSensingService();
+			startAccelGPSAlarmService();
 		}
 	}
 	
@@ -591,7 +624,8 @@ public class TaskActivity extends Activity {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						TaskActivity.this.startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
-						startSensingService();
+//						startSensingService();
+						startAccelGPSAlarmService();
 					}
 				});
 
@@ -599,7 +633,7 @@ public class TaskActivity extends Activity {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						showToast("Task Suspended!!");
-						stopService(new Intent(TaskActivity.this, SensingService.class));
+						AppUtils.stopAccelGPSAlarm(getApplicationContext());
 						AppUtils.addToSuspendedList(currentTask, getApplicationContext());
 					}
 				});
@@ -629,7 +663,7 @@ public class TaskActivity extends Activity {
 			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			
 			response = httpclient.execute(httppost);
-			System.out.println("Reading response...");
+			Log.d(AppConstants.TAG, "Reading response...");
 			HttpEntity entity = response.getEntity();
 			is = entity.getContent();
 
@@ -639,7 +673,7 @@ public class TaskActivity extends Activity {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				sb.append(line + "\n");
-				System.out.println(sb);
+				Log.d(AppConstants.TAG, ""+sb);
 			}
 			is.close();
 		} catch (ClientProtocolException e) {
@@ -652,7 +686,7 @@ public class TaskActivity extends Activity {
 
 		// read task from servlet
 		String resp = sb.toString();
-		System.out.println(resp);
+		Log.d(AppConstants.TAG, resp);
 		return resp.trim();
 //		showToast("Submitted: " + resp + " \r\n");
 	}
@@ -742,7 +776,7 @@ public class TaskActivity extends Activity {
 	
 	private void addUploadButton() {
 		RelativeLayout rl = (RelativeLayout) findViewById(R.id.relativeLayout1);
-		System.out.println("adding upload button");
+		Log.d(AppConstants.TAG, "adding upload button");
 		//add upload notification text
 		TextView uploadTextView = new TextView(this); 
 		uploadTextView.setText("On upload, the photo below will be used to complete the task.");
@@ -829,7 +863,7 @@ public class TaskActivity extends Activity {
 			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			
 			response = httpclient.execute(httppost);
-			System.out.println("Reading response...");
+			Log.d(AppConstants.TAG, "Reading response...");
 			HttpEntity entity = response.getEntity();
 			is = entity.getContent();
 
@@ -839,7 +873,7 @@ public class TaskActivity extends Activity {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				sb.append(line + "\n");
-				System.out.println(sb);
+				Log.d(AppConstants.TAG, ""+sb);
 			}
 			is.close();
 			bao.close();
@@ -853,7 +887,7 @@ public class TaskActivity extends Activity {
 
 		// read task from servlet
 		String resp = sb.toString();
-		System.out.println(resp);
+		Log.d(AppConstants.TAG, resp);
 		deletePhoto();
 //		showToast("Uploaded: \r\n");
 	}
@@ -871,7 +905,7 @@ public class TaskActivity extends Activity {
         		int nextSize = i+chunkSize;
             	if(ba.length<i+chunkSize)
             		nextSize = ba.length;
-            	System.out.println("nextSize: "+nextSize);
+            	Log.d(AppConstants.TAG, "nextSize: "+nextSize);
 				String temp = Base64.encodeToString(ba,i,nextSize,Base64.DEFAULT);
 				ba1.add(temp);
 			} catch (Exception e) {
@@ -952,7 +986,7 @@ public class TaskActivity extends Activity {
 			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			
 			response = httpclient.execute(httppost);
-			System.out.println("Reading response...");
+			Log.d(AppConstants.TAG, "Reading response...");
 			HttpEntity entity = response.getEntity();
 			is = entity.getContent();
 
@@ -962,7 +996,7 @@ public class TaskActivity extends Activity {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				sb.append(line + "\n");
-				System.out.println(sb);
+				Log.d(AppConstants.TAG, ""+sb);
 			}
 			is.close();
 		} catch (ClientProtocolException e) {
@@ -975,7 +1009,7 @@ public class TaskActivity extends Activity {
 
 		// read task from servlet
 		String resp = sb.toString();
-		System.out.println(resp);
+		Log.d(AppConstants.TAG, resp);
 		finish();
 	}
 	
@@ -984,7 +1018,8 @@ public class TaskActivity extends Activity {
 	    public void gotLocation(final Location loc){
 	        //Got the location!
 //	    	Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
-	    	currentLocation = "Latitude:" + loc.getLatitude() +	",Longitude:" + loc.getLongitude()+ " \n";
+	    	if(loc != null)
+	    		currentLocation = "Latitude:" + loc.getLatitude() +	",Longitude:" + loc.getLongitude()+ " \n";
 			
 			AppConstants.gpsLocUpdated = true;
 	    }
@@ -1019,6 +1054,30 @@ public class TaskActivity extends Activity {
 				Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("elapsedMins", min+"");
+		editor.commit();
+	}
+	
+	private int findElapsedMins() {
+		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
+		//calculate sensed time in minutes
+		String elapsedTime = settings.getString("elapsedTime", "");	
+		int mins = 0;
+		if(!elapsedTime.equals("")){
+			float elapsedTimeMin = Long.parseLong(elapsedTime)/(60*1000F);
+			mins = Math.round(elapsedTimeMin);
+		}
+		
+		//elapsedTotalMins and append. save it
+		String elapsedTotalMins = settings.getString("elapsedMins", "0");	
+		mins = mins + Integer.parseInt(elapsedTotalMins);
+		return mins;
+	}
+	
+	protected void logCampusSenseCount(int CampusSenseCount, Context context) {
+		SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("CampusSenseCount", CampusSenseCount+"");
 		editor.commit();
 	}
 }
