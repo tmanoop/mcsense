@@ -60,11 +60,17 @@ public class UploadAlarm extends BroadcastReceiver {
 						//perform photo upload
 						AppUtils.uploadPhoto(context, task.getTaskId());
 					} else if(task.getTaskType().equals("campusSensing")){
-						//perform sensing file upload
-						AppUtils.uploadSensedData(context, task.getTaskStatus(), task.getTaskId());
+						//perform sensing file upload. final sensing duration stored in SensedDataFileLocation field
+						int sensedDuration = 0;
+						if(task.getSensedDataFileLocation()!=null && task.getSensedDataFileLocation().matches("[\\d]+"))
+							sensedDuration = Integer.parseInt(task.getSensedDataFileLocation());
+						AppUtils.uploadSensedData(context, task.getTaskStatus(), task.getTaskId(), sensedDuration);
 					} else if(task.getTaskType().equals("bluetooth")){
 						//perform BL sensing file upload
-						AppUtils.uploadSensedData(context, task.getTaskStatus(), task.getTaskId());
+						int sensedDuration = 0;
+						if(task.getSensedDataFileLocation()!=null && task.getSensedDataFileLocation().matches("[\\d]+"))
+							sensedDuration = Integer.parseInt(task.getSensedDataFileLocation());
+						AppUtils.uploadSensedData(context, task.getTaskStatus(), task.getTaskId(), sensedDuration);
 					}
 				}
 				//remove all upload pending tasks after completing upload
