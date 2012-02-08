@@ -40,6 +40,10 @@
 		<servlet-name>TaskServlet</servlet-name>
 		<servlet-class>
 		com.mcsense.servlet.TaskServlet</servlet-class>
+		<init-param>
+            <param-name>enablePooling</param-name>
+            <param-value>false</param-value>
+        </init-param>
 	</servlet>
 	<servlet>
 		<description>
