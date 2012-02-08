@@ -27,8 +27,9 @@ public class Task implements Entity, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "task_id")
-	@SequenceGenerator(name = "task_id", sequenceName = "task_id", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "task_id")
+//	@SequenceGenerator(name = "task_id", sequenceName = "task_id", allocationSize = 1)
 	@Column(name = "TASK_ID")
 	private int taskId;
 

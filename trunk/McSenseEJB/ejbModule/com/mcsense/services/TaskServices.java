@@ -381,6 +381,12 @@ public class TaskServices implements TaskServicesLocal {
 		return now;
 	}
 
+	/**
+	 * Just for quick changes, SensedDataFileLocation is used to store 2 different values.		
+	 * one for sensed duration in case of sensing task.		
+	 * second for photo location in case of photo task.		
+	 * Later change this to have new field for each. or remember to maintain appropriately.
+	 */
 	@Override
 	public void completeTask(String providerId, String taskId,
 			String completionStatus, String currentLocation) {
@@ -394,8 +400,12 @@ public class TaskServices implements TaskServicesLocal {
 			t.setTaskCompletionTime(McUtility.getTimestamp());
 			t.setTaskStatus(completionStatus);	//IP - in progress
 			t.setSensedDataFileLocation(currentLocation);
-			if(completionStatus.equals("E"))
-				t.setTaskDesc(t.getTaskDesc()+"\nTask Failure Reason: *** Photo not uploaded before task expiration time. ***");	//Set failed reason
+			if(completionStatus.equals("E")){
+				if(t.getTaskType().equals("photo"))
+					t.setTaskDesc(t.getTaskDesc()+"\nTask Failure Reason: *** Photo not uploaded before task expiration time. ***");	//Set failed reason
+				else
+					t.setTaskDesc(t.getTaskDesc()+"\nTask Failure Reason: *** Task failed for not recording at least 6 hours of sensing data. ***");	//Set failed reason
+			}
 			dataServicesLocal.merge(t);
 			
 		} catch (Exception e) {
