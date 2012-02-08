@@ -9,7 +9,7 @@
 function viewPhoto() {
 	var taskNum = document.forms[0].taskId.value;
 	var image = document.getElementById("image_i_want_to_change");  
-	image.src = "C:\\Manoop\\McSense\\McSenseWEB\\WebContent\\files\\"+taskNum+".jpg"; // change the image source so a different image will be displayed
+	image.src = "..\\files\\"+taskNum+".jpg"; // change the image source so a different image will be displayed
 	image.style.display = "";
 	//document.forms[0].expiration.value = currentTime; 
 }
@@ -35,10 +35,11 @@ String user = session.getAttribute("emailID").toString();
 <br>
 <i>Enter Task ID and view photo:</i>
 <br>
-<input type="submit" value="View Photo" onclick="viewPhoto();"></p>
+<input type="submit" value="View Photo" onclick="viewPhoto();"><p></p>
 <img name="image_i_want_to_change" id="image_i_want_to_change"   
 src="dont_really_care_since_were_not_using_it_anyway" style="display: none" width="500" height="500">  
 <form name="task" action="TaskServlet" method="post">
+<input type="submit" name="submit" value="View Task Map"><p></p>
 <p align="left">Task ID:
 <input name="taskId" type="text" size="15" value="">
 <br>
@@ -49,7 +50,8 @@ Task Status:
 </select>
 <br>
 <input type="hidden" name="htmlFormName" value="updateTask">
-<input type="submit" value="Update Task"></p>
+<input type="submit" name="submit" value="Update Task"></p>
 </form>
+
 </body>
 </html>

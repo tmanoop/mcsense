@@ -31,6 +31,7 @@ McSense Utility Screens
 <P><A HREF=/McSenseWEB/pages/Admin.jsp>Admin Screen</A>
 <P><A HREF=/McSenseWEB/pages/Task.jsp>Task Screen</A>
 <P><A HREF=/McSenseWEB/pages/TaskLookup.jsp>Task Lookup Screen</A>
+<P><A HREF=/McSenseWEB/pages/Maps.jsp>Maps Screen</A>
 <P><A HREF=/McSenseWEB/files>Uploaded Files Screen</A>
 </body>
 </html>
