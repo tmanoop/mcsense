@@ -435,6 +435,7 @@ public class TaskActivity extends Activity {
             			if(buttonName.equals("Stop Sensing")){
 //            				stopService(new Intent(TaskActivity.this, SensingService.class));   
             				AppUtils.stopAccelGPSAlarm(context);
+            				AppUtils.addToSuspendedList(currentTask, context);
             				button.setText("Re-start Sensing");
             			} else if(buttonName.equals("Re-start Sensing")){
             				iniSensingService();
@@ -447,6 +448,7 @@ public class TaskActivity extends Activity {
             			if(buttonName.equals("Stop Sensing")){
             				//stop bluetooth alarm
             				AppUtils.stopBluetoothAlarm(context);
+            				AppUtils.addToSuspendedList(currentTask, context);
             				button.setText("Re-start Sensing");
             			} else if(buttonName.equals("Re-start Sensing")){
             				iniBluetoothAlarmService();
