@@ -118,13 +118,15 @@ public class BluetoothAlarm extends BroadcastReceiver {
 			 //TODO change it to actual threshold in final version
 //			 if(BLScanCount < AppConstants.BL_SENSING_THRESHOLD_15MINS)
 			 //multiply count with 5 to calculate minutes sensed. Becoz bluetooth sensing is done every 5 mins
-			 if(((BLScanCount -1) * 5) < currentTask.getTaskDuration())
+			 int sensedDuration = ((BLScanCount -1) * 5);
+			 if(sensedDuration < currentTask.getTaskDuration())
 				 status = "E";
 			 //upload sensed data
 			 if(AppUtils.checkInternetConnection(context))
-				AppUtils.uploadSensedData(context, status, currentTask.getTaskId());
+				AppUtils.uploadSensedData(context, status, currentTask.getTaskId(), sensedDuration);
     		 else {
     			currentTask.setTaskStatus(status); 
+    			currentTask.setSensedDataFileLocation(""+sensedDuration);
     			AppUtils.addToUploadList(currentTask, context);
     		 }
 			 //reset BLScanCount for next task

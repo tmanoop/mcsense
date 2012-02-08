@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import com.mcsense.app.MyLocation.LocationResult;
 import com.mcsense.json.JTask;
 
 import android.app.Service;
@@ -14,6 +15,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.os.IBinder;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ public class BluetoothService extends Service {
 	private JTask currentTask;
     private BluetoothAdapter mBluetoothAdapter = null;
     private List<BluetoothDevice> mNewBluetoothDevices = null;
+    private String currentLocation = "";
 
 	private final String REMINDER_BUNDLE = "BluetoothServiceReminderBundle";
 
@@ -60,6 +63,15 @@ public class BluetoothService extends Service {
 		//get Task
 		JTask jTaskObjInToClass = intent.getExtras().getParcelable("JTask");
 		currentTask = jTaskObjInToClass;
+		
+		//get GPS location
+		Runnable start = new Runnable( ) {
+		    public void run( ) {
+		    	MyLocation myLocation = new MyLocation();
+				myLocation.getLocation(getApplicationContext(), locationResult);
+		    }
+		};
+		start.run();
 		
 		//check if BL radio is on
 		if (mBluetoothAdapter.isEnabled()) {
@@ -123,7 +135,7 @@ public class BluetoothService extends Service {
             	//log list of discovered devices string to file
         		Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
             	
-            	String acelVals = "Timestamp:"+currentTimestamp+",TaskId:"+currentTask.getTaskId()+",ProviderId:"+AppConstants.providerId+",NumOfDevices:"+mNewBluetoothDevices.size()+",discDevices:"+discDevices+" \n";
+            	String acelVals = "Timestamp:"+currentTimestamp+",TaskId:"+currentTask.getTaskId()+",ProviderId:"+AppConstants.providerId+currentLocation+",NumOfDevices:"+mNewBluetoothDevices.size()+",discDevices:"+discDevices+" \n";
             	
             	AppUtils.writeToFile(context, acelVals,"sensing_file"+currentTask.getTaskId());            		
         		
@@ -134,4 +146,16 @@ public class BluetoothService extends Service {
             }
         }                
     };
+    
+    public LocationResult locationResult = (new LocationResult(){
+	    @Override
+	    public void gotLocation(final Location loc){
+	        //Got the location!
+//	    	Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+	    	if(loc != null)
+	    		currentLocation = ",Latitude:" + loc.getLatitude() +	",Longitude:" + loc.getLongitude()+ ",Speed:" + loc.getSpeed();
+			
+			AppConstants.gpsLocUpdated = true;
+	    }
+	});
 }

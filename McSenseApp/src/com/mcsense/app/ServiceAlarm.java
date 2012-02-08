@@ -71,7 +71,7 @@ public class ServiceAlarm extends BroadcastReceiver {
 		if(acceptedTaskList != null && acceptedTaskList.size()>0){
 			for(JTask acptTask : acceptedTaskList){
 				if(suspendedList == null || !suspendedList.contains(acptTask)){
-					if(!(acptTask.getParentTaskId() == 0 && currentHour<12)){
+					if(!(acptTask.getParentTaskId() != 0 && currentHour<12)){
 						if(acptTask.getTaskType().equals("campusSensing")){
 							//stop the sensing service.  This alarm is set to do this every hour.
 //							context.stopService(new Intent(context, SensingService.class));
@@ -91,6 +91,7 @@ public class ServiceAlarm extends BroadcastReceiver {
 								//stop bluetooth alarm
 								AppUtils.stopAccelGPSAlarm(context);
 								notifyUser(context,GPS_NOTIFICATION);
+								AppUtils.addToSuspendedList(acptTask, context);
 							}
 						} else if(acptTask.getTaskType().equals("bluetooth")){
 							if(AppUtils.isBluetoothEnabled(context)){
@@ -102,16 +103,22 @@ public class ServiceAlarm extends BroadcastReceiver {
 									bundle.putParcelableArrayList("task", taskList);
 									BluetoothAlarm alarm = new BluetoothAlarm(context, bundle, 30);
 									Log.d("McSense", "BluetoothAlarm started.");
-								} else{
-									//upload data if task already expired. this scenario occurs, before BL task 5min period occurs after task expired.
-									if(AppUtils.hasTaskExpired(context, acptTask))
-										AppUtils.uploadBluetoothSensedData(context,acptTask);
-								}
+								} 
 							} else {
 								//stop bluetooth alarm
 								AppUtils.stopBluetoothAlarm(context);
 								notifyUser(context,BL_NOTIFICATION);
+								AppUtils.addToSuspendedList(acptTask, context);
 							}
+						}
+					}
+				} else{
+					//upload data if task already expired. this scenario occurs, before BL task 5min period occurs after task expired.
+					if(AppUtils.hasTaskExpired(context, acptTask)){
+						if(acptTask.getTaskType().equals("campusSensing")){
+							AppUtils.uploadCampusSensedData(context,acptTask);
+						} else if(acptTask.getTaskType().equals("bluetooth")){
+							AppUtils.uploadBluetoothSensedData(context,acptTask);
 						}
 					}
 				}

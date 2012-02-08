@@ -198,9 +198,10 @@ public class SensingService extends Service {
 									 status = "E";
 								 }
 								 if(AppUtils.checkInternetConnection(getApplicationContext()))
-									AppUtils.uploadSensedData(appContext,status,taskId);
+									AppUtils.uploadSensedData(appContext,status,taskId, 0);
 					    		 else {
 					    			currentTask.setTaskStatus(status); 
+					    			currentTask.setSensedDataFileLocation(""+0);
 					    			AppUtils.addToUploadList(currentTask, getApplicationContext());
 					    		 }
 								 logSensingElapsedTime(0, taskId, status);
@@ -216,11 +217,12 @@ public class SensingService extends Service {
 					 status = "E";
 				 }
 				 if(AppUtils.checkInternetConnection(getApplicationContext()))
-					 AppUtils.uploadSensedData(appContext,status,taskId);
+					 AppUtils.uploadSensedData(appContext,status,taskId, 0);
 	    		 else {
 	    			 JTask newTask = new JTask(taskId, "");
 	    			 newTask.setTaskStatus(status);
 	    			 newTask.setTaskType("campusSensing");
+	    			 newTask.setSensedDataFileLocation(""+0);
 	    			 AppUtils.addToUploadList(newTask, getApplicationContext());
 	    		 }
 				 logSensingElapsedTime(0, taskId, status);

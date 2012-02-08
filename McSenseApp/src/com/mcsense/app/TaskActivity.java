@@ -157,12 +157,20 @@ public class TaskActivity extends Activity {
 			TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
 			textElapsed.setText("Task Completed on: ");
 			
-			TextView textDuration = (TextView) findViewById(R.id.duration);
-			TextView duration = (TextView) findViewById(R.id.textView7);
-			textDuration.setVisibility(View.INVISIBLE);
-			duration.setVisibility(View.INVISIBLE);
+			TextView duration = (TextView) findViewById(R.id.duration);
+			TextView textDuration = (TextView) findViewById(R.id.textView7);
+			if(jTask.getTaskType().equals("photo")){
+				textDuration.setVisibility(View.INVISIBLE);
+				duration.setVisibility(View.INVISIBLE);
+			} else {
+				String sensedDuration = jTask.getSensedDataFileLocation();
+				textDuration.setText("Sensing Data Recorded for:");
+				if(sensedDuration==null)
+					sensedDuration = "0";
+				duration.setText(sensedDuration+" mins");
+			}
 			
-			String completedTime = settings.getString("completedTime", "");
+			
 
 			TextView elapsed = (TextView) findViewById(R.id.elapsed);
 
@@ -432,41 +440,7 @@ public class TaskActivity extends Activity {
             				iniSensingService();
             				button.setText("Stop Sensing");
             			} else if(buttonName.equals("Upload Sensed Data")){
-            				String status = "C";
-            				
-            				//add total sensed time criteria to identify completion status
-            				 SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
-            				 String countString = settings.getString("CampusSenseCount", "0");
-            				 int CampusSenseCount = Integer.parseInt(countString);
-            				 
-		       				 //if atleast 6 hours of BL scanning is not done, then task is not successfully complete. Mark it as "E".
-		       				 if(CampusSenseCount < currentTask.getTaskDuration())
-		       					 status = "E";
-		       				 //upload sensed data
-		       				 if(AppUtils.checkInternetConnection(context))
-		       					AppUtils.uploadSensedData(context, status, currentTask.getTaskId());
-		       	    		 else {
-		       	    			currentTask.setTaskStatus(status); 
-		       	    			AppUtils.addToUploadList(currentTask, context);
-		       	    		 }
-		       				 //reset BLScanCount for next task
-		       				 logCampusSenseCount(0, context);
-		       				 
-		       				//stop bluetooth alarm
-		       				AppUtils.stopAccelGPSAlarm(context);
-//            				stopService(new Intent(TaskActivity.this, SensingService.class));   
-//            				String status = "C";
-//            				calculateElapsedMins();
-//		       				if(!AppUtils.checkCompletionStatus(currentTask.getTaskDuration(),context)){
-//		       					status = "E";
-//		       				}
-//		       				if(AppUtils.checkInternetConnection(getApplicationContext()))
-//								AppUtils.uploadSensedData(context,status,currentTask.getTaskId());
-//				    		else {
-//				    			currentTask.setTaskStatus(status); 
-//				    			AppUtils.addToUploadList(currentTask, getApplicationContext());
-//				    		 }
-//		       				logSensingElapsedTime(0, currentTask.getTaskId(), status);
+            				AppUtils.uploadCampusSensedData(context, currentTask);
             				finish();
             			}
             		} else if(tskType.equals("bluetooth")){
@@ -478,28 +452,7 @@ public class TaskActivity extends Activity {
             				iniBluetoothAlarmService();
             				button.setText("Stop Sensing");
             			} else if(buttonName.equals("Upload Sensed Data")){
-            				String status = "C";
-            				//add total sensed time criteria to identify completion status
-            				 SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
-            				 String countString = settings.getString("BLScanCount", "0");
-            				 int BLScanCount = Integer.parseInt(countString);
-            				 
-            				 //if atleast 6 hours of BL scanning is not done, then task is not successfully complete. Mark it as "E".
-            				 if((BLScanCount -1) < currentTask.getTaskDuration())
-            					 status = "E";
-            				 //upload sensed data
-            				 if(AppUtils.checkInternetConnection(context))
-            					AppUtils.uploadSensedData(context, status, currentTask.getTaskId());
-            	    		 else {
-            	    			currentTask.setTaskStatus(status); 
-            	    			AppUtils.addToUploadList(currentTask, context);
-            	    		 }
-            				 //reset BLScanCount for next task
-            				 AppConstants.BLScanCount = 0;
-            				 logBluetoothScanCount(AppConstants.BLScanCount, context);
-            				 
-            				//stop bluetooth alarm
-            				AppUtils.stopBluetoothAlarm(context);
+            				AppUtils.uploadBluetoothSensedData(context, currentTask);
             				finish();
             			}
             		}
@@ -1073,11 +1026,5 @@ public class TaskActivity extends Activity {
 		return mins;
 	}
 	
-	protected void logCampusSenseCount(int CampusSenseCount, Context context) {
-		SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME,
-				Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("CampusSenseCount", CampusSenseCount+"");
-		editor.commit();
-	}
+	
 }
