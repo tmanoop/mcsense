@@ -1,5 +1,6 @@
 package com.mcsense.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
@@ -7,10 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 import com.mcsense.entities.People;
@@ -32,6 +35,13 @@ public class TaskServlet extends HttpServlet {
 
 	@EJB(name="com.mcsense.services.BankAdminServices")
 	BankAdminServicesLocal bankAdminServicesLocal;
+	
+	private static final String TMP_DIR_PATH = "c:\\temp";
+	private File tmpDir;
+	private static final String DESTINATION_DIR_PATH ="/files";
+//	private static final String SENSING_DESTINATION_DIR_PATH ="C:\\Manoop\\McSense\\McSenseWEB\\WebContent\\files";
+	private File destinationDir;
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -41,6 +51,19 @@ public class TaskServlet extends HttpServlet {
 		taskServicesLocal = McUtility.lookupEJB("java:global/McSense/McSenseEJB/TaskServices!com.mcsense.services.TaskServicesLocal");
     }
 
+    public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		tmpDir = new File(TMP_DIR_PATH);
+		if(!tmpDir.isDirectory()) {
+			throw new ServletException(TMP_DIR_PATH + " is not a directory");
+		}
+		String realPath = getServletContext().getRealPath(DESTINATION_DIR_PATH);
+		destinationDir = new File(realPath);
+		if(!destinationDir.isDirectory()) {
+			throw new ServletException(DESTINATION_DIR_PATH+" is not a directory");
+		}
+ 
+	}
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -82,7 +105,8 @@ public class TaskServlet extends HttpServlet {
 				Task t = tList.get(i);
 				out.println("<BR> TaskID: " + t.getTaskId() + "| TaskStatus: " + t.getTaskStatus() + "| ProviderID: " + t.getProviderPersonId() + "| ClientID: " + t.getClientPersonId() + "| Task Name: " + t.getTaskName() + "| Task Accepted time: " + t.getTaskAcceptedTime() + "| Task Completion time: " + t.getTaskCompletionTime() + "| Task Expiration time: " + t.getTaskExpirationTime() + "| Task Created time: " + t.getTaskCreatedTime());
 			}
-		} 
+		}
+
 		if (type==null)
 			out.println("<P>Return to <A HREF=../pages/TaskLookup.jsp>Task Lookup Screen</A>");
 		out.close();
@@ -93,7 +117,7 @@ public class TaskServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
-		
+		HttpSession session = request.getSession(true);
 		String htmlFormName = request.getParameter("htmlFormName");
 		System.out.println("htmlFormName: "+htmlFormName);
 		if(htmlFormName.equals("task")){
@@ -113,13 +137,22 @@ public class TaskServlet extends HttpServlet {
 			out.print("<br> Your McSense ID: " + t.getTaskId());
 			out.println("<P>Return to <A HREF=../pages/Task.jsp>Task Screen</A>");
 		} else if(htmlFormName.equals("updateTask")){
+			String submitValue = request.getParameter("submit");
+			System.out.println("submit: "+submitValue);
 			String status = request.getParameter("status");
 			String taskId = request.getParameter("taskId");
-			Task t = taskServicesLocal.getTaskById(taskId);
-			t.setTaskStatus(status);
-			taskServicesLocal.updateTask(t);
-			out.print("<br> McSense Task ID: " + t.getTaskId() + " is updated successfully.");
-			out.println("<P>Return to <A HREF=../pages/Task.jsp>Task Service Screen</A>");
+			if(submitValue.equals("View Task Map")){
+				session.setAttribute("taskId",taskId);
+				session.setAttribute("path",destinationDir);
+				response.sendRedirect("Maps.jsp");
+			} else {				
+				Task t = taskServicesLocal.getTaskById(taskId);
+				t.setTaskStatus(status);
+				taskServicesLocal.updateTask(t);
+				out.print("<br> McSense Task ID: " + t.getTaskId() + " is updated successfully.");
+				out.println("<P>Return to <A HREF=../pages/Task.jsp>Task Service Screen</A>");
+			}
+			
 		}
 		out.close();
 	}

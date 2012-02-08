@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.EJB;
-import javax.jms.JMSException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,6 +27,7 @@ import com.mcsense.mqservice.Consumer;
 import com.mcsense.services.TaskServicesLocal;
 import com.mcsense.util.Base64;
 import com.mcsense.util.McUtility;
+import com.mcsense.util.WebConstants;
 import com.mcsense.util.WebUtil;
 
 /**
@@ -42,7 +42,7 @@ public class ProviderServlet extends HttpServlet {
 	private static final String TMP_DIR_PATH = "c:\\temp";
 	private File tmpDir;
 	private static final String DESTINATION_DIR_PATH ="/files";
-	private static final String SENSING_DESTINATION_DIR_PATH ="C:\\Manoop\\McSense\\McSenseWEB\\WebContent\\files";
+//	private static final String SENSING_DESTINATION_DIR_PATH ="C:\\Manoop\\McSense\\McSenseWEB\\WebContent\\files";
 	private File destinationDir;
 	
 	/**
@@ -180,17 +180,21 @@ public class ProviderServlet extends HttpServlet {
 					System.out.println("Sensed Data Recieved");
 					String sensedData = request.getParameter("sensedData");
 					String completionStatus = request.getParameter("completionStatus");
+					String sensedDuration = request.getParameter("sensedDuration");
 					
 					FileOutputStream f =null;
 					try {
 						byte[] sensedDataByteArray = Base64.decode(sensedData);
 						System.out.println("sensedDataByteArray length: " + sensedDataByteArray.length);
 						
-						f = new FileOutputStream(SENSING_DESTINATION_DIR_PATH+"\\"+taskId+".txt");
-//						f = new FileOutputStream(DESTINATION_DIR_PATH+"/ProviderImage.jpg");
+//						f = new FileOutputStream(WebConstants.DESTINATION_DIR_PATH+"\\"+taskId+".txt");
+						f = new FileOutputStream(destinationDir+"\\"+taskId+".txt");
 						f.write(sensedDataByteArray);
-						
-						taskServicesLocal.completeTask(providerId,taskId,completionStatus);
+						//just for quick changes, SensedDataFileLocation is used to store 2 different values.
+						//one for sensed duration in case of sensing task
+						//second for photo location in case of photo task. 
+						//Later change this to have new field for each. or remember to maintain appropriately.
+						taskServicesLocal.completeTask(providerId,taskId,completionStatus,sensedDuration);
 						
 					} catch (Exception e) {
 						// TODO Auto-generated catch block

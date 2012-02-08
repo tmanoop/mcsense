@@ -13,7 +13,6 @@ import javax.servlet.http.HttpSession;
 import com.mcsense.entities.People;
 import com.mcsense.security.SimpleCrypto;
 import com.mcsense.services.LoginServicesLocal;
-import com.mcsense.services.TaskServicesLocal;
 import com.mcsense.util.Emailer;
 import com.mcsense.util.McUtility;
 import com.mcsense.util.ServiceConstants;
