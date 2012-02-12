@@ -41,7 +41,7 @@ public class ProviderServlet extends HttpServlet {
 	
 	private static final String TMP_DIR_PATH = "c:\\temp";
 	private File tmpDir;
-	private static final String DESTINATION_DIR_PATH ="/files";
+//	private static final String DESTINATION_DIR_PATH ="/files";
 //	private static final String SENSING_DESTINATION_DIR_PATH ="C:\\Manoop\\McSense\\McSenseWEB\\WebContent\\files";
 	private File destinationDir;
 	
@@ -59,10 +59,10 @@ public class ProviderServlet extends HttpServlet {
 		if(!tmpDir.isDirectory()) {
 			throw new ServletException(TMP_DIR_PATH + " is not a directory");
 		}
-		String realPath = getServletContext().getRealPath(DESTINATION_DIR_PATH);
+		String realPath = getServletContext().getRealPath(WebConstants.DESTINATION_DIR_PATH);
 		destinationDir = new File(realPath);
 		if(!destinationDir.isDirectory()) {
-			throw new ServletException(DESTINATION_DIR_PATH+" is not a directory");
+			throw new ServletException(WebConstants.DESTINATION_DIR_PATH+" is not a directory");
 		}
  
 	}
@@ -144,25 +144,27 @@ public class ProviderServlet extends HttpServlet {
 				Task t = taskServicesLocal.getTaskById(taskId);
 				if(t.getTaskType().equals("photo") && taskServicesLocal.hasReachedPhotoLimit(providerId)){
 					out.println("Account reached the daily photo task limit.");
-				} else if(t!=null && t.getTaskStatus().equals("P") &&
-						!taskServicesLocal.hasPendingTask(providerId,t.getTaskType())){
-					
-					//identify long-term tasks
-					if(t.getTaskDuration() == 9999){
-						//update and accept parent task 
-						Task parent = taskServicesLocal.getTaskById(taskId);
-						String taskName = parent.getTaskName()+" Day 1";
-						taskServicesLocal.acceptParentTask(providerId, taskId, taskName);
-						//accept child tasks
-						List<Task> childTasks = taskServicesLocal.getChildTasks(taskId);
-						for(Task child : childTasks){
-							taskServicesLocal.acceptTask(providerId,child.getTaskId()+"");
+				} else if(t!=null && t.getTaskStatus().equals("P")){
+					if(taskServicesLocal.hasPendingTask(providerId,t.getTaskType())){
+						out.println("Please complete pending task, before accepting new task.");
+					} else{
+						//identify long-term tasks
+						if(t.getLongTermIndicator()!=null && t.getLongTermIndicator().equals("1")){
+							//update and accept parent task 
+							Task parent = taskServicesLocal.getTaskById(taskId);
+							String taskName = parent.getTaskName()+" Day 1";
+							taskServicesLocal.acceptParentTask(providerId, taskId, taskName);
+							//accept child tasks
+							List<Task> childTasks = taskServicesLocal.getChildTasks(taskId);
+							for(Task child : childTasks){
+								taskServicesLocal.acceptTask(providerId,child.getTaskId()+"");
+							}
+						} else {
+							//if daily sensing task or photo tasks, just accept.
+							taskServicesLocal.acceptTask(providerId,taskId);
 						}
-					} else {
-						//if daily sensing task or photo tasks, just accept.
-						taskServicesLocal.acceptTask(providerId,taskId);
+						out.println("Accepted");
 					}
-					out.println("Accepted");
 				} else{
 					out.println("Task not available for your account.");
 				}
@@ -195,7 +197,7 @@ public class ProviderServlet extends HttpServlet {
 						//second for photo location in case of photo task. 
 						//Later change this to have new field for each. or remember to maintain appropriately.
 						taskServicesLocal.completeTask(providerId,taskId,completionStatus,sensedDuration);
-						
+						out.println("success");
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

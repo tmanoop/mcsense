@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
@@ -22,6 +23,7 @@ import com.mcsense.json.JTask;
 import com.mcsense.services.BankAdminServicesLocal;
 import com.mcsense.services.TaskServicesLocal;
 import com.mcsense.util.McUtility;
+import com.mcsense.util.WebConstants;
 import com.mcsense.util.WebUtil;
 
 /**
@@ -38,7 +40,7 @@ public class TaskServlet extends HttpServlet {
 	
 	private static final String TMP_DIR_PATH = "c:\\temp";
 	private File tmpDir;
-	private static final String DESTINATION_DIR_PATH ="/files";
+//	private static final String DESTINATION_DIR_PATH ="/files";
 //	private static final String SENSING_DESTINATION_DIR_PATH ="C:\\Manoop\\McSense\\McSenseWEB\\WebContent\\files";
 	private File destinationDir;
 	
@@ -57,10 +59,10 @@ public class TaskServlet extends HttpServlet {
 		if(!tmpDir.isDirectory()) {
 			throw new ServletException(TMP_DIR_PATH + " is not a directory");
 		}
-		String realPath = getServletContext().getRealPath(DESTINATION_DIR_PATH);
+		String realPath = getServletContext().getRealPath(WebConstants.DESTINATION_DIR_PATH);
 		destinationDir = new File(realPath);
 		if(!destinationDir.isDirectory()) {
-			throw new ServletException(DESTINATION_DIR_PATH+" is not a directory");
+			throw new ServletException(WebConstants.DESTINATION_DIR_PATH+" is not a directory");
 		}
  
 	}
@@ -145,7 +147,19 @@ public class TaskServlet extends HttpServlet {
 				session.setAttribute("taskId",taskId);
 				session.setAttribute("path",destinationDir);
 				response.sendRedirect("Maps.jsp");
-			} else {				
+			} else if(submitValue.equals("View Photo")){
+				session.setAttribute("taskId",taskId);
+				Task t = taskServicesLocal.getTaskById(taskId);
+				String st = t.getSensedDataFileLocation(); 
+				//Latitude:40.43472008333333,Longitude:-74.49765961666667 
+				String lat = st.substring(st.lastIndexOf("Latitude")+9,st.lastIndexOf("Longitude")-1);
+				String lng = st.substring(st.lastIndexOf("Longitude")+10,st.length());
+				
+				session.setAttribute("lat",lat);
+				session.setAttribute("lng",lng);
+				session.setAttribute("time",t.getTaskCompletionTime());
+				response.sendRedirect("Photo.jsp");
+			} else if(submitValue.equals("Update Task")){				
 				Task t = taskServicesLocal.getTaskById(taskId);
 				t.setTaskStatus(status);
 				taskServicesLocal.updateTask(t);
@@ -153,7 +167,7 @@ public class TaskServlet extends HttpServlet {
 				out.println("<P>Return to <A HREF=../pages/Task.jsp>Task Service Screen</A>");
 			}
 			
-		}
+		} 
 		out.close();
 	}
 

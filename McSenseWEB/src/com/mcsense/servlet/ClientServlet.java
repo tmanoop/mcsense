@@ -17,6 +17,7 @@ import com.mcsense.mqservice.Producer;
 import com.mcsense.services.TaskServicesLocal;
 import com.mcsense.util.Emailer;
 import com.mcsense.util.McUtility;
+import com.mcsense.util.WebConstants;
 import com.mcsense.util.WebUtil;
 
 /**
@@ -58,17 +59,17 @@ public class ClientServlet extends HttpServlet {
 //		Producer p = new Producer();
 		int taskID =0;
 		try {
-			String longterm = request.getParameter("longterm");
+//			String longterm = request.getParameter("longterm");
 			//insert
 //			Task t = taskServicesLocal.createTask(clientId,taskName, taskType);
 			Task t = prepareTask(request);
-			if(longterm != null && longterm.equals("1")) {
-				t.setTaskDuration(9999);//set 9999 to indicate longterm task. set 2520 for 7 days. 360 mins each day				
-			}
+//			if(longterm != null && longterm.equals("1")) {
+//				t.setTaskDuration(t.getTaskDuration()+WebConstants.LONGTERM);//set extra 1 to indicate longterm task. set 2520 for 7 days. 360 mins each day				
+//			}
 			t = taskServicesLocal.createTask(t);
 			taskID = t.getTaskId();
 			
-			if(longterm != null && longterm.equals("1")){
+			if(t.getLongTermIndicator() != null && t.getLongTermIndicator().equals("1")){
 				createLongTermTasks(request, taskID);
 			}
 //			p.send(taskDesc);
@@ -128,6 +129,7 @@ public class ClientServlet extends HttpServlet {
 		String proximity = request.getParameter("proximity");
 		String ambient = request.getParameter("ambient");
 		String expiration = request.getParameter("expiration");
+		String longTermIndicator = request.getParameter("longterm");
 		
 		Task t = new Task();
 		t.setClientPersonId(new Integer(clientId));
@@ -147,6 +149,7 @@ public class ClientServlet extends HttpServlet {
 		t.setAmbientLightSensor(ambient);
 		t.setTaskCreatedTime(WebUtil.getTimestamp());
 		t.setTaskExpirationTime(WebUtil.getTimestamp(expiration));
+		t.setLongTermIndicator(longTermIndicator);
 		return t;
 	}
 

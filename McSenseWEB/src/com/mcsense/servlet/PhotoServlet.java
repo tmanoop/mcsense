@@ -3,6 +3,7 @@ package com.mcsense.servlet;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
@@ -32,7 +33,7 @@ public class PhotoServlet extends HttpServlet {
 	
 	private static final String TMP_DIR_PATH = "c:\\temp";
 	private File tmpDir;
-	private static final String DESTINATION_DIR_PATH ="/files";
+//	private static final String DESTINATION_DIR_PATH ="/files";
 //	private static final String SENSING_DESTINATION_DIR_PATH ="C:\\Manoop\\McSense\\McSenseWEB\\WebContent\\files";
 	private File destinationDir;
     /**
@@ -49,10 +50,10 @@ public class PhotoServlet extends HttpServlet {
 		if(!tmpDir.isDirectory()) {
 			throw new ServletException(TMP_DIR_PATH + " is not a directory");
 		}
-		String realPath = getServletContext().getRealPath(DESTINATION_DIR_PATH);
+		String realPath = getServletContext().getRealPath(WebConstants.DESTINATION_DIR_PATH);
 		destinationDir = new File(realPath);
 		if(!destinationDir.isDirectory()) {
-			throw new ServletException(DESTINATION_DIR_PATH+" is not a directory");
+			throw new ServletException(WebConstants.DESTINATION_DIR_PATH+" is not a directory");
 		}
  
 	}
@@ -72,7 +73,7 @@ public class PhotoServlet extends HttpServlet {
 		String providerId = request.getParameter("providerId");
 		String imageString = request.getParameter("image");
 		String currentLocation = request.getParameter("currentLocation");
-		
+		PrintWriter out = response.getWriter();
 		Task t = taskServicesLocal.getTaskByIdAndProvider(providerId,taskId);
 		if(t!=null && t.getTaskStatus().equals("IP")){
 			
@@ -90,6 +91,7 @@ public class PhotoServlet extends HttpServlet {
 				f.write(imageByteArray);
 				String completionStatus = WebUtil.getComplationStatus(t);
 				taskServicesLocal.completeTask(providerId,taskId,completionStatus,currentLocation);
+				out.println("success");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
