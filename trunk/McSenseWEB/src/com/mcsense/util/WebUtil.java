@@ -36,6 +36,7 @@ public class WebUtil {
 		jTask.setTaskCompletionTime(t.getTaskCompletionTime());
 		jTask.setTaskExpirationTime(t.getTaskExpirationTime());
 		jTask.setTaskCreatedTime(t.getTaskCreatedTime());
+		jTask.setLongTermIndicator(t.getLongTermIndicator());
 		return jTask;
 	}
 
