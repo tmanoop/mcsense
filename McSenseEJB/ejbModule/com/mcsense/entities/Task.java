@@ -17,7 +17,8 @@ import javax.persistence.*;
 		@NamedQuery(name = "Task.findByIDAndProvider", query = "Select t from Task t where t.taskId = :taskId and t.providerPersonId = :providerId "),
 		@NamedQuery(name = "Task.findByStatusAndId", query = "Select t from Task t where t.taskStatus = :status and t.providerPersonId = :providerId and t.taskExpirationTime BETWEEN :startDate AND :endDate ORDER BY t.taskId DESC "),
 		@NamedQuery(name = "Task.findByParentId", query = "Select t from Task t where t.taskStatus = :status and t.parentTaskId = :parentTaskId ORDER BY t.taskId DESC "),
-		@NamedQuery(name = "Task.findByTaskTypeAndId", query = "Select t from Task t where t.taskStatus in :statuses and t.taskType = :taskType and t.providerPersonId = :providerId and t.taskExpirationTime >= CURRENT_TIMESTAMP ORDER BY t.taskId DESC "),
+		@NamedQuery(name = "Task.findByTaskTypeAndIdPerDay", query = "Select t from Task t where t.taskStatus in :statuses and t.taskType = :taskType and t.providerPersonId = :providerId and t.taskExpirationTime >= CURRENT_TIMESTAMP ORDER BY t.taskId DESC "),
+		@NamedQuery(name = "Task.findByTaskTypeAndId", query = "Select t from Task t where t.taskStatus in :statuses and t.taskType = :taskType and t.providerPersonId = :providerId ORDER BY t.taskId DESC "),
 		@NamedQuery(name = "Task.findByDesc", query = "Select t from Task t where t.taskName = :desc ORDER BY t.taskId DESC"),
 		@NamedQuery(name = "Task.findByStatus", query = "Select t from Task t where t.taskStatus = :status and t.taskExpirationTime >= CURRENT_TIMESTAMP and t.parentTaskId = 0 ORDER BY t.taskId DESC"),
 		@NamedQuery(name = "Task.findCompleted", query = "Select t from Task t where t.taskStatus in :statuses and t.providerPersonId = :providerId ORDER BY t.taskId DESC "),
@@ -101,6 +102,9 @@ public class Task implements Entity, Serializable {
 	
 	@Column(name = "TASK_CREATED_TIME")
 	private Timestamp taskCreatedTime;
+	
+	@Column(name = "LONG_TERM_IND")
+	private String longTermIndicator;
 	
 	// bi-directional many-to-one association to People
 	@ManyToOne
@@ -322,4 +326,13 @@ public class Task implements Entity, Serializable {
 		this.clientPersonId = clientPersonId;
 	}
 
+	public String getLongTermIndicator() {
+		return longTermIndicator;
+	}
+
+	public void setLongTermIndicator(String longTermIndicator) {
+		this.longTermIndicator = longTermIndicator;
+	}
+
+	
 }
