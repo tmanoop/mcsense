@@ -77,26 +77,7 @@ public class AccelGPSAlarm extends BroadcastReceiver {
 					AppUtils.stopAccelGPSAlarm(context);
 				}			
 			} else {
-				 String status = "C";
-				 
-				 //if atleast 6 hours of sensing is not done, then task is not successfully complete. Mark it as "E".
-
-				 int sensedDuration = (CampusSenseCount -1);
-				 if(sensedDuration < currentTask.getTaskDuration())
-					 status = "E";
-				 //upload sensed data
-				 if(AppUtils.checkInternetConnection(context))
-					AppUtils.uploadSensedData(context, status, currentTask.getTaskId(), sensedDuration);
-	    		 else {
-	    			currentTask.setTaskStatus(status); 
-	    			currentTask.setSensedDataFileLocation(""+sensedDuration);
-	    			AppUtils.addToUploadList(currentTask, context);
-	    		 }
-				 //reset BLScanCount for next task
-				 logCampusSenseCount(0, context);
-				 
-				//stop bluetooth alarm
-				AppUtils.stopAccelGPSAlarm(context);
+				AppUtils.uploadCampusSensedData(context, currentTask);
 			}		
 	}
 	
