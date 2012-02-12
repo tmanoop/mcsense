@@ -33,6 +33,7 @@ public class JTask implements Parcelable {
 	Timestamp taskCompletionTime;
 	Timestamp taskExpirationTime;
 	Timestamp taskCreatedTime;
+	String longTermIndicator;
 	
 	public JTask(Parcel in){
 		readFromParcel(in);
@@ -229,6 +230,14 @@ public class JTask implements Parcelable {
 		this.taskCreatedTime = taskCreatedTime;
 	}
 
+	public String getLongTermIndicator() {
+		return longTermIndicator;
+	}
+
+	public void setLongTermIndicator(String longTermIndicator) {
+		this.longTermIndicator = longTermIndicator;
+	}
+
 	@Override
 	public int describeContents() {
 		// TODO Auto-generated method stub
@@ -260,6 +269,7 @@ public class JTask implements Parcelable {
     	dest.writeString((taskCompletionTime != null)? taskCompletionTime.toString() : "");
     	dest.writeString((taskExpirationTime != null)? taskExpirationTime.toString() : "");
     	dest.writeString((taskCreatedTime != null)? taskCreatedTime.toString() : "");
+    	dest.writeString((longTermIndicator));
 	}
 	
 	private void readFromParcel(Parcel in) {
@@ -287,6 +297,7 @@ public class JTask implements Parcelable {
 		taskCompletionTime= AppUtils.getTimestamp(in.readString());
 		taskExpirationTime= AppUtils.getTimestamp(in.readString());
 		taskCreatedTime= AppUtils.getTimestamp(in.readString());
+		longTermIndicator= in.readString();
 	}
 
 	public boolean equals(Object  obj)

@@ -535,6 +535,8 @@ public class AppUtils {
 			//read sensed data file and set as string
 			String sensedData = AppUtils.readFile(context,"sensing_file"+taskId);
 //			String sensedData = AppUtils.readXFile("sensing_file"+taskId);
+			if(sensedDuration<0)
+				sensedDuration = 0;
 			
 			// Add your data
 	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
@@ -573,7 +575,10 @@ public class AppUtils {
 			}
 
 			// read task from servlet
-			String resp = sb.toString();
+			String resp = sb.toString().trim();
+			if(resp.equals("success")){
+				AppUtils.deleteSensedFile(context,"sensing_file"+taskId);
+			}
 			Log.d(AppConstants.TAG, resp);
 		}
 	  
@@ -650,14 +655,21 @@ public class AppUtils {
 			}
 
 			// read task from servlet
-			String resp = sb.toString();
+			String resp = sb.toString().trim();
 			Log.d(AppConstants.TAG, resp);
-			deletePhoto(context);
+			if(resp.equals("success")){
+				deletePhoto(context);
+			}
 //			showToast("Uploaded: \r\n");
 		}
 	  
 	  	public static void deletePhoto(Context context) {
 			context.deleteFile(AppConstants.imageFileName);
+		}
+	  	
+	  	public static void deleteSensedFile(Context context, String fileName) {
+			context.deleteFile(fileName);
+			Log.d(AppConstants.TAG,"Deleted the temp sensed file: "+fileName);
 		}
 	  	
 	  	public static boolean isAlarmExist(Context context){
@@ -914,20 +926,28 @@ public class AppUtils {
 			 int BLScanCount = Integer.parseInt(countString);
 			 
 			 //if atleast 6 hours of BL scanning is not done, then task is not successfully complete. Mark it as "E".
-			 int sensedDuration = ((BLScanCount -1) * 5);
-			 if(sensedDuration < currentTask.getTaskDuration())
-				 status = "E";
-			 //upload sensed data
-			 if(AppUtils.checkInternetConnection(context))
-				AppUtils.uploadSensedData(context, status, currentTask.getTaskId(), sensedDuration);
-    		 else {
-    			currentTask.setTaskStatus(status); 
-    			currentTask.setSensedDataFileLocation(""+sensedDuration);
-    			AppUtils.addToUploadList(currentTask, context);
-    		 }
-			 //reset BLScanCount for next task
-			 AppConstants.BLScanCount = 0;
-			 logBluetoothScanCount(AppConstants.BLScanCount, context);
+			 int sensedDuration = ((BLScanCount -1) * 5);			 
+			
+			 ArrayList<JTask> jTaskList = AppUtils.getLastSavedTabList(AppConstants.UPLOAD_PENDING, context);
+			 if(jTaskList!=null && jTaskList.contains(currentTask)){
+				 if(AppUtils.checkInternetConnection(context))
+						AppUtils.uploadSensedData(context, status, currentTask.getTaskId(), sensedDuration);
+			 } else{
+				 if(sensedDuration < currentTask.getTaskDuration())
+					 status = "E";
+				 //upload sensed data
+				 if(AppUtils.checkInternetConnection(context))
+					AppUtils.uploadSensedData(context, status, currentTask.getTaskId(), sensedDuration);
+	    		 else {
+	    			currentTask.setTaskStatus(status); 
+	    			currentTask.setSensedDataFileLocation(""+sensedDuration);
+	    			AppUtils.addToUploadList(currentTask, context);
+	    		 }
+				 //reset BLScanCount for next task
+				 AppConstants.BLScanCount = 0;
+				 logBluetoothScanCount(AppConstants.BLScanCount, context);
+			 }
+			 	 
 			 
 			//stop bluetooth alarm
 			AppUtils.stopBluetoothAlarm(context);
@@ -942,20 +962,27 @@ public class AppUtils {
 			 String countString = settings.getString("CampusSenseCount", "0");
 			 int CampusSenseCount = Integer.parseInt(countString);
 			 
-			 //if atleast 6 hours of sensing is not done, then task is not successfully complete. Mark it as "E".
-			 if((CampusSenseCount -1) < currentTask.getTaskDuration())
-				 status = "E";
-			 //upload sensed data
-			 if(AppUtils.checkInternetConnection(context))
-				AppUtils.uploadSensedData(context, status, currentTask.getTaskId(),(CampusSenseCount -1));
-    		 else {
-    			currentTask.setTaskStatus(status); 
-    			currentTask.setSensedDataFileLocation(""+(CampusSenseCount -1));
-    			AppUtils.addToUploadList(currentTask, context);
-    		 }
-			 //reset BLScanCount for next task
-			 logCampusSenseCount(0, context);
+			 int sensedDuration = CampusSenseCount - 1;
 			 
+			 ArrayList<JTask> jTaskList = AppUtils.getLastSavedTabList(AppConstants.UPLOAD_PENDING, context);
+			 if(jTaskList!=null && jTaskList.contains(currentTask)){
+				 if(AppUtils.checkInternetConnection(context))
+						AppUtils.uploadSensedData(context, status, currentTask.getTaskId(), sensedDuration);
+			 } else{
+				//if atleast 6 hours of sensing is not done, then task is not successfully complete. Mark it as "E".
+				 if(sensedDuration < currentTask.getTaskDuration())
+					 status = "E";
+				 //upload sensed data
+				 if(AppUtils.checkInternetConnection(context))
+					AppUtils.uploadSensedData(context, status, currentTask.getTaskId(),sensedDuration);
+	    		 else {
+	    			currentTask.setTaskStatus(status); 
+	    			currentTask.setSensedDataFileLocation(""+sensedDuration);
+	    			AppUtils.addToUploadList(currentTask, context);
+	    		 }
+				 //reset BLScanCount for next task
+				 logCampusSenseCount(0, context);
+			 }
 			//stop bluetooth alarm
 			AppUtils.stopAccelGPSAlarm(context);
 		}
