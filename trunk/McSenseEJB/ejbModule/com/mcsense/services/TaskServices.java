@@ -357,7 +357,7 @@ public class TaskServices implements TaskServicesLocal {
 		
 			System.out.println("providerId: "+providerId);
 			List<String> statuses = Arrays.asList("C", "V");
-			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByTaskTypeAndId").setParameter("statuses", statuses).setParameter("taskType", "photo").setParameter("providerId", new Integer(providerId));				
+			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByTaskTypeAndIdPerDay").setParameter("statuses", statuses).setParameter("taskType", "photo").setParameter("providerId", new Integer(providerId));				
 			tList = (List<Task>) q.getResultList();
 		
 			
