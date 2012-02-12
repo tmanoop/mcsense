@@ -30,6 +30,7 @@ public class JTask {
 	Timestamp taskCompletionTime;
 	Timestamp taskExpirationTime;
 	Timestamp taskCreatedTime;
+	String longTermIndicator;
 	
 	public JTask(int id, String taskDesc){
 		taskId = id;
@@ -212,5 +213,15 @@ public class JTask {
 	public void setTaskCreatedTime(Timestamp taskCreatedTime) {
 		this.taskCreatedTime = taskCreatedTime;
 	}
+
+	public String getLongTermIndicator() {
+		return longTermIndicator;
+	}
+
+	public void setLongTermIndicator(String longTermIndicator) {
+		this.longTermIndicator = longTermIndicator;
+	}
+	
+	
 	
 }
