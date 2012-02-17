@@ -29,7 +29,7 @@ function viewPhoto() {
 	//
 	//String fileLoc = WebConstants.DESTINATION_DIR_PATH;
 	//  
-	image.src = "http://localhost:10080/files/"+taskNum+".jpg"; // change the image source so a different image will be displayed
+	image.src = "http://mcsense.njit.edu:10080/files/"+taskNum+".jpg"; // change the image source so a different image will be displayed
 	//var loc =  fileLoc;
 	//image.src = "../"+loc+"\\"+taskNum+".jpg";
 	image.style.display = "";
