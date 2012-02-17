@@ -68,6 +68,7 @@ public class PendingTasks extends ListActivity {
 	
 	private void loadPendingTaskListView() {
 		//TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, AppConstants.getTaskList());
+		filterLongTermTasks();
 		taskAdapter = new TaskAdapter(this, R.layout.list_item, taskList);
 		setListAdapter(taskAdapter);
 //		taskAdapter.notifyDataSetChanged();
@@ -83,7 +84,10 @@ public class PendingTasks extends ListActivity {
 //		      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),Toast.LENGTH_SHORT).show();
 		    TextView tt = (TextView) view.findViewById(R.id.toptext);
 //		      showToast("Selected: "+tt.getText());
-		      JTask t = taskList.get(position);
+		    JTask t = null;
+		    synchronized (taskList){
+		    	t = taskList.get(position);
+		    }		    
 		      if(!t.getTaskDescription().equals("No Accepted Tasks"))
 		    	  loadTask(t);
 		      else
@@ -106,7 +110,6 @@ public class PendingTasks extends ListActivity {
 	    	 public void run() {
 	    		 	// add downloading code here
 	    		 	taskList = AppUtils.loadTasks("IP",getApplicationContext());
-	    		 	filterLongTermTasks();
 	    		    handler.sendEmptyMessage(0);
 	    		}     
 	    	 });
@@ -115,18 +118,29 @@ public class PendingTasks extends ListActivity {
 
 	protected void filterLongTermTasks() {
 		int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+		int currentDay =  Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		Log.d(AppConstants.TAG, "Hour: "+currentHour);
-		for(JTask temp : taskList){
-			//donot show longterm tasks before noon and they are started from 12 noon by service alarm
-			if(temp.getParentTaskId() != 0 && currentHour<12){
-				taskList.remove(temp);
-			}	
-		}
-		if(taskList.size()==0){
-			String desc = "No Accepted Tasks";
-			JTask t = new JTask(0,desc); 
-			taskList = new ArrayList<JTask>();
-			taskList.add(t);
+		if(taskList!=null){
+			synchronized (taskList) {
+				for(JTask temp : (ArrayList<JTask>)taskList.clone()){
+					int taskDay = 0;
+					if(temp!=null && temp.getTaskExpirationTime()!=null)
+						taskDay = temp.getTaskExpirationTime().getDate();
+					//donot show longterm tasks before noon and they are started from 12 noon by service alarm
+					if(temp.getParentTaskId() != 0 && taskDay==currentDay && currentHour<12){
+						taskList.remove(temp);
+					}	
+				}
+			}
+			
+			synchronized (taskList) {
+				if(taskList.size()==0){
+					String desc = "No Accepted Tasks";
+					JTask t = new JTask(0,desc); 
+					taskList = new ArrayList<JTask>();
+					taskList.add(t);
+				}
+			}
 		}
 	}
 

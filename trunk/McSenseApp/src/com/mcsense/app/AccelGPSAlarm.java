@@ -66,8 +66,9 @@ public class AccelGPSAlarm extends BroadcastReceiver {
 		 String countString = settings.getString("CampusSenseCount", "0");
 		 int CampusSenseCount = Integer.parseInt(countString);
 		 
-		//check if task expired or not and complete it if expires
-			if(!AppUtils.hasTaskExpired(context, currentTask)){
+		//check if task expired or not and complete it if expires. 
+		//10 hour (600min) of sensing is limited just to limit upload file size below 1mb.
+			if(!AppUtils.hasTaskExpired(context, currentTask) && CampusSenseCount < AppConstants.MAX_SENSING_THRESHOLD_MINS){
 				if(AppUtils.isGPSEnabled(context)){
 					CampusSenseCount++;
 					logCampusSenseCount(CampusSenseCount, context);
