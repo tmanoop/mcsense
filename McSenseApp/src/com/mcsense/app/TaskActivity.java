@@ -343,8 +343,14 @@ public class TaskActivity extends Activity {
 			}
 		}
 		
+		final TextView taskDescTxt = (TextView) findViewById(R.id.taskDescTextView);
 		final TextView taskDesc = (TextView) findViewById(R.id.taskDescription); 
-		taskDesc.setText(jTask.getTaskDescription());
+		if(jTask.getTaskType().equals("photo") && tab_type.equals("pending")){
+			taskDescTxt.setVisibility(View.INVISIBLE);
+			taskDesc.setVisibility(View.INVISIBLE);
+		} else{
+			taskDesc.setText(jTask.getTaskDescription());
+		}
 		
 		final Button button = (Button) findViewById(R.id.button1); 
 		
