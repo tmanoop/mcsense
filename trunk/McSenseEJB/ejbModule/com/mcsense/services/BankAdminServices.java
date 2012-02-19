@@ -128,6 +128,15 @@ public class BankAdminServices implements BankAdminServicesLocal {
     }
     
     @Override
+    public void updatePerson(People p){
+    	try {
+			dataServicesLocal.merge(p);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
+    @Override
     public void deposit(Bank b){
     	b.setTransactionType("D");
     	b.setTransactionDate(new Date());
