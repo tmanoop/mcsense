@@ -83,6 +83,27 @@ public class AdminServlet extends HttpServlet {
 				out.print("<br> McSense Account#"+id+" is deleted successfully.");
 			else
 				out.print("<br> McSense Account#"+id+" is not deleted due to system error.");
+		} else if(htmlFormName.equals("update")){
+			String id = request.getParameter("id");
+			String fName = request.getParameter("fName");
+			String lName = request.getParameter("lName");
+			String address = request.getParameter("address");
+			String gender = request.getParameter("gender");
+			String dept = request.getParameter("dept");
+			String year = request.getParameter("year");
+			String age = request.getParameter("age");
+			
+			People p = bankAdminServicesLocal.findPersonByID(id);
+			p.setPersonFname(fName);
+			p.setPersonLname(lName);
+			p.setPersonAddress(address);
+			p.setGender(gender);
+			p.setNjitDepartment(dept);
+			p.setNjitAcademicYear(year);
+			p.setAgeGroup(age);
+			
+			bankAdminServicesLocal.updatePerson(p);
+			out.print("<br> McSense Account#"+id+" is updated successfully.");
 		} else if(htmlFormName.equals("deposit")){
 			String taskId = request.getParameter("taskId");
 			String amount = request.getParameter("amount");
