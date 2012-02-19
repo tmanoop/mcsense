@@ -23,4 +23,6 @@ public interface BankAdminServicesLocal {
 
 	void withdrawal(Bank b);
 
+	void updatePerson(People p);
+
 }
