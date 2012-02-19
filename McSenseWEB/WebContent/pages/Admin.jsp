@@ -53,6 +53,29 @@ Re-password:
 <input type="submit" value="Register"></p>
 </form>
 <br>
+Update details of user:
+<form name="update" action="AdminServlet" method="post">
+Person ID:
+<input name="id" type="text" size="10" value=""><br>
+First Name:
+<input name="fName" type="text" size="10" value=""><br>
+Last Name:
+<input name="lName" type="text" size="10" value=""><br>
+Address:
+<input name="address" type="text" size="10" value=""><br>
+Gender:
+<input name="gender" type="text" size="10" value=""><br>
+Department:
+<input name="dept" type="text" size="10" value=""><br>
+Academic year:
+<input name="year" type="text" size="10" value=""><br>
+Age:
+<input name="age" type="text" size="10" value=""><br>
+<input type="hidden" name="htmlFormName" value="update">
+<br>
+<input type="submit" value="Update" />
+</form>
+<br>
 <i>Delete any user</i>
 <br>
 <form name="delete" action="AdminServlet" method="post">
