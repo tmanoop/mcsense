@@ -66,6 +66,13 @@ public class PendingTasks extends ListActivity {
 		downloadTasks();
 	}
 	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		pDialog.dismiss();
+	}
+	
 	private void loadPendingTaskListView() {
 		//TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, AppConstants.getTaskList());
 		filterLongTermTasks();

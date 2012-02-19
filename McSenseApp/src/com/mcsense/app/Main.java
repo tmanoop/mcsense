@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -24,7 +25,7 @@ public class Main extends TabActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		SharedPreferences settings = getSharedPreferences(AppConstants.PREFS_NAME, 0);
 		String login = settings.getString("login", "");
 		//String password = settings.getString("password", "");
@@ -33,6 +34,7 @@ public class Main extends TabActivity {
 			loadHome();
 		else{
 			setContentView(R.layout.main);
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			loadLoginUser();
 			if(!AppUtils.checkInternetConnection(this)){
 				enableWiFi();				
@@ -180,6 +182,7 @@ public class Main extends TabActivity {
 
 	@Override
 	protected void onResume(){
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		super.onResume();
 //		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 //		String login = settings.getString("login", "");
