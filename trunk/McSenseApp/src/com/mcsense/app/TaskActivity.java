@@ -795,10 +795,19 @@ public class TaskActivity extends Activity {
 		//Bitmap bitmap = BitmapFactory.decodeFile(imageInSD);
 //		bitmap = BitmapFactory.decodeFile(imageInSD);
 		ByteArrayOutputStream bao = new ByteArrayOutputStream();
-		
+		int compressRatio = 70;
 		String ba1="";
 		try {
-			bitmap.compress(Bitmap.CompressFormat.JPEG, 70, bao);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, compressRatio, bao);
+			Log.d(AppConstants.TAG, "Image size: "+bao.size());
+			while(bao.size()>AppConstants.IMAGE_SIZE_THRESHOLD){
+				bao = null;
+				bao = new ByteArrayOutputStream();
+				compressRatio = compressRatio - 10;//reduce image quality by 10 each time
+				bitmap.compress(Bitmap.CompressFormat.JPEG, compressRatio, bao);
+				Log.d(AppConstants.TAG, "Image size: "+bao.size());
+			}
+			
 	        byte [] ba = bao.toByteArray();
 			ba1 = Base64.encodeToString(ba,0);
 //	        ArrayList<String> baList = getBitmapEncodedString(ba);
