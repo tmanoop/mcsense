@@ -800,6 +800,7 @@ public class TaskActivity extends Activity {
 		try {
 			bitmap.compress(Bitmap.CompressFormat.JPEG, compressRatio, bao);
 			Log.d(AppConstants.TAG, "Image size: "+bao.size());
+			
 			while(bao.size()>AppConstants.IMAGE_SIZE_THRESHOLD){
 				bao = null;
 				bao = new ByteArrayOutputStream();
@@ -807,6 +808,9 @@ public class TaskActivity extends Activity {
 				bitmap.compress(Bitmap.CompressFormat.JPEG, compressRatio, bao);
 				Log.d(AppConstants.TAG, "Image size: "+bao.size());
 			}
+			
+			bitmap.recycle();
+			System.gc();
 			
 	        byte [] ba = bao.toByteArray();
 			ba1 = Base64.encodeToString(ba,0);
