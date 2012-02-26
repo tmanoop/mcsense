@@ -1,11 +1,11 @@
-package com.mcsense.app;
+package com.mcsense.app.pro;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import com.mcsense.app.MyLocation.LocationResult;
+import com.mcsense.app.pro.MyLocation.LocationResult;
 import com.mcsense.json.JTask;
 
 import android.app.Service;

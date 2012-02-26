@@ -1,4 +1,4 @@
-package com.mcsense.app;
+package com.mcsense.app.pro;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.mcsense.app.R;
 import com.mcsense.security.SimpleCrypto;
 
 public class Home extends Activity {

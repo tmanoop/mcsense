@@ -1,8 +1,9 @@
-package com.mcsense.app;
+package com.mcsense.app.pro;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import com.mcsense.app.R;
 import com.mcsense.json.JTask;
 
 import android.app.AlarmManager;

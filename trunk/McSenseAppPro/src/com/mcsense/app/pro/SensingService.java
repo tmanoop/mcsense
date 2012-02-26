@@ -1,4 +1,4 @@
-package com.mcsense.app;
+package com.mcsense.app.pro;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -44,8 +44,9 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.mcsense.app.MyLocation.LocationResult;
-import com.mcsense.app.Sensors.MyInnerLocationListener;
+import com.mcsense.app.R;
+import com.mcsense.app.pro.MyLocation.LocationResult;
+import com.mcsense.app.pro.Sensors.MyInnerLocationListener;
 import com.mcsense.json.JTask;
 
 public class SensingService extends Service {

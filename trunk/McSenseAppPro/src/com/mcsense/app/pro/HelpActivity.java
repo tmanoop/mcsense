@@ -1,4 +1,6 @@
-package com.mcsense.app;
+package com.mcsense.app.pro;
+
+import com.mcsense.app.R;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
