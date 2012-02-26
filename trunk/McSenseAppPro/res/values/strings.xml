@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, Home!</string>
+    <string name="app_name">McSense Pro</string>
+    <color name="gray">#C0C0C0</color>
+    <color name="blue">#0000ff</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <string name="mapskey">0ouC8wAL11PTw8tuk-Iuj5cnjys-ssv_72BbeZQ</string>
+    <color name="tab_widget">#006666</color>
+    <string name="logout">Log Out</string>
+    <string name="help">Help</string>
+    <string name="settings">Settings</string>
+</resources>
