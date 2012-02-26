@@ -1,4 +1,4 @@
-package com.mcsense.app;
+package com.mcsense.app.pro;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

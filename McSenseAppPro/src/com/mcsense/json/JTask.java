@@ -3,7 +3,7 @@ package com.mcsense.json;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-import com.mcsense.app.AppUtils;
+import com.mcsense.app.pro.AppUtils;
 
 import android.os.Parcel;
 import android.os.Parcelable;

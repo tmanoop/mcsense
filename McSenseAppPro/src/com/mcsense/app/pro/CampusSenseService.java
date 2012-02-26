@@ -1,4 +1,4 @@
-package com.mcsense.app;
+package com.mcsense.app.pro;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -13,7 +13,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.mcsense.app.MyLocation.LocationResult;
+import com.mcsense.app.pro.MyLocation.LocationResult;
 import com.mcsense.json.JTask;
 
 public class CampusSenseService extends Service {

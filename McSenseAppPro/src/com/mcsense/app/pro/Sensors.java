@@ -1,4 +1,4 @@
-package com.mcsense.app;
+package com.mcsense.app.pro;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -32,6 +32,7 @@ import android.widget.LinearLayout.LayoutParams;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
+import com.mcsense.app.R;
 
 public class Sensors extends MapActivity implements SensorEventListener {
     private static SensorManager mSensorManager;

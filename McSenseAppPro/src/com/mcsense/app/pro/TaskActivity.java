@@ -1,4 +1,4 @@
-package com.mcsense.app;
+package com.mcsense.app.pro;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -67,7 +67,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
-import com.mcsense.app.MyLocation.LocationResult;
+import com.mcsense.app.R;
+import com.mcsense.app.pro.MyLocation.LocationResult;
 import com.mcsense.json.JTask;
 
 public class TaskActivity extends Activity {

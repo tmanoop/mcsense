@@ -1,4 +1,4 @@
-package com.mcsense.app;
+package com.mcsense.app.pro;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
