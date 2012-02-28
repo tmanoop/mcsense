@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.mcsense.app.R;
 import com.mcsense.json.JTask;
 
 public class TaskAdapter extends ArrayAdapter<JTask> {

@@ -67,7 +67,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
-import com.mcsense.app.R;
 import com.mcsense.apppro.MyLocation.LocationResult;
 import com.mcsense.json.JTask;
 

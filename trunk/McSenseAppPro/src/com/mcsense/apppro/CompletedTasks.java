@@ -35,7 +35,6 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.mcsense.app.R;
 import com.mcsense.json.JTask;
 
 public class CompletedTasks extends ListActivity {
