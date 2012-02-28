@@ -59,7 +59,7 @@ public class DataServices implements DataServicesLocal {
 		try {
 			Query q = emTransaction.createQuery("select e from People e");
 			People p = (People) q.getSingleResult();
-			System.out.println(p.getPersonFname());
+			//System.out.println(p.getPersonFname());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

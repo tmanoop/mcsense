@@ -1,7 +1,7 @@
-Sat Feb 18 12:01:30 EST 2012 : Apache Derby Network Server - 10.8.1.2 - (1095077) started and ready to accept connections on port 1527
+Sun Feb 26 22:16:34 EST 2012 : Apache Derby Network Server - 10.8.1.2 - (1095077) started and ready to accept connections on port 1527
 ----------------------------------------------------------------
-Sat Feb 18 12:01:34 EST 2012:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): instance a816c00e-0135-9169-41e9-00000000002e 
+Sun Feb 26 22:16:37 EST 2012:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): instance a816c00e-0135-bccf-4194-00000000002e 
 on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB  with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
 Loaded from file:/C:/Program%20Files/eclipse/plugins/org.apache.derby.core_10.8.1/derby.jar
 java.vendor=Sun Microsystems Inc.
@@ -10,8 +10,36 @@ user.dir=C:\Manoop\McSense\McSenseEJB
 derby.system.home=.
 Database Class Loader started - derby.database.classpath=''
 ----------------------------------------------------------------
-Sun Feb 19 11:43:30 EST 2012: Shutting down Derby engine
+Mon Feb 27 00:22:07 EST 2012:
+Shutting down instance a816c00e-0135-bccf-4194-00000000002e on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
+Mon Feb 27 00:22:07 EST 2012 Thread[DRDAConnThread_4,5,main] (DATABASE = McSenseDB), (DRDAID = {2}), Database 'McSenseDB' shutdown.
 ----------------------------------------------------------------
-Sun Feb 19 11:43:31 EST 2012:
-Shutting down instance a816c00e-0135-9169-41e9-00000000002e on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
+Mon Feb 27 00:22:09 EST 2012:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): instance 2ad84242-0135-bccf-4194-00000000002e 
+on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB  with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
+Loaded from file:/C:/Program%20Files/eclipse/plugins/org.apache.derby.core_10.8.1/derby.jar
+java.vendor=Sun Microsystems Inc.
+java.runtime.version=1.6.0_24-b07
+user.dir=C:\Manoop\McSense\McSenseEJB
+derby.system.home=.
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Mon Feb 27 01:17:44 EST 2012:
+Shutting down instance 2ad84242-0135-bccf-4194-00000000002e on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
+Mon Feb 27 01:17:44 EST 2012 Thread[DRDAConnThread_6,5,main] (DATABASE = McSenseDB), (DRDAID = {22}), Database 'McSenseDB' shutdown.
+----------------------------------------------------------------
+Mon Feb 27 01:17:44 EST 2012:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): instance 5ed20591-0135-bccf-4194-00000000002e 
+on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB  with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
+Loaded from file:/C:/Program%20Files/eclipse/plugins/org.apache.derby.core_10.8.1/derby.jar
+java.vendor=Sun Microsystems Inc.
+java.runtime.version=1.6.0_24-b07
+user.dir=C:\Manoop\McSense\McSenseEJB
+derby.system.home=.
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Mon Feb 27 01:17:49 EST 2012: Shutting down Derby engine
+----------------------------------------------------------------
+Mon Feb 27 01:17:49 EST 2012:
+Shutting down instance 5ed20591-0135-bccf-4194-00000000002e on database directory C:\Manoop\McSense\McSenseEJB\McSenseDB with class loader sun.misc.Launcher$AppClassLoader@11b86e7 
 ----------------------------------------------------------------

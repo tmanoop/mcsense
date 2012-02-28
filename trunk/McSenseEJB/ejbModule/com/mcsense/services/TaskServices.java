@@ -82,7 +82,7 @@ public class TaskServices implements TaskServicesLocal {
 			dataServicesLocal.merge(t);
 			
 		} catch (Exception e) {
-			System.out.println("Task not found.");
+			//System.out.println("Task not found.");
 			e.printStackTrace();
 		}
 		
@@ -98,7 +98,7 @@ public class TaskServices implements TaskServicesLocal {
 			t = dataServicesLocal.merge(t);
 			
 		} catch (Exception e) {
-			System.out.println("Task failed to merge.");
+			//System.out.println("Task failed to merge.");
 			e.printStackTrace();
 		}
 		
@@ -112,15 +112,15 @@ public class TaskServices implements TaskServicesLocal {
 		try {			
 			if(status != null && !status.equals("") && !status.equals("ALL")){
 				if(providerId != null && !providerId.equals("") && !status.equals("P")){
-					System.out.println("Status:"+status+" providerId:"+providerId);
+					//System.out.println("Status:"+status+" providerId:"+providerId);
 					Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatusAndId").setParameter("status", status).setParameter("providerId", new Integer(providerId));				
 					tList = (List<Task>) q.getResultList();
 				} else if(status.equals("V")) {
-					System.out.println("Status:"+status);
+					//System.out.println("Status:"+status);
 					Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatus").setParameter("status", status);				
 					tList = (List<Task>) q.getResultList();
 				}else{
-					System.out.println("Status:"+status);
+					//System.out.println("Status:"+status);
 					Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatus").setParameter("status", status);				
 					tList = (List<Task>) q.getResultList();
 				}
@@ -129,7 +129,7 @@ public class TaskServices implements TaskServicesLocal {
 				tList = (List<Task>) q.getResultList();
 			}			
 		} catch (Exception e) {
-			System.out.println("Task not found.");
+			//System.out.println("Task not found.");
 			e.printStackTrace();
 		}
 		
@@ -142,7 +142,7 @@ public class TaskServices implements TaskServicesLocal {
 		
 		try {			
 			if(status != null && !status.equals("") && !status.equals("ALL")){
-				System.out.println("Status:"+status);
+				//System.out.println("Status:"+status);
 				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findAllByStatus").setParameter("status", status);				
 				tList = (List<Task>) q.getResultList();
 			} else {				
@@ -150,7 +150,7 @@ public class TaskServices implements TaskServicesLocal {
 				tList = (List<Task>) q.getResultList();
 			}			
 		} catch (Exception e) {
-			System.out.println("Task not found.");
+			//System.out.println("Task not found.");
 			e.printStackTrace();
 		}
 		
@@ -167,7 +167,7 @@ public class TaskServices implements TaskServicesLocal {
 				Timestamp now = getTonightTimestamp();
 				now.setDate(now.getDate()-1);
 				Timestamp startDate = now;
-				System.out.println("Status:"+status+" providerId:"+providerId+" start: "+now+" end: "+endDate);
+				//System.out.println("Status:"+status+" providerId:"+providerId+" start: "+now+" end: "+endDate);
 				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatusAndId").setParameter("status", status).setParameter("providerId", new Integer(providerId)).setParameter("startDate", startDate).setParameter("endDate", endDate);				
 				tList = (List<Task>) q.getResultList();
 			} else if(status.equals("P")) {
@@ -175,12 +175,12 @@ public class TaskServices implements TaskServicesLocal {
 				Query qPerson = dataServicesLocal.getEM().createNamedQuery("People.findByPrimaryKey").setParameter("id", new Integer(providerId));
 				People p = (People)qPerson.getSingleResult();
 				if(p!=null && !p.getNjitDepartment().equals("")){
-					System.out.println("Status:"+status);
+					//System.out.println("Status:"+status);
 					Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatus").setParameter("status", status);				
 					tList = (List<Task>) q.getResultList();
 				}
 			} else if(status.equals("C")) {
-				System.out.println("Status:"+status);
+				//System.out.println("Status:"+status);
 				List<String> statuses = Arrays.asList("C", "E", "V");
 				Query q = dataServicesLocal.getEM().createNamedQuery("Task.findCompleted").setParameter("statuses", statuses).setParameter("providerId", new Integer(providerId));				
 				tList = (List<Task>) q.getResultList();
@@ -203,7 +203,7 @@ public class TaskServices implements TaskServicesLocal {
 			t = (Task) q.getSingleResult();	
 			
 		} catch (Exception e) {
-			System.out.println("Task not found.");
+			//System.out.println("Task not found.");
 			e.printStackTrace();
 		}
 		return t;
@@ -219,7 +219,7 @@ public class TaskServices implements TaskServicesLocal {
 			t = (Task) q.getSingleResult();	
 			
 		} catch (Exception e) {
-			System.out.println("Task not found.");
+			//System.out.println("Task not found.");
 			e.printStackTrace();
 		}
 		return t;
@@ -242,7 +242,7 @@ public class TaskServices implements TaskServicesLocal {
 			dataServicesLocal.getEM().flush();
 			
 		} catch (Exception e) {
-			System.out.println("Task not found.");
+			//System.out.println("Task not found.");
 			e.printStackTrace();
 		}
 	}
@@ -264,7 +264,7 @@ public class TaskServices implements TaskServicesLocal {
 			dataServicesLocal.getEM().flush();
 			
 		} catch (Exception e) {
-			System.out.println("Task not found.");
+			//System.out.println("Task not found.");
 			e.printStackTrace();
 		}
 	}
@@ -284,7 +284,7 @@ public class TaskServices implements TaskServicesLocal {
 			dataServicesLocal.merge(t);
 			
 		} catch (Exception e) {
-			System.out.println("Task not found.");
+			//System.out.println("Task not found.");
 			e.printStackTrace();
 		}
 	}
@@ -307,7 +307,7 @@ public class TaskServices implements TaskServicesLocal {
 			dataServicesLocal.merge(t);
 			
 		} catch (Exception e) {
-			System.out.println("Task not found.");
+			//System.out.println("Task not found.");
 			e.printStackTrace();
 		}
 	}
@@ -318,7 +318,7 @@ public class TaskServices implements TaskServicesLocal {
 		
 		try {
 		
-			System.out.println("parentTaskId: "+parentTaskId);
+			//System.out.println("parentTaskId: "+parentTaskId);
 			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByParentId").setParameter("status", "P").setParameter("parentTaskId", new Integer(parentTaskId));				
 			tList = (List<Task>) q.getResultList();
 		
@@ -337,7 +337,7 @@ public class TaskServices implements TaskServicesLocal {
 		
 		try {
 		
-			System.out.println("providerId: "+providerId);
+			//System.out.println("providerId: "+providerId);
 			List<String> statuses = Arrays.asList("IP");
 			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByTaskTypeAndId").setParameter("statuses", statuses).setParameter("taskType", taskType).setParameter("providerId", new Integer(providerId));				
 			tList = (List<Task>) q.getResultList();
@@ -360,7 +360,7 @@ public class TaskServices implements TaskServicesLocal {
 		
 		try {
 		
-			System.out.println("providerId: "+providerId);
+			//System.out.println("providerId: "+providerId);
 			List<String> statuses = Arrays.asList("C", "V");
 			Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByTaskTypeAndIdPerDay").setParameter("statuses", statuses).setParameter("taskType", "photo").setParameter("providerId", new Integer(providerId));				
 			tList = (List<Task>) q.getResultList();
@@ -414,7 +414,7 @@ public class TaskServices implements TaskServicesLocal {
 			dataServicesLocal.merge(t);
 			
 		} catch (Exception e) {
-			System.out.println("Task not found.");
+			//System.out.println("Task not found.");
 			e.printStackTrace();
 		}
 	}
