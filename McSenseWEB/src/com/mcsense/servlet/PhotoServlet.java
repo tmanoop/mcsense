@@ -68,7 +68,7 @@ public class PhotoServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Photo Recieved");
+		//System.out.println("Photo Recieved");
 		String taskId = request.getParameter("taskId");
 		String providerId = request.getParameter("providerId");
 		String imageString = request.getParameter("image");
@@ -80,7 +80,7 @@ public class PhotoServlet extends HttpServlet {
 			FileOutputStream f =null;
 			try {
 				byte[] imageByteArray = Base64.decode(imageString);
-				System.out.println("imageByteArray length: " + imageByteArray.length);
+				//System.out.println("imageByteArray length: " + imageByteArray.length);
 				
 				String realPath = getServletContext().getRealPath(WebConstants.DESTINATION_DIR_PATH);
 				File destinationDir = new File(realPath);
@@ -97,7 +97,7 @@ public class PhotoServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 		    f.close();
-			System.out.println("Task: " + taskId);
+			//System.out.println("Task: " + taskId);
 		}		
 	}
 

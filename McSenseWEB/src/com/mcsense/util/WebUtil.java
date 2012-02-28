@@ -57,7 +57,7 @@ public class WebUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("formated date :" + lFromDate1);
+//		System.out.println("formated date :" + lFromDate1);
 		Timestamp fromTS1 = new Timestamp(lFromDate1.getTime());
 		return fromTS1;
 	}

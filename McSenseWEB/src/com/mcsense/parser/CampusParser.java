@@ -20,8 +20,8 @@ public class CampusParser {
 		ArrayList<LocationInfo> locationList = new ArrayList<LocationInfo>();
 		String fileName = "762.txt";
 		locationList = parseCampusLog(WebConstants.DESTINATION_DIR_PATH, fileName);
-		for(LocationInfo l : locationList)
-			System.out.println("lat: "+l.getLatitude()+" long: "+l.getLongitude()+" speed: "+l.getSpeed());	
+//		for(LocationInfo l : locationList)
+//			System.out.println("lat: "+l.getLatitude()+" long: "+l.getLongitude()+" speed: "+l.getSpeed());	
 	}
 
 	public static ArrayList<LocationInfo> parseCampusLog(String path, String fileName){

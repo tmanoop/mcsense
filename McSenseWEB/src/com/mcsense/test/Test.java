@@ -14,11 +14,11 @@ public class Test {
 
 	public static void test1(){
 		String resp = "aaa";
-		if(!resp.equals("") && resp.matches("[\\d]+")){
-			System.out.println("true");
-		} else {
-			System.out.println("false");
-		}
+//		if(!resp.equals("") && resp.matches("[\\d]+")){
+//			System.out.println("true");
+//		} else {
+//			System.out.println("false");
+//		}
 	}
 	
 	public static void test2(){
