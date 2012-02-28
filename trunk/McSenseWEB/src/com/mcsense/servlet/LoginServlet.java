@@ -49,7 +49,7 @@ public class LoginServlet extends HttpServlet {
 		HttpSession session = request.getSession(true);
 		String type = request.getParameter("type");
 		String htmlFormName = request.getParameter("htmlFormName");
-		System.out.println("type: "+type);
+		//System.out.println("type: "+type);
 		if(htmlFormName!=null && htmlFormName.equals("login")){
 			String emailID = request.getParameter("emailID");
 			String password = request.getParameter("password");
@@ -68,7 +68,7 @@ public class LoginServlet extends HttpServlet {
 		}
 		if(type!=null && type.equals("mobile")){
 			String reqType = request.getParameter("reqType");
-			System.out.println("reqType: "+reqType);
+			//System.out.println("reqType: "+reqType);
 			if(reqType.equals("login")){
 				String emailId = request.getParameter("emailId");
 				String password = request.getParameter("password");
@@ -122,7 +122,7 @@ public class LoginServlet extends HttpServlet {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-    	System.out.println("encryptedText:"+encryptedText);
+    	//System.out.println("encryptedText:"+encryptedText);
 		return encryptedText;
 	}
 

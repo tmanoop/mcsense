@@ -38,7 +38,7 @@ public class AdminServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("get test");
+		////System.out.println("get test");
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class AdminServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		bankAdminServicesLocal = McUtility.lookupEJB("java:global/McSense/McSenseEJB/BankAdminServices!com.mcsense.services.BankAdminServicesLocal");
 		String htmlFormName = request.getParameter("htmlFormName");
-		System.out.println("htmlFormName: "+htmlFormName);
+		//System.out.println("htmlFormName: "+htmlFormName);
 		if(htmlFormName.equals("register")){
 			String lname = request.getParameter("lname");
 			String fname = request.getParameter("fname");

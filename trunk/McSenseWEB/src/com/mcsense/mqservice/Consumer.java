@@ -47,8 +47,7 @@ public class Consumer {
         TextMessage textMessage = null;
         if (message instanceof TextMessage) {
             textMessage = (TextMessage) message;
-            System.out.println("Received message '"
-                + textMessage.getText() + "'");
+            //System.out.println("Received message '"                + textMessage.getText() + "'");
         }
         
         //if textmessage null, return blank

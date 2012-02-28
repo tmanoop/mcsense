@@ -72,10 +72,10 @@ public class TaskServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
 		String htmlFormName = request.getParameter("htmlFormName");
-		System.out.println("htmlFormName: "+htmlFormName);
+		//System.out.println("htmlFormName: "+htmlFormName);
 		String type = "";
 		type = request.getParameter("type");
-		System.out.println("type: "+type);
+		//System.out.println("type: "+type);
 		String status = request.getParameter("status");	
 		if(htmlFormName.equals("tasklookup")){
 			
@@ -88,7 +88,7 @@ public class TaskServlet extends HttpServlet {
 					for (int i = 0; i < tList.size(); i++) {
 						Task t = tList.get(i);
 						JTask jTask = WebUtil.mapToJsonTask(t);
-						System.out.println("Exp time: "+jTask.getTaskExpirationTime());
+						//System.out.println("Exp time: "+jTask.getTaskExpirationTime());
 //						Timestamp now = new Timestamp(System.currentTimeMillis());
 						//Filter new sensing tasks after 4pm
 						if(!status.equals("P") || (jTask.getTaskType().equals("photo") || WebUtil.hasEnoughSensingTime(jTask.getTaskDuration(),jTask.getTaskExpirationTime())))
@@ -121,7 +121,7 @@ public class TaskServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		HttpSession session = request.getSession(true);
 		String htmlFormName = request.getParameter("htmlFormName");
-		System.out.println("htmlFormName: "+htmlFormName);
+		//System.out.println("htmlFormName: "+htmlFormName);
 		if(htmlFormName.equals("task")){
 			String id = request.getParameter("id");
 			String taskDesc = request.getParameter("taskDesc");		
@@ -140,7 +140,7 @@ public class TaskServlet extends HttpServlet {
 			out.println("<P>Return to <A HREF=../pages/Task.jsp>Task Screen</A>");
 		} else if(htmlFormName.equals("updateTask")){
 			String submitValue = request.getParameter("submit");
-			System.out.println("submit: "+submitValue);
+			//System.out.println("submit: "+submitValue);
 			String status = request.getParameter("status");
 			String taskId = request.getParameter("taskId");
 			if(submitValue.equals("View Task Map")){

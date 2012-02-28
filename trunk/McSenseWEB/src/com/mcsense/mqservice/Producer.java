@@ -45,7 +45,7 @@ public class Producer {
 
         // Here we are sending the message!
         producer.send(message);
-        System.out.println("Sent message '" + message.getText() + "'");
+        //System.out.println("Sent message '" + message.getText() + "'");
 
         connection.close();
     }

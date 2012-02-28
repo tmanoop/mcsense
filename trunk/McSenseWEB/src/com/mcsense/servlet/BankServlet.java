@@ -36,7 +36,7 @@ public class BankServlet extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String htmlFormName = request.getParameter("htmlFormName");
-		System.out.println("htmlFormName: "+htmlFormName);
+		//System.out.println("htmlFormName: "+htmlFormName);
 		
 		People p = null;
 		List<People> pList = null;
@@ -45,8 +45,8 @@ public class BankServlet extends HttpServlet {
 			String name = request.getParameter("lname");
 			String id = request.getParameter("id");
 			
-			System.out.println("lname: "+name);
-			System.out.println("id: "+id);
+			//System.out.println("lname: "+name);
+			//System.out.println("id: "+id);
 			
 			bankAdminServicesLocal = McUtility.lookupEJB("java:global/McSense/McSenseEJB/BankAdminServices!com.mcsense.services.BankAdminServicesLocal");
 			
@@ -63,19 +63,19 @@ public class BankServlet extends HttpServlet {
 			//dataServicesLocal.test();
 						
 		} catch (Exception e) {
-			System.out.println("PersonID not found.");
+			//System.out.println("PersonID not found.");
 			e.printStackTrace();
 		}
 		
 		// response
 		PrintWriter out = response.getWriter();
 		if (p!=null) {
-			System.out.println("PersonID: " + p.getPersonId());
+			//System.out.println("PersonID: " + p.getPersonId());
 			out.println("<br> PersonID: " + p.getPersonId() + "| FirstName: " + p.getPersonFname() + "| LastName: " + p.getPersonLname() + "| AccountNumber: " + p.getBankAccountId() );
 			if(htmlFormName.equals("reputation"))
 				out.print("| Reputation: " + p.getReputation().getReputationScore());
 		} else if (pList!=null && pList.size()!=0) {
-			System.out.println("PersonID: " + pList.get(0).getPersonId());
+			//System.out.println("PersonID: " + pList.get(0).getPersonId());
 			for(int i=0;i<pList.size();i++){
 				People p1 = pList.get(i);
 				out.println("<br> PersonID: " + p1.getPersonId() + "| FirstName: " + p1.getPersonFname() + "| LastName: " + p1.getPersonLname() + "| AccountNumber: " + p1.getBankAccountId() );
@@ -83,7 +83,7 @@ public class BankServlet extends HttpServlet {
 					out.print("| Reputation: " + p1.getReputation().getReputationScore());
 			}
 		} else{
-			System.out.println("PersonID not found.");
+			//System.out.println("PersonID not found.");
 			out.println("PersonID not found.");
 		}
 		if(htmlFormName.equals("reputation"))
@@ -97,14 +97,14 @@ public class BankServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("get test");		
+		//System.out.println("get test");		
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("post test");
+		//System.out.println("post test");
 	}
 
 }

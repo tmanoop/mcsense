@@ -41,7 +41,7 @@ public class ClientServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("get test");
+		//System.out.println("get test");
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class ClientServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String taskDesc = request.getParameter("taskDesc");
-		System.out.println("Task Name: " + taskDesc);
+		//System.out.println("Task Name: " + taskDesc);
 		// Publish in JMS Queue. Start ActiveMQ before running this. (Run
 		// C:\Program Files\apache-activemq-5.5.0\bin\activemq)
 //		Sensors requiredSensors = 
@@ -81,9 +81,9 @@ public class ClientServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		String type = "";
 		type = request.getParameter("type");
-		System.out.println("type: " + type);
+		//System.out.println("type: " + type);
 		if (type!=null && type.equals("mobile")) {
-			System.out.println("respond to mobile.");
+			//System.out.println("respond to mobile.");
 			out.println("Sensing Task Submitted. TaskID: "+taskID);
 		} else {
 			out.println("<title>Submitted</title>" + "<body bgcolor=FFFFFF>");
@@ -164,7 +164,7 @@ public class ClientServlet extends HttpServlet {
 		String proximity = request.getParameter("proximity");
 		String ambient = request.getParameter("ambient");
 		
-		System.out.println("Sensors:"+accelerometer+","+gps+","+camera+","+mic+","+wifi+","+bluetooth+","+magnetometer+","+proximity+","+ambient);
+		//System.out.println("Sensors:"+accelerometer+","+gps+","+camera+","+mic+","+wifi+","+bluetooth+","+magnetometer+","+proximity+","+ambient);
 	}
 
 }

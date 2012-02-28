@@ -90,7 +90,7 @@ public class ProviderServlet extends HttpServlet {
 //				t = taskServicesLocal.updateTask(id,task);
 				t = taskList.get(taskList.size()-1);
 				taskID = t.getTaskId();
-				System.out.println("Task read: " + task);
+				//System.out.println("Task read: " + task);
 			}			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,9 +101,9 @@ public class ProviderServlet extends HttpServlet {
 
 		String type = "";
 		type = request.getParameter("type");
-		System.out.println("type: "+type);
+		//System.out.println("type: "+type);
 		if (type!=null && type.equals("mobile")){
-			System.out.println("respond to mobile.");
+			//System.out.println("respond to mobile.");
 			if(t!=null){
 				List<JTask> jTaskList = new ArrayList<JTask>();
 //				Task t = tList.get(i);
@@ -133,12 +133,12 @@ public class ProviderServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/plain");
 		String htmlFormName = request.getParameter("htmlFormName");
-		System.out.println("htmlFormName: "+htmlFormName);
+		//System.out.println("htmlFormName: "+htmlFormName);
 		
 		String providerId = request.getParameter("providerId");
 		String taskId = request.getParameter("taskId");
 		String taskStatus = request.getParameter("taskStatus");
-		System.out.println("TaskID"+taskId);
+		//System.out.println("TaskID"+taskId);
 		if (taskStatus != null){ 
 			if(taskStatus.equals("Accepted")) {
 				Task t = taskServicesLocal.getTaskById(taskId);
@@ -179,7 +179,7 @@ public class ProviderServlet extends HttpServlet {
 			} else if (taskStatus.equals("Completed")){
 				Task t = taskServicesLocal.getTaskByIdAndProvider(providerId,taskId);
 				if(t!=null && t.getTaskStatus().equals("IP")){
-					System.out.println("Sensed Data Recieved");
+					//System.out.println("Sensed Data Recieved");
 					String sensedData = request.getParameter("sensedData");
 					String completionStatus = request.getParameter("completionStatus");
 					String sensedDuration = request.getParameter("sensedDuration");
@@ -187,7 +187,7 @@ public class ProviderServlet extends HttpServlet {
 					FileOutputStream f =null;
 					try {
 						byte[] sensedDataByteArray = Base64.decode(sensedData);
-						System.out.println("sensedDataByteArray length: " + sensedDataByteArray.length);
+						//System.out.println("sensedDataByteArray length: " + sensedDataByteArray.length);
 						
 //						f = new FileOutputStream(WebConstants.DESTINATION_DIR_PATH+"\\"+taskId+".txt");
 						f = new FileOutputStream(destinationDir+"\\"+taskId+".txt");
@@ -203,7 +203,7 @@ public class ProviderServlet extends HttpServlet {
 						e.printStackTrace();
 					}
 				    f.close();
-					System.out.println("Task: " + taskId);
+					//System.out.println("Task: " + taskId);
 				}				
 			}
 		} else if(htmlFormName == null || htmlFormName.equals("completetask")){
@@ -218,7 +218,6 @@ public class ProviderServlet extends HttpServlet {
 			/*
 			 * Set the temporary directory to store the uploaded files of size above threshold.
 			 */
-			fileItemFactory.setRepository(tmpDir);
 	 
 			ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
 			try {
