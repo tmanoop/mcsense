@@ -20,7 +20,6 @@ import org.apache.http.params.HttpParams;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.mcsense.app.R;
 import com.mcsense.json.JTask;
 
 import android.app.ListActivity;

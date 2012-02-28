@@ -1,7 +1,5 @@
 package com.mcsense.apppro;
 
-import com.mcsense.app.R;
-
 import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.Context;

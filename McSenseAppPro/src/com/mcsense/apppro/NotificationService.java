@@ -2,7 +2,6 @@ package com.mcsense.apppro;
 
 import java.util.ArrayList;
 
-import com.mcsense.app.R;
 import com.mcsense.json.JTask;
 
 import android.app.Notification;

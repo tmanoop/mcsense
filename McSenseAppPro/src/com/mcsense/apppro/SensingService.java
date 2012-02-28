@@ -44,7 +44,6 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.mcsense.app.R;
 import com.mcsense.apppro.MyLocation.LocationResult;
 import com.mcsense.apppro.Sensors.MyInnerLocationListener;
 import com.mcsense.json.JTask;

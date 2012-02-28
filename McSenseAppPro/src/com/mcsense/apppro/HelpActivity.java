@@ -1,7 +1,5 @@
 package com.mcsense.apppro;
 
-import com.mcsense.app.R;
-
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
