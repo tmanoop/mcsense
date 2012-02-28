@@ -38,12 +38,12 @@ public class LoginServices implements LoginServicesLocal {
 			p = (People)q.getSingleResult();
 						
 		} catch (Exception e) {
-			System.out.println("PersonID not found.");
+			//System.out.println("PersonID not found.");
 //			e.printStackTrace();
 		}
 		
 		if (p==null) {
-			System.out.println("PersonID not found.");
+			//System.out.println("PersonID not found.");
 		}
 		return p;
     }
@@ -61,7 +61,7 @@ public class LoginServices implements LoginServicesLocal {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-    	System.out.println("encryptedText:"+encryptedText);
+    	//System.out.println("encryptedText:"+encryptedText);
     	try {
 			dataServicesLocal.persist(p);
 			
@@ -98,11 +98,11 @@ public class LoginServices implements LoginServicesLocal {
 			pList = (List<People>)q.getResultList();
 						
 		} catch (Exception e) {
-			System.out.println("PersonID not found.");
+			//System.out.println("PersonID not found.");
 		}
 		
 		if (pList!=null && pList.size()>0) {
-			System.out.println("exist");
+			//System.out.println("exist");
 			exist = true;
 		}
 		return exist;
@@ -118,12 +118,12 @@ public class LoginServices implements LoginServicesLocal {
 			p = (People)q.getSingleResult();
 						
 		} catch (Exception e) {
-			System.out.println("PersonID not found.");
+			//System.out.println("PersonID not found.");
 //			e.printStackTrace();
 		}
 		
 		if (p==null) {
-			System.out.println("PersonID not found.");
+			//System.out.println("PersonID not found.");
 		}
 		return p;
 	}

@@ -37,20 +37,20 @@ public class Test {
 			e.printStackTrace();
 		}
 
-		System.out.println("formated date :" + lFromDate1);
+		//System.out.println("formated date :" + lFromDate1);
 		
 		Timestamp fromTS1 = null;
 		if(lFromDate1!=null)
 			fromTS1 = new Timestamp(lFromDate1.getTime());
 		
 		String timeformat = fromTS1.toString();
-		System.out.println("Timestamp date :" + timeformat.substring(0,timeformat.length() - 5));
+		//System.out.println("Timestamp date :" + timeformat.substring(0,timeformat.length() - 5));
 	}
 	
 	public static void main(String Args[]){
-		System.out.println("Timestamp :" + getTonightTimestamp());
+		//System.out.println("Timestamp :" + getTonightTimestamp());
 		Timestamp night = getTonightTimestamp();
 		night.setDate(night.getDate()+1);
-		System.out.println("Timestamp :" + night);
+		//System.out.println("Timestamp :" + night);
 	}
 }

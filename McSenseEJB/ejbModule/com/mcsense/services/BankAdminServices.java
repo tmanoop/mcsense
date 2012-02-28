@@ -38,7 +38,7 @@ public class BankAdminServices implements BankAdminServicesLocal {
 			pList = (List<People>) q.getResultList();
 						
 		} catch (Exception e) {
-			System.out.println("PersonID not found.");
+			//System.out.println("PersonID not found.");
 			e.printStackTrace();
 		}
 		
@@ -55,12 +55,12 @@ public class BankAdminServices implements BankAdminServicesLocal {
 			//dataServicesLocal.test();
 						
 		} catch (Exception e) {
-			System.out.println("PersonID not found.");
+			//System.out.println("PersonID not found.");
 			e.printStackTrace();
 		}
 		
 		if (p==null) {
-			System.out.println("PersonID not found.");
+			//System.out.println("PersonID not found.");
 		}
 		return p;
     }

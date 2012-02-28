@@ -38,14 +38,14 @@ public class Register {
                 System.out.print(rsmd.getColumnLabel(i)+"\t\t");  
             }
 
-            System.out.println("\n-------------------------------------------------");
+            //System.out.println("\n-------------------------------------------------");
 
             while(results.next())
             {
                 String id = results.getString(1);
                 String TName = results.getString(2);
                 String TType = results.getString(3);
-                System.out.println(id + "\t\t" + TName + "\t\t" + TType);
+                //System.out.println(id + "\t\t" + TName + "\t\t" + TType);
             }
             results.close();
             stmt.close();
@@ -106,7 +106,7 @@ public class Register {
 	                System.out.print(rsmd.getColumnLabel(i)+"\t\t");  
 	            }
 
-	            System.out.println("\n-------------------------------------------------");
+	            //System.out.println("\n-------------------------------------------------");
 
 	            while(results.next())
 	            {
@@ -114,7 +114,7 @@ public class Register {
 	                int bankAccountId = results.getInt(2);
 	                String LName = results.getString(3);
 	                String FName = results.getString(4);
-	                System.out.println(id + "\t\t" + bankAccountId + "\t\t" + LName + "\t\t" + FName);
+	                //System.out.println(id + "\t\t" + bankAccountId + "\t\t" + LName + "\t\t" + FName);
 	            }
 	            results.close();
 	            stmt.close();

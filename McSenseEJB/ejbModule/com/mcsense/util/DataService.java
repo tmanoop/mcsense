@@ -31,7 +31,7 @@ public class DataService {
 	
 	public static void main(String[] args) {
 		People p = getEntity("1");
-		System.out.println("PersonID: "+p.getPersonId());
+		//System.out.println("PersonID: "+p.getPersonId());
 	}
 
 	private static EntityManager getEntityManager() {
