@@ -345,7 +345,7 @@ public class TaskActivity extends Activity {
 		
 		final TextView taskDescTxt = (TextView) findViewById(R.id.taskDescTextView);
 		final TextView taskDesc = (TextView) findViewById(R.id.taskDescription); 
-		if(jTask.getTaskType().equals("photo") && tab_type.equals("pending")){
+		if(jTask.getTaskType().equals("photo") && tab_type.equals("pending") && bitmap!=null){
 			taskDescTxt.setVisibility(View.INVISIBLE);
 			taskDesc.setVisibility(View.INVISIBLE);
 		} else{
