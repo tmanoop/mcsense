@@ -143,6 +143,7 @@ public class TaskServlet extends HttpServlet {
 			//System.out.println("submit: "+submitValue);
 			String status = request.getParameter("status");
 			String taskId = request.getParameter("taskId");
+			String errorDesc = request.getParameter("errorDesc");
 			if(submitValue.equals("View Task Map")){
 				session.setAttribute("taskId",taskId);
 				session.setAttribute("path",destinationDir);
@@ -152,8 +153,13 @@ public class TaskServlet extends HttpServlet {
 				Task t = taskServicesLocal.getTaskById(taskId);
 				String st = t.getSensedDataFileLocation(); 
 				//Latitude:40.43472008333333,Longitude:-74.49765961666667 
-				String lat = st.substring(st.lastIndexOf("Latitude")+9,st.lastIndexOf("Longitude")-1);
-				String lng = st.substring(st.lastIndexOf("Longitude")+10,st.length());
+				String lat = "40.43472008333333";
+				String lng = "-74.49765961666667";
+				
+				if(st != null && !st.equals("")){
+					lat = st.substring(st.lastIndexOf("Latitude")+9,st.lastIndexOf("Longitude")-1);
+					lng = st.substring(st.lastIndexOf("Longitude")+10,st.length());
+				}
 				
 				session.setAttribute("lat",lat);
 				session.setAttribute("lng",lng);
@@ -162,6 +168,11 @@ public class TaskServlet extends HttpServlet {
 			} else if(submitValue.equals("Update Task")){				
 				Task t = taskServicesLocal.getTaskById(taskId);
 				t.setTaskStatus(status);
+				if(status.equals("E")){
+					//set error desc
+					String taskDesc = t.getTaskDesc();
+					t.setTaskDesc(taskDesc + "\nTask Failure Reason: *** "+ errorDesc + " ***");
+				}					
 				taskServicesLocal.updateTask(t);
 				out.print("<br> McSense Task ID: " + t.getTaskId() + " is updated successfully.");
 				out.println("<P>Return to <A HREF=../pages/Task.jsp>Task Service Screen</A>");
