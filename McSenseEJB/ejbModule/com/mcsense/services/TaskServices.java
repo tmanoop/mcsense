@@ -172,13 +172,15 @@ public class TaskServices implements TaskServicesLocal {
 				tList = (List<Task>) q.getResultList();
 			} else if(status.equals("P")) {
 				//check for participants only. return available tasks only for them.
-				Query qPerson = dataServicesLocal.getEM().createNamedQuery("People.findByPrimaryKey").setParameter("id", new Integer(providerId));
-				People p = (People)qPerson.getSingleResult();
-				if(p!=null && !p.getNjitDepartment().equals("")){
-					//System.out.println("Status:"+status);
-					Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatus").setParameter("status", status);				
-					tList = (List<Task>) q.getResultList();
-				}
+				if(providerId!=null && !providerId.equals("")){
+					Query qPerson = dataServicesLocal.getEM().createNamedQuery("People.findByPrimaryKey").setParameter("id", new Integer(providerId));
+					People p = (People)qPerson.getSingleResult();
+					if(p!=null && !p.getNjitDepartment().equals("")){
+						//System.out.println("Status:"+status);
+						Query q = dataServicesLocal.getEM().createNamedQuery("Task.findByStatus").setParameter("status", status);				
+						tList = (List<Task>) q.getResultList();
+					}
+				}				
 			} else if(status.equals("C")) {
 				//System.out.println("Status:"+status);
 				List<String> statuses = Arrays.asList("C", "E", "V");
