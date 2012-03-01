@@ -55,6 +55,9 @@ Task Status:
 <option value="E">Error</option>
 </select>
 <br>
+Error Description:<br>
+<textarea name="errorDesc" rows="10" cols="30" ></textarea><br />
+<br>
 <input type="hidden" name="htmlFormName" value="updateTask">
 <input type="submit" name="submit" value="Update Task"></p>
 </form>
