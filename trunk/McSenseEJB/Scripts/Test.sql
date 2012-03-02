@@ -27,3 +27,21 @@ SELECT DISTINCT CURRENT_TIMESTAMP from APP.TASK;
 SELECT CONVERT (char(8), CURRENT_TIMESTAMP, 112) from APP.TASK;
 
 SELECT DISTINCT CONCAT ('photo task', CAST (CURRENT_TIMESTAMP AS CHAR(100))) from APP.TASK;
+
+--reports scripts
+
+select * from APP.TASK where TASK_STATUS = 'C' and TASK_TYPE = 'bluetooth' and TASK_ACCEPTED_TIME > '2012-03-01 00:00:00';
+select * from APP.TASK where TASK_STATUS = 'C' and TASK_TYPE = 'campusSensing' and TASK_ACCEPTED_TIME > '2012-03-01 00:00:00';
+select * from APP.TASK where TASK_STATUS = 'C' and TASK_TYPE = 'photo' and TASK_ACCEPTED_TIME > '2012-03-01 00:00:00';
+
+select * from APP.TASK where TASK_STATUS = 'E' and TASK_TYPE = 'bluetooth' and TASK_ACCEPTED_TIME > '2012-03-01 00:00:00';
+select * from APP.TASK where TASK_STATUS = 'E' and TASK_TYPE = 'campusSensing' and TASK_ACCEPTED_TIME > '2012-03-01 00:00:00';
+select * from APP.TASK where TASK_STATUS = 'E' and TASK_TYPE = 'photo' and TASK_ACCEPTED_TIME > '2012-03-01 00:00:00';
+
+select * from APP.TASK where TASK_STATUS = 'IP' and TASK_TYPE = 'bluetooth' and TASK_ACCEPTED_TIME > '2012-03-01 00:00:00';
+select * from APP.TASK where TASK_STATUS = 'IP' and TASK_TYPE = 'campusSensing' and TASK_ACCEPTED_TIME > '2012-03-01 00:00:00';
+select * from APP.TASK where TASK_STATUS = 'IP' and TASK_TYPE = 'photo' and TASK_ACCEPTED_TIME > '2012-03-01 01:00:00';
+
+select sum(CLIENT_PAY) as Earnings, PROVIDER_PERSON_ID from APP.TASK where TASK_ACCEPTED_TIME > '2012-02-27 01:00:00' group by PROVIDER_PERSON_ID order by Earnings;
+
+select sum(CLIENT_PAY) from APP.TASK where TASK_ACCEPTED_TIME > '2012-02-27 01:00:00' and PROVIDER_PERSON_ID = 933;
