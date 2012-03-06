@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import javax.ejb.EJB;
 import javax.jms.JMSException;
@@ -57,20 +58,16 @@ public class ClientServlet extends HttpServlet {
 //		Sensors requiredSensors = 
 //			getSensorsIndicators(request);
 //		Producer p = new Producer();
-		int taskID =0;
+		String taskID ="";
 		try {
 //			String longterm = request.getParameter("longterm");
 			//insert
 //			Task t = taskServicesLocal.createTask(clientId,taskName, taskType);
-			Task t = prepareTask(request);
-//			if(longterm != null && longterm.equals("1")) {
-//				t.setTaskDuration(t.getTaskDuration()+WebConstants.LONGTERM);//set extra 1 to indicate longterm task. set 2520 for 7 days. 360 mins each day				
-//			}
-			t = taskServicesLocal.createTask(t);
-			taskID = t.getTaskId();
-			
-			if(t.getLongTermIndicator() != null && t.getLongTermIndicator().equals("1")){
-				createLongTermTasks(request, taskID);
+			String numOfTasksText = request.getParameter("numOfTasks");
+			if(numOfTasksText!=null && !numOfTasksText.equals("")){
+				taskID = "" + createMultipleLongTermTasks(request).toString();
+			} else {
+				taskID = ""+createSingleTask(request);
 			}
 //			p.send(taskDesc);
 		} catch (Exception e) {
@@ -94,7 +91,7 @@ public class ClientServlet extends HttpServlet {
 		out.close();
 	}
 
-	private void createLongTermTasks(HttpServletRequest request, int taskID) {
+	private void createLongTermTasks(HttpServletRequest request, String taskName, int taskID) {
 		String daysText = request.getParameter("days");
 		int days = Integer.parseInt(daysText);
 		//create days# child tasks referring to above parent task ID
@@ -106,9 +103,42 @@ public class ClientServlet extends HttpServlet {
 			//set exp date for each child till days#
 			tonight.setDate(tonight.getDate()+1);
 			child.setTaskExpirationTime(tonight);
-			child.setTaskName(child.getTaskName()+" Day "+dayCounter++);
+			child.setTaskName(taskName+" Day "+dayCounter++);
 			child = taskServicesLocal.createTask(child);
 		}
+	}
+	
+	private ArrayList<String> createMultipleLongTermTasks(HttpServletRequest request) {
+		String numOfTasksText = request.getParameter("numOfTasks");
+		int numOfTasks = Integer.parseInt(numOfTasksText);
+		String taskNameOrg = request.getParameter("name");
+		ArrayList<String> taskIds = new ArrayList<String>();
+		for(int i = 0; i < numOfTasks; i++){
+			String taskName = taskNameOrg+(i);
+			Task t = prepareTask(request);
+			t.setTaskName(taskName);
+			t = taskServicesLocal.createTask(t);
+			int taskID = t.getTaskId();
+			taskIds.add(""+taskID);
+			if(t.getLongTermIndicator() != null && t.getLongTermIndicator().equals("1")){
+				createLongTermTasks(request, taskName, taskID);
+			}
+		}	
+		return taskIds;
+	}
+	
+	private int createSingleTask(HttpServletRequest request) {
+		Task t = prepareTask(request);
+//		if(longterm != null && longterm.equals("1")) {
+//			t.setTaskDuration(t.getTaskDuration()+WebConstants.LONGTERM);//set extra 1 to indicate longterm task. set 2520 for 7 days. 360 mins each day				
+//		}
+		t = taskServicesLocal.createTask(t);
+		int taskID = t.getTaskId();
+		
+		if(t.getLongTermIndicator() != null && t.getLongTermIndicator().equals("1")){
+			createLongTermTasks(request, t.getTaskName(), taskID);
+		}
+		return taskID;
 	}
 
 	private Task prepareTask(HttpServletRequest request) {
