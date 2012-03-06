@@ -60,8 +60,8 @@ Enter McSense ID:
 <br>
 Task Name:
 <br>
-<input name="name" type="text" size="30" MAXLENGTH=30 value="" onkeydown="setSensingDesc();"> </input>
-<br>
+<input name="name" type="text" size="30" MAXLENGTH=30 value="" onkeydown="setSensingDesc();"> 
+<br> 
 <br>
 Task Type:
 <br>
@@ -74,6 +74,9 @@ Task Type:
 
 <input name="days" size="5" MAXLENGTH=2 onkeyup="this.value=this.value.replace(/[^\d]/,'')">
 Days 
+<br>
+Num of Tasks:
+<input name="numOfTasks" size="5" MAXLENGTH=3 value="">
 <br>
 <br>
 Pay:
