@@ -45,3 +45,8 @@ select * from APP.TASK where TASK_STATUS = 'IP' and TASK_TYPE = 'photo' and TASK
 select sum(CLIENT_PAY) as Earnings, PROVIDER_PERSON_ID from APP.TASK where TASK_ACCEPTED_TIME > '2012-02-27 01:00:00' group by PROVIDER_PERSON_ID order by Earnings;
 
 select sum(CLIENT_PAY) from APP.TASK where TASK_ACCEPTED_TIME > '2012-02-27 01:00:00' and PROVIDER_PERSON_ID = 933;
+
+update APP.TASK set TASK_STATUS='C' where TASK_STATUS = 'IP' and TASK_NAME like '5-Day Task LC';
+select * from APP.TASK where TASK_STATUS = 'IP' and TASK_NAME like '5-Day Task%';
+
+delete from APP.TASK where TASK_STATUS = 'P' and TASK_NAME like 'LONG_TERM Task%';
