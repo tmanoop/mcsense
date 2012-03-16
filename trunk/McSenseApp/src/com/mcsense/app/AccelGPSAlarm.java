@@ -1,5 +1,6 @@
 package com.mcsense.app;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -49,6 +50,12 @@ public class AccelGPSAlarm extends BroadcastReceiver {
 		//Every minute - 60*1000
 		alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), 60*1000, 
 				pendingIntent);
+		
+		//log user ID
+		Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+		String userDetails = "Timestamp:"+currentTimestamp+",TaskId:"+currentTask.getTaskId()+",ProviderId:"+AppConstants.providerId+" \n";
+		AppUtils.writeToFile(context, userDetails,"sensing_file"+currentTask.getTaskId());
+		
 		Toast.makeText(context, "Campus Sensing Started", Toast.LENGTH_SHORT).show();
 		
 	}
