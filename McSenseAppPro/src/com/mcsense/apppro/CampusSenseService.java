@@ -114,8 +114,8 @@ public class CampusSenseService extends Service {
 //			String gpsVals = "My current location is: " +	"\n Latitude = " + loc.getLatitude() +	"\n Longitude = " + loc.getLongitude();
 	    	String gpsVals = "";
 	    	if(loc!=null)
-				gpsVals = "Timestamp:"+currentTimestamp+",TaskId:"+taskId+",ProviderId:"+AppConstants.providerId+",Latitude:" + loc.getLatitude() +	",Longitude:" + loc.getLongitude()+ ",Speed:" + loc.getSpeed()+" \n";
-			
+				gpsVals = "Timestamp:"+currentTimestamp+",Latitude:" + loc.getLatitude() +	",Longitude:" + loc.getLongitude()+ ",Speed:" + loc.getSpeed()+" \n";
+//	    	gpsVals = "Timestamp:"+currentTimestamp+",TaskId:"+taskId+",ProviderId:"+AppConstants.providerId+",Latitude:" + loc.getLatitude() +	",Longitude:" + loc.getLongitude()+ ",Speed:" + loc.getSpeed()+" \n";
 			AppUtils.writeToFile(getApplicationContext(), gpsVals,"sensing_file"+taskId);
 //			AppUtils.writeToXFile(gpsVals,"sensing_file"+taskId);
 			AppConstants.gpsLocUpdated = true;
