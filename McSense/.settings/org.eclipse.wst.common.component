@@ -37,5 +37,29 @@
         <dependent-module archiveName="gson-1.7.1.jar" deploy-path="/" handle="module:/classpath/lib/C:/Manoop/Android/google-gson-1.7.1/gson-1.7.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="googlemaps.jar" deploy-path="/" handle="module:/classpath/lib/McSense/lib/googlemaps.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="activemq-all-5.5.0.jar" deploy-path="/" handle="module:/classpath/lib/McSense/lib/activemq-all-5.5.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-fileupload-1.2.2.jar" deploy-path="/" handle="module:/classpath/lib/McSense/lib/commons-fileupload-1.2.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-io-2.0.1.jar" deploy-path="/" handle="module:/classpath/lib/McSense/lib/commons-io-2.0.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="gson-1.7.1_1.jar" deploy-path="/" handle="module:/classpath/lib/McSense/lib/gson-1.7.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="log4j-1.2.14.jar" deploy-path="/" handle="module:/classpath/lib/McSense/lib/log4j-1.2.14.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="slf4j-api-1.5.11.jar" deploy-path="/" handle="module:/classpath/lib/McSense/lib/slf4j-api-1.5.11.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="slf4j-jdk14-1.6.1.jar" deploy-path="/" handle="module:/classpath/lib/McSense/lib/slf4j-jdk14-1.6.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
     </wb-module>
 </project-modules>
