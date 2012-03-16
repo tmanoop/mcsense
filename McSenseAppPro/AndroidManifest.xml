@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.mcsense.app" android:versionCode="1" android:versionName="1.0.1">
+	package="com.mcsense.apppro" android:versionCode="4" android:versionName="1.0.4">
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
@@ -18,7 +18,7 @@
 	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"></uses-permission>
 	<uses-feature android:name="android.hardware.camera" />
 	<uses-feature android:name="android.hardware.camera.autofocus" />
-	<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="11" />
+	<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="15" />
 
 	<application android:icon="@drawable/ic_launcher" android:label="@string/app_name">
 		<activity android:name=".Home" android:label="@string/app_name" android:finishOnTaskLaunch="true">
@@ -55,18 +55,18 @@
 		</activity>
 		<activity android:name=".SettingsActivity" android:label="@string/app_name">
 		</activity>
-		<activity android:name=".pro.HelpActivity" android:label="@string/app_name">
+		<activity android:name=".HelpActivity" android:label="@string/app_name">
 		</activity>
 		<service android:enabled="true" android:name=".SensingService" />
 		<service android:enabled="true" android:name=".NotificationService" />
 		<service android:enabled="true" android:name=".BluetoothService" />
-		<service android:enabled="true" android:name=".pro.CampusSenseService" />
+		<service android:enabled="true" android:name=".CampusSenseService" />
 		<receiver android:enabled="true" android:name=".MyAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".UploadAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".ServiceAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".BluetoothAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".AccelGPSAlarm"> </receiver>
-		<receiver android:enabled="true" android:name=".pro.MyStartupIntentReceiver">
+		<receiver android:enabled="true" android:name=".MyStartupIntentReceiver">
  
             <intent-filter>
  
