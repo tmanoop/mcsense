@@ -85,7 +85,7 @@ public class CampusSenseService extends Service {
 	private void startSensing() {
 		startAccelerometerSensing();
 		acelSensorListener = new AcelSensor(getApplicationContext(),currentTask);
-		mSensorManager.registerListener(acelSensorListener, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+		mSensorManager.registerListener(acelSensorListener, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
 		
 		myLocation.getLocation(this, locationResult);
 	}
