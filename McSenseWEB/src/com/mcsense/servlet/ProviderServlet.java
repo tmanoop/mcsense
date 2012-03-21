@@ -142,7 +142,9 @@ public class ProviderServlet extends HttpServlet {
 		String sensedData = request.getParameter("sensedData");
 		String completionStatus = request.getParameter("completionStatus");
 		String sensedDuration = request.getParameter("sensedDuration");
-		byte[] sensedDataByteArray = Base64.decode(sensedData);
+		byte[] sensedDataByteArray = null;
+		if(sensedData!=null)
+			sensedDataByteArray = Base64.decode(sensedData);
 		
 		if ( ServletFileUpload.isMultipartContent( request ))
 		{
