@@ -80,7 +80,9 @@ public class PhotoServlet extends HttpServlet {
 		String providerId = request.getParameter("providerId");
 		String imageString = request.getParameter("image");
 		String currentLocation = request.getParameter("currentLocation");
-		byte[] imageByteArray = Base64.decode(imageString);
+		byte[] imageByteArray = null;
+		if(imageString!=null)
+			imageByteArray = Base64.decode(imageString);
 		
 		if ( ServletFileUpload.isMultipartContent( request ))
 		{
