@@ -717,8 +717,8 @@ public class TaskActivity extends Activity {
 		   bmOptions = new BitmapFactory.Options();
 		   bmOptions.inSampleSize = 8;
 		   bmOptions.requestCancelDecode();
-		   String imageInSD = "/sdcard/McSenseImage.jpg";
-//		   String imageInSD = context.getFilesDir().toString()+"/"+AppConstants.imageFileName+currentTask.getTaskId();
+//		   String imageInSD = "/sdcard/McSenseImage.jpg";
+		   String imageInSD = context.getFilesDir().toString()+"/"+AppConstants.imageFileName+currentTask.getTaskId();
 //		   showToast("imageInSD: "+imageInSD);
 		   bitmap = BitmapFactory.decodeFile(imageInSD);
 //		   showToast("bitmap: "+bitmap);
