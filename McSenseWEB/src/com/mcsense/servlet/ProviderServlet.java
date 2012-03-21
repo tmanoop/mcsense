@@ -3,6 +3,7 @@ package com.mcsense.servlet;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -138,6 +139,43 @@ public class ProviderServlet extends HttpServlet {
 		String providerId = request.getParameter("providerId");
 		String taskId = request.getParameter("taskId");
 		String taskStatus = request.getParameter("taskStatus");
+		String sensedData = request.getParameter("sensedData");
+		String completionStatus = request.getParameter("completionStatus");
+		String sensedDuration = request.getParameter("sensedDuration");
+		byte[] sensedDataByteArray = Base64.decode(sensedData);
+		
+		if ( ServletFileUpload.isMultipartContent( request ))
+		{
+		    List<FileItem> fileItems= null;
+			try {
+				fileItems = new ServletFileUpload( new DiskFileItemFactory( 1024 * 1024, new File(TMP_DIR_PATH) )).
+		        parseRequest( request );
+			} catch (FileUploadException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 
+		    for ( FileItem item : fileItems )
+		    {
+		        String fieldName = item.getFieldName();
+		        if(fieldName.trim().equals("taskId"))
+		        	taskId = item.getString();
+		        else if(fieldName.trim().equals("providerId"))
+		        	providerId = item.getString();
+		        else if(fieldName.trim().equals("taskStatus"))
+		        	taskStatus = item.getString();
+		        else if(fieldName.trim().equals("completionStatus"))
+		        	completionStatus = item.getString();
+		        else if(fieldName.trim().equals("sensedDuration"))
+		        	sensedDuration = item.getString();
+		        else if(fieldName.trim().equals("sensedData")){
+		        	InputStream is = item.getInputStream();
+		        	sensedDataByteArray = new byte[is.available()];
+		        	is.read(sensedDataByteArray);
+		        }
+		    }
+		}
+		
 		//System.out.println("TaskID"+taskId);
 		if (taskStatus != null){ 
 			if(taskStatus.equals("Accepted")) {
@@ -180,13 +218,10 @@ public class ProviderServlet extends HttpServlet {
 				Task t = taskServicesLocal.getTaskByIdAndProvider(providerId,taskId);
 				if(t!=null && t.getTaskStatus().equals("IP")){
 					//System.out.println("Sensed Data Recieved");
-					String sensedData = request.getParameter("sensedData");
-					String completionStatus = request.getParameter("completionStatus");
-					String sensedDuration = request.getParameter("sensedDuration");
 					
 					FileOutputStream f =null;
 					try {
-						byte[] sensedDataByteArray = Base64.decode(sensedData);
+//						byte[] sensedDataByteArray = Base64.decode(sensedData);
 						//System.out.println("sensedDataByteArray length: " + sensedDataByteArray.length);
 						
 //						f = new FileOutputStream(WebConstants.DESTINATION_DIR_PATH+"\\"+taskId+".txt");
