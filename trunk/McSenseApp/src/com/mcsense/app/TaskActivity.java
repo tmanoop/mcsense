@@ -23,6 +23,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -713,8 +717,8 @@ public class TaskActivity extends Activity {
 		   bmOptions = new BitmapFactory.Options();
 		   bmOptions.inSampleSize = 8;
 		   bmOptions.requestCancelDecode();
-//		   String imageInSD = "/sdcard/McSenseImage.jpg";
-		   String imageInSD = context.getFilesDir().toString()+"/"+AppConstants.imageFileName+currentTask.getTaskId();
+		   String imageInSD = "/sdcard/McSenseImage.jpg";
+//		   String imageInSD = context.getFilesDir().toString()+"/"+AppConstants.imageFileName+currentTask.getTaskId();
 //		   showToast("imageInSD: "+imageInSD);
 		   bitmap = BitmapFactory.decodeFile(imageInSD);
 //		   showToast("bitmap: "+bitmap);
@@ -813,29 +817,32 @@ public class TaskActivity extends Activity {
 			System.gc();
 			
 	        byte [] ba = bao.toByteArray();
-			ba1 = Base64.encodeToString(ba,0);
+//			ba1 = Base64.encodeToString(ba,0);
 //	        ArrayList<String> baList = getBitmapEncodedString(ba);
 //	        ba1 = baList.get(0);
-	        
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-//			showToast("uploading error!! "+e1.getMessage());
-		}
-		
-		// Add your data
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-//        nameValuePairs.add(new BasicNameValuePair("taskDesc", currentTask.getTaskDescription()));
-        nameValuePairs.add(new BasicNameValuePair("taskId", currentTask.getTaskId()+""));
-        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
-        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
-        nameValuePairs.add(new BasicNameValuePair("image",ba1));
-        nameValuePairs.add(new BasicNameValuePair("currentLocation",currentLocation));
+	    
+			// upload with multipart
+			ByteArrayBody bab = new ByteArrayBody(ba, "image");
+			MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+			 
+			reqEntity.addPart("taskId", new StringBody(currentTask.getTaskId()+""));
+	        reqEntity.addPart("providerId", new StringBody(AppConstants.providerId));
+	        reqEntity.addPart("type", new StringBody("mobile"));
+	        reqEntity.addPart("image",bab);
+	        reqEntity.addPart("currentLocation",new StringBody(currentLocation));
+			httppost.setEntity(reqEntity);
+			/*
+			// Add your data
+	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+	//        nameValuePairs.add(new BasicNameValuePair("taskDesc", currentTask.getTaskDescription()));
+	        nameValuePairs.add(new BasicNameValuePair("taskId", currentTask.getTaskId()+""));
+	        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
+	        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
+	        nameValuePairs.add(new BasicNameValuePair("image",ba1));
+	        nameValuePairs.add(new BasicNameValuePair("currentLocation",currentLocation));
         
-		// Execute HTTP Get Request
-		try {
 			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-			
+			*/
 			response = httpclient.execute(httppost);
 			Log.d(AppConstants.TAG, "Reading response...");
 			HttpEntity entity = response.getEntity();
@@ -857,7 +864,11 @@ public class TaskActivity extends Activity {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+//			showToast("uploading error!! "+e1.getMessage());
+		}		
 
 		// read task from servlet
 		String resp = sb.toString();
