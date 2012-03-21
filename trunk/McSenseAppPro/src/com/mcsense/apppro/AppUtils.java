@@ -30,6 +30,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -398,6 +401,28 @@ public class AppUtils {
 		return sensedData;
 	}
 	
+	public static byte[] readFileByteArray(Context context, String fileName) {
+		String sensedData = "";
+		byte[] buffer = null;
+		try
+		{               
+		  FileInputStream fileIn;       
+		  fileIn = context.openFileInput(fileName);
+		  buffer = new byte[fileIn.available()];
+		  fileIn.read(buffer);
+//		  sensedData = Base64.encodeToString(buffer, Base64.DEFAULT);                   
+		  fileIn.close();                       
+		} catch (FileNotFoundException e)
+		{
+		   e.printStackTrace();
+		}
+		catch (IOException e)
+		{   
+		    e.printStackTrace();
+		}
+		return buffer;
+	}
+	
 	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm";
 
 	  public static String currentTime() {
@@ -533,25 +558,41 @@ public class AppUtils {
 			StringBuilder sb = new StringBuilder();
 			
 			//read sensed data file and set as string
-			String sensedData = AppUtils.readFile(context,"sensing_file"+taskId);
+//			String sensedData = AppUtils.readFile(context,"sensing_file"+taskId);
 //			String sensedData = AppUtils.readXFile("sensing_file"+taskId);
+			
+			//read data into byte array
+			byte[] sensedData = AppUtils.readFileByteArray(context,"sensing_file"+taskId);
+			
 			if(sensedDuration<0)
 				sensedDuration = 0;
 			
-			// Add your data
-	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-	        nameValuePairs.add(new BasicNameValuePair("taskStatus", "Completed"));
-	        nameValuePairs.add(new BasicNameValuePair("completionStatus", status));
-	        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
-	        nameValuePairs.add(new BasicNameValuePair("taskId", taskId+""));
-	        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
-	        nameValuePairs.add(new BasicNameValuePair("sensedDuration", ""+sensedDuration));
-	        nameValuePairs.add(new BasicNameValuePair("sensedData", sensedData));
-	        
 			// Execute HTTP Get Request
 			try {
+				//upload using multi-part
+				ByteArrayBody bab = new ByteArrayBody(sensedData, "sensedData");
+				MultipartEntity reqEntity = new MultipartEntity();
+				 
+				reqEntity.addPart("taskStatus", new StringBody("Completed"));
+		        reqEntity.addPart("completionStatus", new StringBody(status));
+		        reqEntity.addPart("providerId", new StringBody(AppConstants.providerId));
+		        reqEntity.addPart("taskId", new StringBody(taskId+""));
+		        reqEntity.addPart("type", new StringBody("mobile"));
+		        reqEntity.addPart("sensedDuration", new StringBody(""+sensedDuration));
+		        reqEntity.addPart("sensedData", bab);
+		        httppost.setEntity(reqEntity);
+				/*
+				// Add your data
+		        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+		        nameValuePairs.add(new BasicNameValuePair("taskStatus", "Completed"));
+		        nameValuePairs.add(new BasicNameValuePair("completionStatus", status));
+		        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
+		        nameValuePairs.add(new BasicNameValuePair("taskId", taskId+""));
+		        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
+		        nameValuePairs.add(new BasicNameValuePair("sensedDuration", ""+sensedDuration));
+		        nameValuePairs.add(new BasicNameValuePair("sensedData", sensedData));
 				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-				
+				*/
 				response = httpclient.execute(httppost);
 				Log.d(AppConstants.TAG, "Reading response...");
 				HttpEntity entity = response.getEntity();
