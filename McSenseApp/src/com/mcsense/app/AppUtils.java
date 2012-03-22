@@ -783,6 +783,14 @@ public class AppUtils {
 	  		Log.d(AppConstants.TAG, "isAccelGPSAlarmExist "+alarmUp);
 	  		return alarmUp;
 	  	}
+	  	
+	  	public static boolean isScreenStatusReceiverRegistered(boolean newstatus) {
+	  		return AppMonitorScreenStatusReceiver.isRegistered.getAndSet(newstatus);
+	  	}
+	  	
+	  	public static boolean isScreenStatusReceiverRegistered() {
+	  		return AppMonitorScreenStatusReceiver.isRegistered.get();
+	  	}
 		
 	  	public static void stopBluetoothAlarm(Context context) {
 			//stop existing bluetooth alarm
