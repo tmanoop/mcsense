@@ -5,6 +5,7 @@ import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
@@ -47,6 +48,8 @@ public class Main extends TabActivity {
 				iniUploadAlarm();
 			if(!AppUtils.isServiceAlarmExist(getApplicationContext()))
 				iniServiceAlarm();
+			if (!AppUtils.isScreenStatusReceiverRegistered(true))
+				iniScreenStatusReceiver(getApplicationContext());
 		}
 	}
 	
@@ -54,6 +57,12 @@ public class Main extends TabActivity {
 		Bundle bundle = new Bundle();
 		// add extras here..
 		ServiceAlarm alarm = new ServiceAlarm(this, bundle, 30);
+	}
+	
+	private void iniScreenStatusReceiver(Context context) {
+		AppMonitorScreenStatusReceiver amssr = new AppMonitorScreenStatusReceiver();
+		context.registerReceiver(amssr, new IntentFilter(Intent.ACTION_SCREEN_ON));
+		context.registerReceiver(amssr, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 	}
 	
 	private void iniUploadAlarm() {
