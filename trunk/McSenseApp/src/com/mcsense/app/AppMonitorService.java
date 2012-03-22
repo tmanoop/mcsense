@@ -17,8 +17,10 @@ public class AppMonitorService extends Service {
 
 	public static final String START_ACTION = "com.mcsense.app.AppMonitorService.START";
 	public static final String STOP_ACTION = "com.mcsense.app.AppMonitorService.STOP";
-	private static final String LOGTAG = "ApplicationMonitoring";
 	public static final int ACTIVITY_POLL_INTERVAL_MSEC = 1000;
+	
+	private static final String LOGTAG = "ApplicationMonitoring";
+	private static final AtomicBoolean sIsRunning = new AtomicBoolean(false);
 	
 	private AtomicBoolean mRunMonitor;
 	private ActivityManager mActivityManager;
@@ -31,17 +33,23 @@ public class AppMonitorService extends Service {
 		return null;
 	}
 	
+	public static boolean isRunning() {
+		return sIsRunning.get();
+	}
+	
 	
 	@Override
 	public void onCreate() {
 		Log.i(LOGTAG, "onCreate()");
 		try {
+			sIsRunning.set(true);
 			// Toast.makeText(this, "ActivityMonitor started", Toast.LENGTH_SHORT).show();
 			mRunMonitor = new AtomicBoolean(true);
 			mActivityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-			mMonitoringThread = new Thread(new TopActivityPoller(), "ActivityMonitorService monitoring thread");
-			mMonitoringThread.start();
-
+			if (null == mMonitoringThread) {
+				mMonitoringThread = new Thread(new TopActivityPoller(), "AppMonitorService monitoring thread");
+				mMonitoringThread.start();
+			}
 		} catch (Exception e) {
 			Log.e(LOGTAG, e.getMessage());
 			e.printStackTrace();
@@ -61,6 +69,8 @@ public class AppMonitorService extends Service {
 					Toast.LENGTH_SHORT).show();
 		}
 		// Toast.makeText(this, "ActivityMonitor Service Destroyed", Toast.LENGTH_SHORT).show();
+		mMonitoringThread = null;
+		sIsRunning.set(false);
 	}
 
 	@Override
