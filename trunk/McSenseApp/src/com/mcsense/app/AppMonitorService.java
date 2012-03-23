@@ -17,7 +17,7 @@ public class AppMonitorService extends Service {
 
 	public static final String START_ACTION = "com.mcsense.app.AppMonitorService.START";
 	public static final String STOP_ACTION = "com.mcsense.app.AppMonitorService.STOP";
-	public static final int ACTIVITY_POLL_INTERVAL_MSEC = 1000;
+	public static final int ACTIVITY_POLL_INTERVAL_MSEC = 1500;
 	
 	private static final String LOGTAG = "ApplicationMonitoring";
 	private static final AtomicBoolean sIsRunning = new AtomicBoolean(false);
@@ -122,8 +122,9 @@ public class AppMonitorService extends Service {
 				if (fgApp != null && fgAct != null) {
 					String activeApp = fgApp.baseActivity.getPackageName();
 					String activeAct = fgAct.getClassName();
-					String logString = String.format("Active app: %s active act: %s", activeApp, activeAct); 
+					String logString = String.format("Active app: %s active acivityt: %s", activeApp, activeAct); 
 					Log.i(LOGTAG, logString);
+					String taskDumpString = String.format("ActiveApp:%s;ActiveAcivity: %s", activeApp, activeAct);
 					/* TODO: insert here code to write active app and activity to file */
 				}
 
