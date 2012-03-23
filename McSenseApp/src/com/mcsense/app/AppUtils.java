@@ -568,60 +568,63 @@ public class AppUtils {
 			if(sensedDuration<0)
 				sensedDuration = 0;
 			
-			// Execute HTTP Get Request
-			try {
-				//upload using multi-part
-				ByteArrayBody bab = new ByteArrayBody(sensedData, "sensedData");
-				MultipartEntity reqEntity = new MultipartEntity();
-				 
-				reqEntity.addPart("taskStatus", new StringBody("Completed"));
-		        reqEntity.addPart("completionStatus", new StringBody(status));
-		        reqEntity.addPart("providerId", new StringBody(AppConstants.providerId));
-		        reqEntity.addPart("taskId", new StringBody(taskId+""));
-		        reqEntity.addPart("type", new StringBody("mobile"));
-		        reqEntity.addPart("sensedDuration", new StringBody(""+sensedDuration));
-		        reqEntity.addPart("sensedData", bab);
-		        httppost.setEntity(reqEntity);
-				/*
-				// Add your data
-		        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-		        nameValuePairs.add(new BasicNameValuePair("taskStatus", "Completed"));
-		        nameValuePairs.add(new BasicNameValuePair("completionStatus", status));
-		        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
-		        nameValuePairs.add(new BasicNameValuePair("taskId", taskId+""));
-		        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
-		        nameValuePairs.add(new BasicNameValuePair("sensedDuration", ""+sensedDuration));
-		        nameValuePairs.add(new BasicNameValuePair("sensedData", sensedData));
-				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-				*/
-				response = httpclient.execute(httppost);
-				Log.d(AppConstants.TAG, "Reading response...");
-				HttpEntity entity = response.getEntity();
-				is = entity.getContent();
+			if(sensedData!=null){
+				// Execute HTTP Get Request
+				try {
+					//upload using multi-part
+					ByteArrayBody bab = new ByteArrayBody(sensedData, "sensedData");
+					MultipartEntity reqEntity = new MultipartEntity();
+					 
+					reqEntity.addPart("taskStatus", new StringBody("Completed"));
+			        reqEntity.addPart("completionStatus", new StringBody(status));
+			        reqEntity.addPart("providerId", new StringBody(AppConstants.providerId));
+			        reqEntity.addPart("taskId", new StringBody(taskId+""));
+			        reqEntity.addPart("type", new StringBody("mobile"));
+			        reqEntity.addPart("sensedDuration", new StringBody(""+sensedDuration));
+			        reqEntity.addPart("sensedData", bab);
+			        httppost.setEntity(reqEntity);
+					/*
+					// Add your data
+			        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+			        nameValuePairs.add(new BasicNameValuePair("taskStatus", "Completed"));
+			        nameValuePairs.add(new BasicNameValuePair("completionStatus", status));
+			        nameValuePairs.add(new BasicNameValuePair("providerId", AppConstants.providerId));
+			        nameValuePairs.add(new BasicNameValuePair("taskId", taskId+""));
+			        nameValuePairs.add(new BasicNameValuePair("type", "mobile"));
+			        nameValuePairs.add(new BasicNameValuePair("sensedDuration", ""+sensedDuration));
+			        nameValuePairs.add(new BasicNameValuePair("sensedData", sensedData));
+					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+					*/
+					response = httpclient.execute(httppost);
+					Log.d(AppConstants.TAG, "Reading response...");
+					HttpEntity entity = response.getEntity();
+					is = entity.getContent();
 
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(is, "iso-8859-1"), 8);
+					BufferedReader reader = new BufferedReader(
+							new InputStreamReader(is, "iso-8859-1"), 8);
 
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					sb.append(line + "\n");
-					Log.d(AppConstants.TAG, ""+sb);
+					String line = null;
+					while ((line = reader.readLine()) != null) {
+						sb.append(line + "\n");
+						Log.d(AppConstants.TAG, ""+sb);
+					}
+					is.close();
+				} catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				is.close();
-			} catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 
-			// read task from servlet
-			String resp = sb.toString().trim();
-			if(resp.equals("success")){
-				AppUtils.deleteSensedFile(context,"sensing_file"+taskId);
-			}
-			Log.d(AppConstants.TAG, resp);
+				// read task from servlet
+				String resp = sb.toString().trim();
+				if(resp.equals("success")){
+					AppUtils.deleteSensedFile(context,"sensing_file"+taskId);
+				}
+				Log.d(AppConstants.TAG, resp);
+			}	
+			
 		}
 	  
 	  public static void uploadPhoto(Context context, int taskId){
