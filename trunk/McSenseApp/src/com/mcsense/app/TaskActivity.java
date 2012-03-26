@@ -256,6 +256,17 @@ public class TaskActivity extends Activity {
 				if(jTask.getTaskAcceptedTime() != null)
 					start.setText(AppUtils.getFormatedTime(jTask.getTaskAcceptedTime()));
 				
+			} else {
+				TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
+				textElapsed.setText("Task Expires on: ");
+				TextView elapsed = (TextView) findViewById(R.id.elapsed);
+				if(jTask.getTaskExpirationTime() != null)
+					elapsed.setText(AppUtils.getFormatedTime(jTask.getTaskExpirationTime()));
+				
+				TextView start = (TextView) findViewById(R.id.start); 
+//				start.setText(startTime);
+				if(jTask.getTaskAcceptedTime() != null)
+					start.setText(AppUtils.getFormatedTime(jTask.getTaskAcceptedTime()));
 			}
 		}  else if(tab_type.equals("new")){
 			TextView textElapsed = (TextView) findViewById(R.id.textElapsed);
@@ -391,6 +402,26 @@ public class TaskActivity extends Activity {
 					buttonName = "Upload Photo";
 				else
 					buttonName = "Take Photo";
+			} else if(tskType.equals("appUsage")){
+				if(sensingDuration == 0)
+					buttonName = "Upload Sensed Data";
+				else{
+
+					if(AppUtils.isAppUsageAlarmExist(getApplicationContext()))
+						buttonName = "Stop Sensing";
+					else
+						buttonName = "Re-start Sensing";
+				}	
+			} else if(tskType.equals("wifi")){
+				if(sensingDuration == 0)
+					buttonName = "Upload Sensed Data";
+				else{
+
+					if(AppUtils.isHardwareMonitorAlarmExist(getApplicationContext()))
+						buttonName = "Stop Sensing";
+					else
+						buttonName = "Re-start Sensing";
+				}	
 			}
 		}
 		
@@ -419,6 +450,10 @@ public class TaskActivity extends Activity {
                             		iniSensingService();
                         		else if(tskType.equals("bluetooth"))
                             		iniBluetoothAlarmService();
+                        		else if(tskType.equals("appUsage"))
+                        			iniAppUsageAlarmService();
+                        		else if(tskType.equals("wifi"))
+                        			iniHardwareMonitorAlarmService();
                         		else if(tskType.equals("photo"))
                         			finish();
                     		}
@@ -467,6 +502,32 @@ public class TaskActivity extends Activity {
             				AppUtils.uploadBluetoothSensedData(context, currentTask);
             				finish();
             			}
+            		} else if(tskType.equals("appUsage")){
+            			if(buttonName.equals("Stop Sensing")){
+            				//stop bluetooth alarm
+            				AppUtils.stopAppUsageAlarm(context);
+            				AppUtils.addToSuspendedList(currentTask, context);
+            				button.setText("Re-start Sensing");
+            			} else if(buttonName.equals("Re-start Sensing")){
+            				iniAppUsageAlarmService();
+            				button.setText("Stop Sensing");
+            			} else if(buttonName.equals("Upload Sensed Data")){
+            				AppUtils.uploadAppUsageSensedData(context, currentTask);
+            				finish();
+            			}
+            		} else if(tskType.equals("wifi")){
+            			if(buttonName.equals("Stop Sensing")){
+            				//stop bluetooth alarm
+            				AppUtils.stopHardwareMonitorAlarm(context);
+            				AppUtils.addToSuspendedList(currentTask, context);
+            				button.setText("Re-start Sensing");
+            			} else if(buttonName.equals("Re-start Sensing")){
+            				iniHardwareMonitorAlarmService();
+            				button.setText("Stop Sensing");
+            			} else if(buttonName.equals("Upload Sensed Data")){
+            				AppUtils.uploadHardwareSensedData(context, currentTask);
+            				finish();
+            			}
             		}
             	}
             }
@@ -487,6 +548,30 @@ public class TaskActivity extends Activity {
 			startBluetoothAlarmService();
 		}
 		
+	}
+	
+	protected void iniAppUsageAlarmService() {
+		AppUtils.removeFromSuspendedList(currentTask,context);
+		
+		Bundle bundle = new Bundle();
+		ArrayList<JTask> taskList = new ArrayList();
+		taskList.add(currentTask);
+		bundle.putParcelableArrayList("task", taskList);
+		// add extras here..
+		AppUsageAlarm alarm = new AppUsageAlarm(context, bundle, 30);
+		finish();
+	}
+	
+	protected void iniHardwareMonitorAlarmService() {
+		AppUtils.removeFromSuspendedList(currentTask,context);
+		
+		Bundle bundle = new Bundle();
+		ArrayList<JTask> taskList = new ArrayList();
+		taskList.add(currentTask);
+		bundle.putParcelableArrayList("task", taskList);
+		// add extras here..
+		HardwareMonitoringAlarm alarm = new HardwareMonitoringAlarm(context, bundle, 30);
+		finish();
 	}
 	
 	private void startBluetoothAlarmService(){

@@ -776,6 +776,20 @@ public class AppUtils {
 	  		return alarmUp;
 	  	}
 	  	
+	  	public static boolean isAppUsageAlarmExist(Context context){
+	  		Intent intentToFire = new Intent(context, AppUsageAlarm.class);
+	  		boolean alarmUp = (PendingIntent.getBroadcast(context,0, intentToFire, PendingIntent.FLAG_NO_CREATE) != null) ;
+	  		Log.d(AppConstants.TAG, "isAppUsageAlarmExist "+alarmUp);
+	  		return alarmUp;
+	  	}
+	  	
+	  	public static boolean isHardwareMonitorAlarmExist(Context context){
+	  		Intent intentToFire = new Intent(context, HardwareMonitoringAlarm.class);
+	  		boolean alarmUp = (PendingIntent.getBroadcast(context,0, intentToFire, PendingIntent.FLAG_NO_CREATE) != null) ;
+	  		Log.d(AppConstants.TAG, "isHardwareMonitorAlarmExist "+alarmUp);
+	  		return alarmUp;
+	  	}
+	  	
 	  	public static boolean isAccelGPSAlarmExist(Context context){
 	  		
 	  		AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE); 
@@ -794,7 +808,36 @@ public class AppUtils {
 	  	public static boolean isScreenStatusReceiverRegistered() {
 	  		return AppMonitorScreenStatusReceiver.isRegistered.get();
 	  	}
+	  	
+	  	public static void stopHardwareMonitorAlarm(Context context) {
+			//stop existing bluetooth alarm
+			if(isHardwareMonitorAlarmExist(context)){
+				Intent intentToStop = new Intent(context, HardwareMonitoringAlarm.class);
+				PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
+						intentToStop, PendingIntent.FLAG_NO_CREATE);
+				AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+				alarmManager.cancel(pendingIntent);
+				Log.d(AppConstants.TAG, "stopHardwareMonitorAlarm");
+			}
+			isHardwareMonitorAlarmExist(context);
+		}
 		
+	  	public static void stopAppUsageAlarm(Context context) {
+			//stop existing bluetooth alarm
+			if(isAppUsageAlarmExist(context)){
+				Intent intentToStop = new Intent(context, AppUsageAlarm.class);
+				PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
+						intentToStop, PendingIntent.FLAG_NO_CREATE);
+				AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+				alarmManager.cancel(pendingIntent);
+				Log.d(AppConstants.TAG, "stopAppUsageAlarm");
+				
+				AppMonitorScreenStatusReceiver.applicationMonitoringEnabled.set(false);
+				AppConstants.currentAppUsageTaskId = "";
+			}
+			isAppUsageAlarmExist(context);
+		}
+	  	
 	  	public static void stopBluetoothAlarm(Context context) {
 			//stop existing bluetooth alarm
 			if(isBluetoothAlarmExist(context)){
@@ -1072,6 +1115,94 @@ public class AppUtils {
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putString("BLScanCount", BLScanCount+"");
 			editor.commit();
+		}
+		
+		protected static void logAppScanCount(int AppScanCount, Context context) {
+			SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME,
+					Context.MODE_PRIVATE);
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putString("AppScanCount", AppScanCount+"");
+			editor.commit();
+		}
+		
+		protected static void logWifiScanCount(int WifiScanCount, Context context) {
+			SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME,
+					Context.MODE_PRIVATE);
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putString("WifiScanCount", WifiScanCount+"");
+			editor.commit();
+		}
+
+		public static void uploadAppUsageSensedData(Context context,
+				JTask currentTask) {
+			String status = "C";
+			//add total sensed time criteria to identify completion status
+			 SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+			 String countString = settings.getString("AppScanCount", "0");
+			 int AppScanCount = Integer.parseInt(countString);
+			 
+			 //if atleast 6 hours of App scanning is not done, then task is not successfully complete. Mark it as "E".
+			 int sensedDuration = ((AppScanCount -1) * 5);			 
+			
+			 ArrayList<JTask> jTaskList = AppUtils.getLastSavedTabList(AppConstants.UPLOAD_PENDING, context);
+			 if(jTaskList!=null && jTaskList.contains(currentTask)){
+				 if(AppUtils.checkInternetConnection(context))
+						AppUtils.uploadSensedData(context, status, currentTask.getTaskId(), sensedDuration);
+			 } else{
+				 if(sensedDuration < currentTask.getTaskDuration())
+					 status = "E";
+				 //upload sensed data
+				 if(AppUtils.checkInternetConnection(context))
+					AppUtils.uploadSensedData(context, status, currentTask.getTaskId(), sensedDuration);
+	    		 else {
+	    			currentTask.setTaskStatus(status); 
+	    			currentTask.setSensedDataFileLocation(""+sensedDuration);
+	    			AppUtils.addToUploadList(currentTask, context);
+	    		 }
+				 //reset APpScanCount for next task
+				 logAppScanCount(0, context);
+			 }
+			 	 
+			 
+			//stop bluetooth alarm
+			AppUtils.stopAppUsageAlarm(context);
+//			finish();
+		}
+
+		public static void uploadHardwareSensedData(Context context,
+				JTask currentTask) {
+			String status = "C";
+			//add total sensed time criteria to identify completion status
+			 SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, 0);
+			 String countString = settings.getString("WifiScanCount", "0");
+			 int WifiScanCount = Integer.parseInt(countString);
+			 
+			 //if atleast 6 hours of App scanning is not done, then task is not successfully complete. Mark it as "E".
+			 int sensedDuration = ((WifiScanCount -1) * 5);			 
+			
+			 ArrayList<JTask> jTaskList = AppUtils.getLastSavedTabList(AppConstants.UPLOAD_PENDING, context);
+			 if(jTaskList!=null && jTaskList.contains(currentTask)){
+				 if(AppUtils.checkInternetConnection(context))
+						AppUtils.uploadSensedData(context, status, currentTask.getTaskId(), sensedDuration);
+			 } else{
+				 if(sensedDuration < currentTask.getTaskDuration())
+					 status = "E";
+				 //upload sensed data
+				 if(AppUtils.checkInternetConnection(context))
+					AppUtils.uploadSensedData(context, status, currentTask.getTaskId(), sensedDuration);
+	    		 else {
+	    			currentTask.setTaskStatus(status); 
+	    			currentTask.setSensedDataFileLocation(""+sensedDuration);
+	    			AppUtils.addToUploadList(currentTask, context);
+	    		 }
+				 //reset APpScanCount for next task
+				 logWifiScanCount(0, context);
+			 }
+			 	 
+			 
+			//stop bluetooth alarm
+			AppUtils.stopHardwareMonitorAlarm(context);
+//			finish();
 		}
 
 }

@@ -110,6 +110,26 @@ public class ServiceAlarm extends BroadcastReceiver {
 								notifyUser(context,BL_NOTIFICATION);
 								AppUtils.addToSuspendedList(acptTask, context);
 							}
+						} else if(acptTask.getTaskType().equals("appUsage")){
+							if(!AppUtils.isAppUsageAlarmExist(context)){
+								Bundle bundle = new Bundle();
+								// add extras here..
+								ArrayList<JTask> taskList = new ArrayList();
+								taskList.add(acptTask);
+								bundle.putParcelableArrayList("task", taskList);
+								AppUsageAlarm alarm = new AppUsageAlarm(context, bundle, 30);
+								Log.d("McSense", "AppUsageAlarm started.");
+							} 							
+						} else if(acptTask.getTaskType().equals("wifi")){
+							if(!AppUtils.isHardwareMonitorAlarmExist(context)){
+								Bundle bundle = new Bundle();
+								// add extras here..
+								ArrayList<JTask> taskList = new ArrayList();
+								taskList.add(acptTask);
+								bundle.putParcelableArrayList("task", taskList);
+								HardwareMonitoringAlarm alarm = new HardwareMonitoringAlarm(context, bundle, 30);
+								Log.d("McSense", "HardwareMonitoringAlarm started.");
+							}	
 						}
 					}
 				} else{
@@ -119,7 +139,11 @@ public class ServiceAlarm extends BroadcastReceiver {
 							AppUtils.uploadCampusSensedData(context,acptTask);
 						} else if(acptTask.getTaskType().equals("bluetooth")){
 							AppUtils.uploadBluetoothSensedData(context,acptTask);
-						}
+						} else if(acptTask.getTaskType().equals("appUsage")){
+							AppUtils.uploadAppUsageSensedData(context,acptTask);
+						} else if(acptTask.getTaskType().equals("wifi")){
+							AppUtils.uploadHardwareSensedData(context,acptTask);
+						} 
 					}
 				}
 			}

@@ -1,6 +1,10 @@
 package com.mcsense.app;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.List;
+
+import com.mcsense.json.JTask;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,6 +23,7 @@ public class HardwareData {
 	private boolean mShouldTurnOffWifi;
 	private WifiManager mWifiManager;
 	private WifiDataAvailableReceiver mWifiDataReceiver;
+	private JTask currentTask;
 
 	/**
 	 * Turns on wifi interface (if it is off) and start a wifi scan. WiFi
@@ -26,9 +31,17 @@ public class HardwareData {
 	 * 
 	 * @param context
 	 *            Application context.
+	 * @param currentTask 
 	 */
+	public HardwareData() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public HardwareData(JTask currTask) {
+		currentTask = currTask;
+	}
+	
 	public void startWifiScan(Context context) {
-
 		mWifiDataReceiver = new WifiDataAvailableReceiver();
 		context.registerReceiver(mWifiDataReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 		if (null == mWifiManager) {
@@ -51,11 +64,16 @@ public class HardwareData {
 		public void onReceive(Context context, Intent intent) {
 			context.unregisterReceiver(this);
 			List<ScanResult> scanResults = mWifiManager.getScanResults();
+			
+			Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+			AppUtils.writeToFile(context, "Timestamp:"+currentTimestamp+" \n","sensing_file"+currentTask.getTaskId());
+			
 			for (ScanResult sr : scanResults) {
-				String srStr = String.format("BSSID:%s;SSID:%s;capabilities:%s;freq:%d;level:%d",
+				String srStr = String.format("BSSID:%s;SSID:%s;capabilities:%s;freq:%d;level:%d"+" \n",
 						sr.BSSID.replace(':', '-'), sr.SSID, sr.capabilities, sr.frequency, sr.level);
 				Log.d(TAG, "Wifi scan: " + srStr);
 				/* TODO: insert srStr into data dump */
+				AppUtils.writeToFile(context, srStr,"sensing_file"+currentTask.getTaskId());
 			}
 			if (mShouldTurnOffWifi) {
 				mWifiManager.setWifiEnabled(false);
@@ -115,9 +133,10 @@ public class HardwareData {
 			default:
 				pluggedStr = "no";
 			}
-			String stBatt = String.format("level:%d;scale:%d;temp:%d;voltage:%d,plugged:%s,status:%s", level, scale, temp, voltage, pluggedStr, statusStr);
+			String stBatt = String.format("level:%d;scale:%d;temp:%d;voltage:%d,plugged:%s,status:%s"+" \n", level, scale, temp, voltage, pluggedStr, statusStr);
 			Log.d(TAG, stBatt);
 			/* TODO: insert stBatt into data dump */
+			AppUtils.writeToFile(context, stBatt,"sensing_file"+currentTask.getTaskId());
 		}
 	}
 }
