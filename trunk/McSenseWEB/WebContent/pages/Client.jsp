@@ -69,6 +69,8 @@ Task Type:
 <option value="campusSensing">Campus Sensing Task</option>
 <option value="photo">Photo Task</option>
 <option value="bluetooth">Bluetooth Sensing Task</option>
+<option value="appUsage">App Usage Task</option>
+<option value="wifi">WiFi Sensing Task</option>
 </select>
 <input type="checkbox" name="longterm" value="1" onclick="setLongDesc();"> Long-Term 
 
