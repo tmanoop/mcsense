@@ -7,9 +7,9 @@ import com.mcsense.json.JTask;
 public class AppConstants {
 //	protected static final String ip = "128.235.66.235";
 //	protected static final String ip = "http://10.1.169.211:10080";
-//	protected static final String ip = "http://manoop.dyndns.org:10080";
+	protected static final String ip = "http://manoop.dyndns.org:10080";
 //	protected static final String ip = "http://192.168.1.4:10080";
-	protected static final String ip = "http://mcsense.njit.edu:10080";
+//	protected static final String ip = "http://mcsense.njit.edu:10080";
 	
 	protected static final String PREFS_NAME = "myPref";
 	// Set the timeout in milliseconds until a connection is established.
@@ -34,6 +34,8 @@ public class AppConstants {
 	protected static ArrayList failedTaskList = new ArrayList();
 
 	public static int BLScanCount = 0;
+
+	public static String currentAppUsageTaskId = "";
 	
 	static final String TAG = "McSense";
 	

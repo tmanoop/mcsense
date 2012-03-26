@@ -71,6 +71,12 @@ public class UploadAlarm extends BroadcastReceiver {
 						if(task.getSensedDataFileLocation()!=null && task.getSensedDataFileLocation().matches("[\\d]+"))
 							sensedDuration = Integer.parseInt(task.getSensedDataFileLocation());
 						AppUtils.uploadSensedData(context, task.getTaskStatus(), task.getTaskId(), sensedDuration);
+					} else {
+						//perform sensing file upload
+						int sensedDuration = 0;
+						if(task.getSensedDataFileLocation()!=null && task.getSensedDataFileLocation().matches("[\\d]+"))
+							sensedDuration = Integer.parseInt(task.getSensedDataFileLocation());
+						AppUtils.uploadSensedData(context, task.getTaskStatus(), task.getTaskId(), sensedDuration);
 					}
 				}
 				//remove all upload pending tasks after completing upload

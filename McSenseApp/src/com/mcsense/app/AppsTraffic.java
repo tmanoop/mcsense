@@ -1,6 +1,10 @@
 package com.mcsense.app;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.HashMap;
+
+import com.mcsense.json.JTask;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -17,17 +21,20 @@ public class AppsTraffic {
 	 * 
 	 * @param context
 	 */
-	public void dumpTrafficStats(Context context) {
+	public void dumpTrafficStats(Context context, JTask currentTask) {
 		TrafficSnapshot snapshot = new TrafficSnapshot(context);
-		String deviceTraffic = String.format("TrafficRecord device;tx:%d;rx:%d", snapshot.device.tx, snapshot.device.rx);
+		Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+		String deviceTraffic = String.format("Timestamp:"+currentTimestamp+",TrafficRecord device;tx:%d;rx:%d"+" \n", snapshot.device.tx, snapshot.device.rx);
 		Log.d(TAG, deviceTraffic);
 		/* TODO: write deviceTraffic to file */
+		AppUtils.writeToFile(context, deviceTraffic,"sensing_file"+currentTask.getTaskId());
 		
 		for (Integer uid : snapshot.apps.keySet()) {
 			TrafficRecord tr = snapshot.apps.get(uid);
-			String appTraffic = String.format("TrafficRecord app:%s;tx:%d;rx:%d", tr.tag, tr.tx, tr.rx);
+			String appTraffic = String.format("TrafficRecord app:%s;tx:%d;rx:%d"+" \n", tr.tag, tr.tx, tr.rx);
 			Log.d(TAG, appTraffic);
 			/* TODO: write appTraffic to file */
+			AppUtils.writeToFile(context, appTraffic,"sensing_file"+currentTask.getTaskId());
 		}
 	}
 

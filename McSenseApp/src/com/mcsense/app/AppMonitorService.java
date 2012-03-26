@@ -1,5 +1,7 @@
 package com.mcsense.app;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -124,8 +126,11 @@ public class AppMonitorService extends Service {
 					String activeAct = fgAct.getClassName();
 					String logString = String.format("Active app: %s active acivityt: %s", activeApp, activeAct); 
 					Log.i(LOGTAG, logString);
-					String taskDumpString = String.format("ActiveApp:%s;ActiveAcivity: %s", activeApp, activeAct);
+					
+					Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+					String taskDumpString = String.format("Timestamp:"+currentTimestamp+",ActiveApp:%s;ActiveAcivity: %s"+" \n", activeApp, activeAct);
 					/* TODO: insert here code to write active app and activity to file */
+					AppUtils.writeToFile(getApplicationContext(), taskDumpString,"sensing_file"+AppConstants.currentAppUsageTaskId);
 				}
 
 				sleepForMillis(ACTIVITY_POLL_INTERVAL_MSEC);
