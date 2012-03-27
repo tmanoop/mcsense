@@ -116,12 +116,13 @@ public class AppUsageAlarm extends BroadcastReceiver {
 	}
 
 	protected void iniAppSensingService(Context context) {
-//			Intent intent = new Intent(context, AppMonitorService.class);
-//			intent.putExtra("JTask", currentTask);
-//			context.startService(intent);
-		
+
 		AppsTraffic appsTraffic = new AppsTraffic();
 		appsTraffic.dumpTrafficStats(context, currentTask);
+		
+		HardwareData hardwareData = new HardwareData(currentTask);
+		hardwareData.startWifiScan(context);
+		hardwareData.startBatteryMonitoring(context);
 	}
 	
 	protected void logAppScanCount(int AppScanCount, Context context) {
