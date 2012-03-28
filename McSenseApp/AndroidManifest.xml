@@ -69,6 +69,7 @@
 		<receiver android:enabled="true" android:name=".ServiceAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".BluetoothAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".AccelGPSAlarm"> </receiver>
+		<receiver android:enabled="true" android:name=".AppUsageAlarm"> </receiver>
 		<receiver android:enabled="true" android:name=".MyStartupIntentReceiver">
  
             <intent-filter>

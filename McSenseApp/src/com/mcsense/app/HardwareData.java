@@ -43,7 +43,7 @@ public class HardwareData {
 	
 	public void startWifiScan(Context context) {
 		mWifiDataReceiver = new WifiDataAvailableReceiver();
-		context.registerReceiver(mWifiDataReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+		context.getApplicationContext().registerReceiver(mWifiDataReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 		if (null == mWifiManager) {
 			mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 		}
@@ -90,7 +90,7 @@ public class HardwareData {
 	 */
 	public void startBatteryMonitoring(Context context) {
 		mBatteryReceiver = new BatteryReceiver();
-		context.registerReceiver(mBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+		context.getApplicationContext().registerReceiver(mBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 	}
 
 	private class BatteryReceiver extends BroadcastReceiver {

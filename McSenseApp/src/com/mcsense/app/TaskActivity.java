@@ -355,6 +355,13 @@ public class TaskActivity extends Activity {
 				if(elapsedTotalMins<0)
 					elapsedTotalMins = 0;
 				duration.setText(elapsedTotalMins+" mins");
+			} else if(jTask.getTaskType().equals("appUsage")){
+				String countString = settings.getString("AppScanCount", "0");
+				int AppScanCount = Integer.parseInt(countString);
+				int elapsedTotalMins = (AppScanCount -1) * 5;
+				if(elapsedTotalMins<0)
+					elapsedTotalMins = 0;
+				duration.setText(elapsedTotalMins+" mins");
 			}
 		}
 		
