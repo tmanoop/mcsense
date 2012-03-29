@@ -134,8 +134,13 @@ public class BluetoothService extends Service {
             	
             	//log list of discovered devices string to file
         		Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        		
+        		// replace separator of hex digist with a dash
+        		// because log lines already use ":" to separate
+        		// fields.
+        		String localBtMAC = mBluetoothAdapter.getAddress().replace(':', '-');
             	
-            	String acelVals = "Timestamp:"+currentTimestamp+",TaskId:"+currentTask.getTaskId()+",ProviderId:"+AppConstants.providerId+currentLocation+",NumOfDevices:"+mNewBluetoothDevices.size()+",discDevices:"+discDevices+" \n";
+            	String acelVals = "Timestamp:"+currentTimestamp+",TaskId:"+currentTask.getTaskId()+",ProviderId:"+AppConstants.providerId+currentLocation+",LocalBluetoothMAC:"+localBtMAC+",NumOfDevices:"+mNewBluetoothDevices.size()+",discDevices:"+discDevices+" \n";
             	
             	AppUtils.writeToFile(context, acelVals,"sensing_file"+currentTask.getTaskId());            		
         		
