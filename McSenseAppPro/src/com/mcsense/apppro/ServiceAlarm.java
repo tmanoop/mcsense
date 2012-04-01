@@ -62,6 +62,7 @@ public class ServiceAlarm extends BroadcastReceiver {
 		Log.d("McSense", "load accepted tasks : "+acceptedTaskList.size());
 		//get last saved suspended list
 		ArrayList<JTask> suspendedList = AppUtils.getLastSavedTabList(AppConstants.SUSPENDED, context);
+		ArrayList<JTask> uploadPendingList = AppUtils.getLastSavedTabList(AppConstants.UPLOAD_PENDING, context);
 		
 		int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 		Log.d(AppConstants.TAG, "Hour: "+currentHour);
@@ -70,7 +71,7 @@ public class ServiceAlarm extends BroadcastReceiver {
 		//then start in-progress tasks anytime and long-term tasks only after 12 noon
 		if(acceptedTaskList != null && acceptedTaskList.size()>0){
 			for(JTask acptTask : acceptedTaskList){
-				if(suspendedList == null || !suspendedList.contains(acptTask)){
+				if(suspendedList == null || !suspendedList.contains(acptTask) || uploadPendingList == null || !uploadPendingList.contains(acptTask)){
 					if(!(acptTask.getParentTaskId() != 0 && currentHour<12)){
 						if(acptTask.getTaskType().equals("campusSensing")){
 							//stop the sensing service.  This alarm is set to do this every hour.

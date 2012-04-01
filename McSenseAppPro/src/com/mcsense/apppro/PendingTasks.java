@@ -78,6 +78,7 @@ public class PendingTasks extends ListActivity {
 	private void loadPendingTaskListView() {
 		//TaskAdapter taskAdapter = new TaskAdapter(this, R.layout.list_item, AppConstants.getTaskList());
 		filterLongTermTasks();
+		filterUploadPendingTasks();
 		taskAdapter = new TaskAdapter(this, R.layout.list_item, taskList);
 		setListAdapter(taskAdapter);
 //		taskAdapter.notifyDataSetChanged();
@@ -148,6 +149,31 @@ public class PendingTasks extends ListActivity {
 					JTask t = new JTask(0,desc); 
 					taskList = new ArrayList<JTask>();
 					taskList.add(t);
+				}
+			}
+		}
+	}
+	
+	protected void filterUploadPendingTasks() {
+		
+		if(taskList!=null){
+			ArrayList<JTask> uploadPendingList = AppUtils.getLastSavedTabList(AppConstants.UPLOAD_PENDING, getApplicationContext());
+			if(uploadPendingList != null){
+				synchronized (taskList) {
+					for(JTask temp : (ArrayList<JTask>)taskList.clone()){
+						if(uploadPendingList.contains(temp)){
+							taskList.remove(temp);
+						}	
+					}
+				}
+				
+				synchronized (taskList) {
+					if(taskList.size()==0){
+						String desc = "No Accepted Tasks";
+						JTask t = new JTask(0,desc); 
+						taskList = new ArrayList<JTask>();
+						taskList.add(t);
+					}
 				}
 			}
 		}
