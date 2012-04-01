@@ -34,6 +34,8 @@ public class AppConstants {
 	protected static ArrayList failedTaskList = new ArrayList();
 
 	public static int BLScanCount = 0;
+
+	public static String currentAppUsageTaskId = "";
 	
 	static final String TAG = "McSense";
 	

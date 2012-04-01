@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -50,6 +51,14 @@ public class MyStartupIntentReceiver extends BroadcastReceiver  {
 			iniUploadAlarm(context);
 		if(!AppUtils.isServiceAlarmExist(context))
 			iniServiceAlarm(context);
+		if (!AppUtils.isScreenStatusReceiverRegistered(true))
+			iniScreenStatusReceiver(context);
+	}
+	
+	private void iniScreenStatusReceiver(Context context) {
+		AppMonitorScreenStatusReceiver amssr = new AppMonitorScreenStatusReceiver();
+		context.registerReceiver(amssr, new IntentFilter(Intent.ACTION_SCREEN_ON));
+		context.registerReceiver(amssr, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 	}
 	
 	private void iniServiceAlarm(Context context) {
