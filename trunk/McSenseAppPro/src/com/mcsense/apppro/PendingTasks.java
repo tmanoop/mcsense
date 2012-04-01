@@ -45,6 +45,7 @@ public class PendingTasks extends ListActivity {
 	ArrayList<JTask> taskList;
 	TaskAdapter taskAdapter;
 	private ProgressDialog pDialog;
+	private int currentPosition;
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -71,6 +72,7 @@ public class PendingTasks extends ListActivity {
 		// TODO Auto-generated method stub
 		super.onPause();
 		pDialog.dismiss();
+		currentPosition = getListView().getLastVisiblePosition();
 	}
 	
 	private void loadPendingTaskListView() {
@@ -158,6 +160,7 @@ public class PendingTasks extends ListActivity {
 	        // handle the result here
 	        loadPendingTaskListView();
 			taskAdapter.notifyDataSetChanged();
+			getListView().setSelection(currentPosition);
 	    }
 	};
 	
