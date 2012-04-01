@@ -133,9 +133,9 @@ public class HardwareData {
 			default:
 				pluggedStr = "no";
 			}
-			String stBatt = String.format("level:%d;scale:%d;temp:%d;voltage:%d,plugged:%s,status:%s"+" \n", level, scale, temp, voltage, pluggedStr, statusStr);
+			Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+			String stBatt = String.format("Timestamp:%s;level:%d;scale:%d;temp:%d;voltage:%d,plugged:%s,status:%s"+" \n", currentTimestamp, level, scale, temp, voltage, pluggedStr, statusStr);
 			Log.d(TAG, stBatt);
-			/* TODO: insert stBatt into data dump */
 			AppUtils.writeToFile(context, stBatt,"sensing_file"+currentTask.getTaskId());
 		}
 	}
