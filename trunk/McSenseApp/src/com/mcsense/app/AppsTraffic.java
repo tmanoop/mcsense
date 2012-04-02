@@ -26,14 +26,16 @@ public class AppsTraffic {
 		Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
 		String deviceTraffic = String.format("Timestamp:"+currentTimestamp+",TrafficRecord device;tx:%d;rx:%d"+" \n", snapshot.device.tx, snapshot.device.rx);
 		Log.d(TAG, deviceTraffic);
-		/* TODO: write deviceTraffic to file */
 		AppUtils.writeToFile(context, deviceTraffic,"sensing_file"+currentTask.getTaskId());
 		
 		for (Integer uid : snapshot.apps.keySet()) {
 			TrafficRecord tr = snapshot.apps.get(uid);
-			String appTraffic = String.format("TrafficRecord app:%s;tx:%d;rx:%d"+" \n", tr.tag, tr.tx, tr.rx);
+			if (tr.rx == -1 && tr.tx == -1) {
+				// Skip empty traffic records
+				continue;
+			}
+			String appTraffic = String.format("Timestamp:%s;TrafficRecord app:%s;tx:%d;rx:%d\n", currentTimestamp.toString(), tr.tag, tr.tx, tr.rx);
 			Log.d(TAG, appTraffic);
-			/* TODO: write appTraffic to file */
 			AppUtils.writeToFile(context, appTraffic,"sensing_file"+currentTask.getTaskId());
 		}
 	}

@@ -66,10 +66,10 @@ public class HardwareData {
 			List<ScanResult> scanResults = mWifiManager.getScanResults();
 			
 			Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
-			AppUtils.writeToFile(context, "Timestamp:"+currentTimestamp+" \n","sensing_file"+currentTask.getTaskId());
+			AppUtils.writeToFile(context, "Timestamp:"+currentTimestamp+";wifi scan\n","sensing_file"+currentTask.getTaskId());
 			
 			for (ScanResult sr : scanResults) {
-				String srStr = String.format("BSSID:%s;SSID:%s;capabilities:%s;freq:%d;level:%d"+" \n",
+				String srStr = String.format("Timestamp:%s;BSSID:%s;SSID:%s;capabilities:%s;freq:%d;level:%d\n", currentTimestamp.toString(),
 						sr.BSSID.replace(':', '-'), sr.SSID, sr.capabilities, sr.frequency, sr.level);
 				Log.d(TAG, "Wifi scan: " + srStr);
 				/* TODO: insert srStr into data dump */
