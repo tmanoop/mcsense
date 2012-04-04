@@ -201,18 +201,22 @@ public class SensingService extends Service {
 //								 long oneMinuteSleepEnd = System.currentTimeMillis() + 60*1000;
 //								 while (System.currentTimeMillis() < oneMinuteSleepEnd) {
 //									 try {
-//										/* Thread.sleep is not very precise, sleeping for 60000 may
-//										 * cause the thread to miss the while condition and sleep
-//										 * for two minutes. Hence the thread wakes up every five seconds.
-//										 */
-//										Thread.sleep(5*1000);
+//										Thread.sleep(oneMinuteSleepEnd - System.currentTimeMillis());
 //									 } catch (InterruptedException e) {
 //									 }
-//									 if(!AppUtils.isServiceRunning(getApplicationContext()))
-//										 break;
-//									 logSensingElapsedTime(elapsedTimeMillis, taskId, "IP");
-//									 startHandler.sendEmptyMessage(0);
-//								 }								
+//								 }
+//								 if(!AppUtils.isServiceRunning(getApplicationContext()))
+//									 break;
+//								 logSensingElapsedTime(elapsedTimeMillis, taskId, "IP");
+//								 startHandler.sendEmptyMessage(0);
+//								 long fifteensecondsSleepEnd = System.currentTimeMillis() + 15*1000;
+//								 while (System.currentTimeMillis() < fifteensecondsSleepEnd) {
+//									 try {
+//										Thread.sleep(fifteensecondsSleepEnd - System.currentTimeMillis());
+//									 } catch (InterruptedException e) {
+//									 }
+//								 }
+//								 stopHandler.sendEmptyMessage(0);
 //							 }
 							 
 							 if(AppUtils.isServiceRunning(getApplicationContext())){
