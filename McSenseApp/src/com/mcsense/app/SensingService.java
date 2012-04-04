@@ -190,6 +190,31 @@ public class SensingService extends Service {
 								 }
 							 }
 							 
+							 /*
+							  * The following code runs a loop that lasts sensingDuration seconds.
+							  * The threadsleeps for one minute then sends an empty message to
+							  * startHandler.
+							  */
+//							 long endTime = System.currentTimeMillis() + sensingDuration*60*1000;
+//							 while (System.currentTimeMillis() < endTime) {
+//								 /* sleep one minute */
+//								 long oneMinuteSleepEnd = System.currentTimeMillis() + 60*1000;
+//								 while (System.currentTimeMillis() < oneMinuteSleepEnd) {
+//									 try {
+//										/* Thread.sleep is not very precise, sleeping for 60000 may
+//										 * cause the thread to miss the while condition and sleep
+//										 * for two minutes. Hence the thread wakes up every five seconds.
+//										 */
+//										Thread.sleep(5*1000);
+//									 } catch (InterruptedException e) {
+//									 }
+//									 if(!AppUtils.isServiceRunning(getApplicationContext()))
+//										 break;
+//									 logSensingElapsedTime(elapsedTimeMillis, taskId, "IP");
+//									 startHandler.sendEmptyMessage(0);
+//								 }								
+//							 }
+							 
 							 if(AppUtils.isServiceRunning(getApplicationContext())){
 								 stopService(new Intent(SensingService.this, SensingService.class));
 								 calculateElapsedMins();
