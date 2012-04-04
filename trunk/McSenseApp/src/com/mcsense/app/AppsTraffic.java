@@ -1,19 +1,28 @@
 package com.mcsense.app;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.mcsense.json.JTask;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.TrafficStats;
 import android.util.Log;
 
 public class AppsTraffic {
 
 	private static final String TAG = "AppsTraffic";
+	private static final String LAST_INSTALL_CHECK = "LastInstalledPackagesCheck";
 
 	/**
 	 * Function that dumps network traffic of the whole device and of the single
@@ -22,22 +31,61 @@ public class AppsTraffic {
 	 * @param context
 	 */
 	public void dumpTrafficStats(Context context, JTask currentTask) {
-		TrafficSnapshot snapshot = new TrafficSnapshot(context);
-		Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
-		String deviceTraffic = String.format("Timestamp:"+currentTimestamp+",TrafficRecord device;tx:%d;rx:%d"+" \n", snapshot.device.tx, snapshot.device.rx);
-		Log.d(TAG, deviceTraffic);
-		AppUtils.writeToFile(context, deviceTraffic,"sensing_file"+currentTask.getTaskId());
 		
+		Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+		String filename = "sensing_file" + currentTask.getTaskId();
+
+		SharedPreferences settings = context.getSharedPreferences(AppConstants.PREFS_NAME, Context.MODE_PRIVATE);
+		String lastInstalledPkgs = settings.getString(LAST_INSTALL_CHECK, "1970-01-01 01:00:00");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		try {
+			Date lastInstallCheck = sdf.parse(lastInstalledPkgs);
+			Calendar lastCheckCal = GregorianCalendar.getInstance();
+			lastCheckCal.setTime(lastInstallCheck);
+			Calendar nowCal = GregorianCalendar.getInstance();
+			long difInDays = ((nowCal.getTime().getTime() - lastCheckCal.getTime().getTime())/(1000*60*60*12));
+			if (difInDays > 1) {
+				getInstalledPackages(context, currentTimestamp, filename);
+				SharedPreferences.Editor settingsEditor = settings.edit();
+				String newLastCheck = sdf.format(nowCal.getTime());
+				settingsEditor.putString(LAST_INSTALL_CHECK, newLastCheck);
+				settingsEditor.commit();
+			}
+		} catch (ParseException e) {
+			Log.e("AppsTraffic", e.getMessage());
+		}
+
+		TrafficSnapshot snapshot = new TrafficSnapshot(context);
+		String deviceTraffic = String.format("Timestamp:" + currentTimestamp + ",TrafficRecord device;tx:%d;rx:%d"
+				+ " \n", snapshot.device.tx, snapshot.device.rx);
+		Log.d(TAG, deviceTraffic);
+		AppUtils.writeToFile(context, deviceTraffic, filename);
+
+		List<String> result = new LinkedList<String>();
 		for (Integer uid : snapshot.apps.keySet()) {
 			TrafficRecord tr = snapshot.apps.get(uid);
 			if (tr.rx == -1 && tr.tx == -1) {
 				// Skip empty traffic records
 				continue;
 			}
-			String appTraffic = String.format("Timestamp:%s;TrafficRecord app:%s;tx:%d;rx:%d\n", currentTimestamp.toString(), tr.tag, tr.tx, tr.rx);
+			String appTraffic = String.format("Timestamp:%s;TrafficRecord app:%s;tx:%d;rx:%d\n",
+					currentTimestamp.toString(), tr.tag, tr.tx, tr.rx);
+			result.add(appTraffic);
 			Log.d(TAG, appTraffic);
-			AppUtils.writeToFile(context, appTraffic,"sensing_file"+currentTask.getTaskId());
 		}
+		AppUtils.writeListToFile(context, result, filename);
+	}
+
+	private void getInstalledPackages(Context context, Timestamp currentTimestamp, String filename) {
+		final PackageManager pm = context.getPackageManager();
+		List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+		List<String> result = new LinkedList<String>();
+		for (ApplicationInfo packageInfo : packages) {
+			String installedPkg = String.format("Timestamp:%s;InstalledPkg:%s\n", currentTimestamp.toString(), packageInfo.packageName);
+			result.add(installedPkg);
+		}
+		AppUtils.writeListToFile(context, result, filename);
 	}
 
 	private class TrafficSnapshot {
