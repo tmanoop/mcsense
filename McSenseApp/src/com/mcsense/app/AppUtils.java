@@ -19,7 +19,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -377,6 +379,22 @@ public class AppUtils {
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void writeListToFile(Context context, Iterable<String> values, String fileName) {
+		String FILENAME = fileName;
+		try {
+			//writing
+			FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_APPEND);
+			for (String s : values) {
+				fos.write(s.getBytes());
+			}
+			fos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

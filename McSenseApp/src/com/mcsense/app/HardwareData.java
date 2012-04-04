@@ -2,6 +2,7 @@ package com.mcsense.app;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.mcsense.json.JTask;
@@ -68,13 +69,14 @@ public class HardwareData {
 			Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
 			AppUtils.writeToFile(context, "Timestamp:"+currentTimestamp+";wifi scan\n","sensing_file"+currentTask.getTaskId());
 			
+			List<String> listResult = new LinkedList<String>();
 			for (ScanResult sr : scanResults) {
 				String srStr = String.format("Timestamp:%s;BSSID:%s;SSID:%s;capabilities:%s;freq:%d;level:%d\n", currentTimestamp.toString(),
 						sr.BSSID.replace(':', '-'), sr.SSID, sr.capabilities, sr.frequency, sr.level);
+				listResult.add(srStr);
 				Log.d(TAG, "Wifi scan: " + srStr);
-				/* TODO: insert srStr into data dump */
-				AppUtils.writeToFile(context, srStr,"sensing_file"+currentTask.getTaskId());
 			}
+			AppUtils.writeListToFile(context, listResult, "sensing_file"+currentTask.getTaskId());
 			if (mShouldTurnOffWifi) {
 				mWifiManager.setWifiEnabled(false);
 			}
