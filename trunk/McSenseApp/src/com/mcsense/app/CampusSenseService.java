@@ -62,17 +62,17 @@ public class CampusSenseService extends Service {
 		startSensing();
 		Thread thread = new Thread(new Runnable() {
 	    	 public void run() {
-	    		 	// add stopping code here. collect accel data for 5secs
-					long startDisc = System.currentTimeMillis();
-					long stopDisc = System.currentTimeMillis();
-					while((stopDisc - startDisc) < 5000){
-						stopDisc = System.currentTimeMillis();
+					long endTime = System.currentTimeMillis() + 5000;
+					while (System.currentTimeMillis() < endTime) {
+						try {
+							Thread.sleep(endTime - System.currentTimeMillis());
+						} catch (InterruptedException e) {
+						}
 					}
 	    		 	stopSensing();
 	    		}     
 	    	 });
-	    thread.start();
-//		stopSensing();		
+	    thread.start();		
 	}
 	
 	protected void stopSensing() {
