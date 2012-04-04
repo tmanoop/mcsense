@@ -78,13 +78,14 @@ public class CampusSenseService extends Service {
 	protected void stopSensing() {
 		if(mSensorManager!=null)
 			mSensorManager.unregisterListener(acelSensorListener,mAccelerometer);
+		AppUtils.writeListToFile(getApplicationContext(), acelSensorListener.result,"sensing_file"+currentTask.getTaskId());
 		mSensorManager = null;
 		stopService(new Intent(getApplicationContext(), CampusSenseService.class));
 	}
 
 	private void startSensing() {
 		startAccelerometerSensing();
-		acelSensorListener = new AcelSensor(getApplicationContext(),currentTask);
+		acelSensorListener = new AcelSensor(getApplicationContext());
 		mSensorManager.registerListener(acelSensorListener, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
 		
 		myLocation.getLocation(this, locationResult);
