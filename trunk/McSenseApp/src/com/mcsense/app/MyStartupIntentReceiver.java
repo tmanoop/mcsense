@@ -57,8 +57,8 @@ public class MyStartupIntentReceiver extends BroadcastReceiver  {
 	
 	private void iniScreenStatusReceiver(Context context) {
 		AppMonitorScreenStatusReceiver amssr = new AppMonitorScreenStatusReceiver();
-		context.registerReceiver(amssr, new IntentFilter(Intent.ACTION_SCREEN_ON));
-		context.registerReceiver(amssr, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+		context.getApplicationContext().registerReceiver(amssr, new IntentFilter(Intent.ACTION_SCREEN_ON));
+		context.getApplicationContext().registerReceiver(amssr, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 	}
 	
 	private void iniServiceAlarm(Context context) {
