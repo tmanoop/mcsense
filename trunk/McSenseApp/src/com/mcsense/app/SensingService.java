@@ -333,7 +333,7 @@ public class SensingService extends Service {
 	protected void stopSensing() {
 		if(mSensorManager!=null)
 			mSensorManager.unregisterListener(acelSensorListener,mAccelerometer);
-		AppUtils.writeListToFile(getApplicationContext(), acelSensorListener.result,"sensing_file"+currentTask.getTaskId());
+		AppUtils.writeListToFile(getApplicationContext(), acelSensorListener.getResult(),"sensing_file"+currentTask.getTaskId());
 		mSensorManager = null;
 //        mlocManager.removeUpdates(mlocListener);
 	}
