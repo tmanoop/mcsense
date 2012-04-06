@@ -2,8 +2,10 @@ package com.mcsense.app;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import android.content.Context;
 
@@ -15,11 +17,13 @@ import android.widget.Toast;
 
 public class AcelSensor implements SensorEventListener {
 	Context context;
-	List<String> result;
+	private List<String> result;
+	ReentrantLock lock;
 	
 	public AcelSensor(Context cntxt){
 		context = cntxt;
 		result = new LinkedList<String>();
+		lock = new ReentrantLock();
 	}
 	
 	@Override
@@ -35,7 +39,16 @@ public class AcelSensor implements SensorEventListener {
     	Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
     	
     	String acelVals = "Timestamp:"+currentTimestamp+",x:"+x+",y:"+y+",z:"+z+"; \n";
+    	lock.lock();
     	result.add(acelVals);
+    	lock.unlock();
+	}
+	
+	public List<String> getResult() {
+		lock.lock();
+		List<String> clonedRes = new LinkedList<String>(result);
+		lock.unlock();
+		return clonedRes;
 	}
 
 	public void showToast(String msg) {
