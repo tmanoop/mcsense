@@ -65,7 +65,7 @@ public class TotalEarningsActivity extends Activity {
 					}
 				}
 			}			
-			textview.setText("Below are the Total Earnings: \r\n $"+totalEarnings+" \r\n");
+			textview.setText("Below are the Total Earnings: \r\n $"+AppUtils.roundTwoDecimals(totalEarnings)+" \r\n");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

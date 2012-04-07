@@ -15,6 +15,7 @@ import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1221,6 +1222,11 @@ public class AppUtils {
 			//stop bluetooth alarm
 			AppUtils.stopHardwareMonitorAlarm(context);
 //			finish();
+		}
+		
+		public static double roundTwoDecimals(double d) {
+            DecimalFormat twoDForm = new DecimalFormat("#.##");
+		    return Double.valueOf(twoDForm.format(d));
 		}
 
 }
