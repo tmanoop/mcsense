@@ -2,6 +2,7 @@ package com.mcsense.apppro;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.mcsense.json.JTask;
@@ -66,15 +67,16 @@ public class HardwareData {
 			List<ScanResult> scanResults = mWifiManager.getScanResults();
 			
 			Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
-			AppUtils.writeToFile(context, "Timestamp:"+currentTimestamp+" \n","sensing_file"+currentTask.getTaskId());
+			AppUtils.writeToFile(context, "Timestamp:"+currentTimestamp+";wifi scan\n","sensing_file"+currentTask.getTaskId());
 			
+			List<String> listResult = new LinkedList<String>();
 			for (ScanResult sr : scanResults) {
-				String srStr = String.format("BSSID:%s;SSID:%s;capabilities:%s;freq:%d;level:%d"+" \n",
+				String srStr = String.format("Timestamp:%s;BSSID:%s;SSID:%s;capabilities:%s;freq:%d;level:%d\n", currentTimestamp.toString(),
 						sr.BSSID.replace(':', '-'), sr.SSID, sr.capabilities, sr.frequency, sr.level);
+				listResult.add(srStr);
 				Log.d(TAG, "Wifi scan: " + srStr);
-				/* TODO: insert srStr into data dump */
-				AppUtils.writeToFile(context, srStr,"sensing_file"+currentTask.getTaskId());
 			}
+			AppUtils.writeListToFile(context, listResult, "sensing_file"+currentTask.getTaskId());
 			if (mShouldTurnOffWifi) {
 				mWifiManager.setWifiEnabled(false);
 			}
@@ -133,9 +135,9 @@ public class HardwareData {
 			default:
 				pluggedStr = "no";
 			}
-			String stBatt = String.format("level:%d;scale:%d;temp:%d;voltage:%d,plugged:%s,status:%s"+" \n", level, scale, temp, voltage, pluggedStr, statusStr);
+			Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+			String stBatt = String.format("Timestamp:%s;level:%d;scale:%d;temp:%d;voltage:%d,plugged:%s,status:%s"+" \n", currentTimestamp, level, scale, temp, voltage, pluggedStr, statusStr);
 			Log.d(TAG, stBatt);
-			/* TODO: insert stBatt into data dump */
 			AppUtils.writeToFile(context, stBatt,"sensing_file"+currentTask.getTaskId());
 		}
 	}

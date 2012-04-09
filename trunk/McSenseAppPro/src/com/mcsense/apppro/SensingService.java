@@ -190,6 +190,35 @@ public class SensingService extends Service {
 								 }
 							 }
 							 
+							 /*
+							  * The following code runs a loop that lasts sensingDuration seconds.
+							  * The threadsleeps for one minute then sends an empty message to
+							  * startHandler.
+							  */
+//							 long endTime = System.currentTimeMillis() + sensingDuration*60*1000;
+//							 while (System.currentTimeMillis() < endTime) {
+//								 /* sleep one minute */
+//								 long oneMinuteSleepEnd = System.currentTimeMillis() + 60*1000;
+//								 while (System.currentTimeMillis() < oneMinuteSleepEnd) {
+//									 try {
+//										Thread.sleep(oneMinuteSleepEnd - System.currentTimeMillis());
+//									 } catch (InterruptedException e) {
+//									 }
+//								 }
+//								 if(!AppUtils.isServiceRunning(getApplicationContext()))
+//									 break;
+//								 logSensingElapsedTime(elapsedTimeMillis, taskId, "IP");
+//								 startHandler.sendEmptyMessage(0);
+//								 long fifteensecondsSleepEnd = System.currentTimeMillis() + 15*1000;
+//								 while (System.currentTimeMillis() < fifteensecondsSleepEnd) {
+//									 try {
+//										Thread.sleep(fifteensecondsSleepEnd - System.currentTimeMillis());
+//									 } catch (InterruptedException e) {
+//									 }
+//								 }
+//								 stopHandler.sendEmptyMessage(0);
+//							 }
+							 
 							 if(AppUtils.isServiceRunning(getApplicationContext())){
 								 stopService(new Intent(SensingService.this, SensingService.class));
 								 calculateElapsedMins();
@@ -304,13 +333,14 @@ public class SensingService extends Service {
 	protected void stopSensing() {
 		if(mSensorManager!=null)
 			mSensorManager.unregisterListener(acelSensorListener,mAccelerometer);
+		AppUtils.writeListToFile(getApplicationContext(), acelSensorListener.getResult(),"sensing_file"+currentTask.getTaskId());
 		mSensorManager = null;
 //        mlocManager.removeUpdates(mlocListener);
 	}
 
 	private void startSensing() {
 		startAccelerometerSensing();
-		acelSensorListener = new AcelSensor(getApplicationContext(),currentTask);
+		acelSensorListener = new AcelSensor(getApplicationContext());
 		mSensorManager.registerListener(acelSensorListener, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 		
 //		myLocation.getLocation(this, locationResult);
