@@ -72,7 +72,7 @@ public class FacebookServlet extends HttpServlet {
 			System.out.println("Answer for Qs: "+surveyResponse);
 			saveData(id, "\n\n*****SurveyResponse*****\n\n", surveyResponse);
 			
-			String responseText = "Thank you for your participation and help!!";
+			String responseText = "Thank you for your participation and help!! <p> You can now close this browser window.";
 //			response
 			PrintWriter out = response.getWriter();
 			out.println("<title>Submitted</title>" + "<body bgcolor=FFFFFF>");

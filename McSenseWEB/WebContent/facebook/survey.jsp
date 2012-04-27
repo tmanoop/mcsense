@@ -6,9 +6,126 @@
     </title> 
   </head> 
 <body>
+<script>
+function validateForm(theForm) {
+	var listSelected1 = false;
+	var listSelected2 = false;
+	var listSelected3 = false;
+	var listSelected4 = false;
+	var listSelected5 = false;
+	var listSelected6 = false;
+	var listSelected7 = false;
+	var listSelected8 = false;
+	var listSelected9 = false;
+	var listSelected10 = false;
+	var listSelected11 = false;
+	var listSelected12 = false;
+	var listSelected13 = false;
+	var listSelected14 = false;
+	var listSelected15 = false;
+	
+	
+	for ( var i = 0; i < theForm.rad1.length; i++ ) {
+		if ( theForm.rad1[i].checked ) {
+			listSelected1 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad2.length; i++ ) {
+		if ( theForm.rad2[i].checked ) {
+			listSelected2 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad3.length; i++ ) {
+		if ( theForm.rad3[i].checked ) {
+			listSelected3 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad4.length; i++ ) {
+		if ( theForm.rad4[i].checked ) {
+			listSelected4 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad5.length; i++ ) {
+		if ( theForm.rad5[i].checked ) {
+			listSelected5 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad6.length; i++ ) {
+		if ( theForm.rad6[i].checked ) {
+			listSelected6 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad7.length; i++ ) {
+		if ( theForm.rad7[i].checked ) {
+			listSelected7 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad8.length; i++ ) {
+		if ( theForm.rad8[i].checked ) {
+			listSelected8 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad9.length; i++ ) {
+		if ( theForm.rad9[i].checked ) {
+			listSelected9 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad10.length; i++ ) {
+		if ( theForm.rad10[i].checked ) {
+			listSelected10 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad11.length; i++ ) {
+		if ( theForm.rad11[i].checked ) {
+			listSelected11 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad12.length; i++ ) {
+		if ( theForm.rad12[i].checked ) {
+			listSelected12 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad13.length; i++ ) {
+		if ( theForm.rad13[i].checked ) {
+			listSelected13 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad14.length; i++ ) {
+		if ( theForm.rad14[i].checked ) {
+			listSelected14 = true;
+			break;
+		}
+	}
+	for ( var i = 0; i < theForm.rad15.length; i++ ) {
+		if ( theForm.rad15[i].checked ) {
+			listSelected15 = true;
+			break;
+		}
+	}
+	
+	if (!listSelected1 || !listSelected2 || !listSelected3 || !listSelected4 || !listSelected5 || !listSelected6 || !listSelected7 || !listSelected8 || !listSelected9 || !listSelected10 || !listSelected11 || !listSelected12 || !listSelected13 || !listSelected14 || !listSelected15 ){
+		alert('Please answer all questions.');
+		return false;
+	}else
+		return true;
+}
+</script>
 <h2>Please complete below survey:</h2>
 <BR>
-<form name="input" action="../FacebookServlet" method="post" accept-charset="UTF-8">
+<form name="input" action="../FacebookServlet" method="post" accept-charset="UTF-8" onsubmit="return validateForm(this)">
 <input	type="hidden" id="id" name="id" value="<%= request.getParameter("id")%>">
 1. I participated in this study to earn money
 <BR>
