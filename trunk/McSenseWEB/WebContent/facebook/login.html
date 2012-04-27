@@ -1,6 +1,20 @@
 <html>
 <head>
 <title>Test Page</title>
+<script type="text/javascript">
+        // Get rid of the Facebook residue hash in the URI
+        // Must be done in JS cuz hash only exists client-side
+        // IE and Chrome version of the hack
+        if (String(window.location.hash).substring(0,1) == "#") {
+                window.location.hash = "";
+                window.location.href=window.location.href.slice(0, -1);
+                }
+        // Firefox version of the hack
+        if (String(location.hash).substring(0,1) == "#") {
+                location.hash = "";
+                location.href=location.href.substring(0,location.href.length-3);
+                }
+</script>
 <script>
   var statusList = new Array();
   var statusListSorted = new Array();
@@ -10,13 +24,14 @@
 
 	
 	function upload_data() {
+		document.getElementById('login').innerHTML = "";
 		get_public_info();
 	}
 
 	function get_public_info() {
 		//alert('publicinfo');
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "public info from Facebook ... ";
+				+ "data from Facebook ... ";
 		FB.api('/me', function(response) {
 			profile = profile.concat("*****PublicInfo*****");
 			profile = profile.concat(response);
@@ -28,7 +43,7 @@
 	function get_likes_info() {
 		//alert('publicinfo');
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "likes from Facebook ... ";
+				+ "data from Facebook .......... ";
 		FB.api('/me/likes', function(response) {
 			profile = profile.concat("*****UserLikes*****");
 			profile = profile.concat(response.data);
@@ -39,7 +54,7 @@
 
 	function get_friend_List() {
 		//alert('friend');
-		document.getElementById('test').innerHTML = "Requesting friends data from Facebook ... ";
+		document.getElementById('test').innerHTML = "Requesting data from Facebook ... ";
 		FB.api('/me/friends', function(response) {
 			friendCount = response.data.length;
 			//alert(friendCount);
@@ -53,7 +68,7 @@
 
 	function get_movies_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "movies info from Facebook ... ";
+				+ "data from Facebook .......... ";
 		FB.api('/me/movies', function(response) {
 			profile = profile.concat("*****MoviesInfo*****");
 			profile = profile.concat(response.data);
@@ -63,7 +78,7 @@
 
 	function get_music_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "music info from Facebook ... ";
+				+ "data from Facebook ... ";
 		FB.api('/me/music', function(response) {
 			profile = profile.concat("*****MusicInfo*****");
 			profile = profile.concat(response.data);
@@ -73,7 +88,7 @@
 
 	function get_books_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "books info from Facebook ... ";
+				+ "data from Facebook .......... ";
 		FB.api('/me/books', function(response) {
 			profile = profile.concat("*****BooksInfo*****");
 			profile = profile.concat(response.data);
@@ -83,7 +98,7 @@
 
 	function get_notes_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "notes info from Facebook ... ";
+				+ "data from Facebook ... ";
 		FB.api('/me/notes', function(response) {
 			profile = profile.concat("*****NotesInfo*****");
 			profile = profile.concat(response.data);
@@ -93,7 +108,7 @@
 
 	function get_permissions_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "permissions info from Facebook ... ";
+				+ "data from Facebook .......... ";
 		FB.api('/me/permissions', function(response) {
 			profile = profile.concat("*****PermissionsInfo*****");
 			profile = profile.concat(response.data);
@@ -103,7 +118,7 @@
 
 	function get_photos_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "photos info from Facebook ... ";
+				+ "data from Facebook ... ";
 		FB.api('/me/albums', function(response) {
 			profile = profile.concat("*****PhotosInfo*****");
 			profile = profile.concat(response.data);
@@ -113,7 +128,7 @@
 
 	function get_videos_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "videos info from Facebook ... ";
+				+ "data from Facebook .......... ";
 		FB.api('/me/videos/uploaded', function(response) {
 			profile = profile.concat("*****VideosInfo*****");
 			profile = profile.concat(response.data);
@@ -123,7 +138,7 @@
 
 	function get_events_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "events info from Facebook ... ";
+				+ "data from Facebook ... ";
 		FB.api('/me/events', function(response) {
 			profile = profile.concat("*****EventsInfo*****");
 			profile = profile.concat(response.data);
@@ -133,7 +148,7 @@
 
 	function get_groups_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "groups info from Facebook ... ";
+				+ "data from Facebook .......... ";
 		FB.api('/me/groups', function(response) {
 			profile = profile.concat("*****GroupsInfo*****");
 			profile = profile.concat(response.data);
@@ -143,7 +158,7 @@
 
 	function get_checkins_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "checkins info from Facebook ... ";
+				+ "data from Facebook ... ";
 		FB.api('/me/checkins', function(response) {
 			profile = profile.concat("*****CheckinsInfo*****");
 			profile = profile.concat(response.data);
@@ -153,7 +168,7 @@
 
 	function get_locations_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "locations info from Facebook ... ";
+				+ "data from Facebook .......... ";
 		FB.api('/me/locations', function(response) {
 			profile = profile.concat("*****LocationsInfo*****");
 			profile = profile.concat(response.data);
@@ -163,7 +178,7 @@
 
 	function get_wall_info() {
 		document.getElementById('test').innerHTML = "Requesting "
-				+ "wall info from Facebook ... ";
+				+ "data from Facebook ... ";
 		FB.api('/me/feed', function(response) {
 			profile = profile.concat("*****WallInfo*****");
 			profile = profile.concat(response.data);
@@ -202,33 +217,69 @@ Please enter UCID and click on Facebook login button to start.
 <div id="statuses"></div>
 <script src="http://connect.facebook.net/en_US/all.js"></script>
 <script> 
+window.fbAsyncInit = function() {
 FB.init({
     appId  : '316312168439370',
+    channelUrl : 'http://localhost:10080/McSenseWEB/facebook//channel.html',
     status : true, // check login status
     cookie : true, // enable cookies 
     xfbml  : true, // parse XFBML
     oauth  : true
   });
 FB.Event.subscribe('auth.authResponseChange', function(response) {
+	//alert(response.authResponse);
+	if (response.authResponse) {
   		window.location.reload();
-});
+	}
+}, true);
+
 FB.getLoginStatus(function(response) {
   if (response.status == "connected") {
     // logged in and connected user, someone you know
-    if(document.getElementById('id').value === "")
+    if(document.getElementById('id').value === ""){
+    	document.getElementById('login').innerHTML
+        ='<a href="#" onclick="upload_data();">Start Survey</a><br/>';
         alert("Please enter UCID and Click on Start Survey.");
-    else
+    }
+    else{
+    	//alert('in');
     	upload_data();
-    document.getElementById('login').innerHTML
-      ='<a href="#" onclick="upload_data();">Start Survey</a><br/>';
+    }
+    
+  } else if (response.status === 'not_authorized') {
+	  //alert('not');
+	  upload_data();
   } else {
     document.getElementById('login').innerHTML
-      ='<fb:login-button show-faces="true" width="100"' 
+      ='<fb:login-button onlogin="call_login();" show-faces="true" width="100"' 
       + ' max-rows="1" perms="user_about_me, user_activities, user_birthday, user_checkins, user_education_history, user_events, user_groups, user_hometown, user_interests, user_likes, user_notes, user_photos, user_relationships, user_status, user_videos, email">'
       + '</fb:login-button>';
     FB.XFBML.parse();
   }
 });
+
+};
+function call_login(){
+	FB.getLoginStatus(function(response) {
+		  if (response.status == "connected") {
+		    // logged in and connected user, someone you know
+		    if(document.getElementById('id').value === ""){
+		    	document.getElementById('login').innerHTML
+		        ='<a href="#" onclick="upload_data();">Start Survey</a><br/>';
+		        alert("Please enter UCID and Click on Start Survey.");
+		    }
+		    else{
+		    	//alert('in');
+		    	upload_data();
+		    }
+		    
+		  } else if (response.status === 'not_authorized') {
+			  //alert('not');
+			  upload_data();
+		  } 
+	}, true);
+}
+
 </script>
 </body>
 </html>
