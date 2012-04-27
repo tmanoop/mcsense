@@ -8,7 +8,8 @@
 <body>
 <h2>Please complete below survey:</h2>
 <BR>
-<form name="input" action="../FacebookServlet" method="post">
+<form name="input" action="../FacebookServlet" method="post" accept-charset="UTF-8">
+<input	type="hidden" id="id" name="id" value="<%= request.getParameter("id")%>">
 1. I participated in this study to earn money
 <BR>
 <BR>

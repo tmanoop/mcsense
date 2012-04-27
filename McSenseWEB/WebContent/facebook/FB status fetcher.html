@@ -1,0 +1,95 @@
+<html> 
+<head> 
+<title>Test Page</title> 
+<script> 
+  var statusList = new Array();
+  var statusListSorted = new Array();
+  var friendCount = 0;
+  var maxResults = 100;
+  function show_elements()
+  {
+  	document.getElementById('test').innerHTML = "";
+    for( i=0; i<maxResults; i++) {
+      var newDiv = document.createElement("DIV");
+      newDiv.id = statusList[i].id;
+      newDiv.innerHTML = "From: <b>"+statusList[i].from.name+"</b>, Updated at: "+statusList[i].updated_time+"<blockquote><i>"+statusList[i].message +'</i></blockquote>' 
+        +"\r\n";
+      document.getElementById("statuses").appendChild(newDiv);
+      
+    }
+    
+  }
+  function upload_data()
+  {
+	  var params = "";
+      for( i=0; i<maxResults; i++) {
+      	params = params+statusList[i].from.name+"-"+statusList[i].updated_time+"-"+statusList[i].message+" ; \n"
+      }
+	  document.getElementById('xml').value = params;
+	  document.forms["fb"].submit();
+  }
+  function get_friend_likes() {
+    document.getElementById('test').innerHTML = "Requesting "
+      + "data from Facebook ... ";
+    FB.api('/me/friends', function(response) {
+        friendCount = response.data.length;
+        for( i=0; i<response.data.length; i++) 
+	{
+        	//alert('friend'+i);
+          friendId = response.data[i].id;
+	  FB.api('/'+friendId+'/statuses', function(response) {
+            statusList = statusList.concat(response.data);
+            friendCount--;
+            document.getElementById('test').innerHTML = friendCount 
+              + " friends to go ... ";
+            if(friendCount === 0) 
+	    {
+        upload_data();
+		//show_elements(); 
+		//document.getElementById('test').innerHTML = response.data;
+	    };
+          });
+        } 
+      });
+  }
+</script>
+</head> 
+<body>  
+<form name="fb" action="../FacebookServlet" method="post">
+<input type="hidden" id="xml" name="xml" value="">
+</form>
+<div id="fb-root"></div> 
+<div id="login"></div> 
+<div id="test"></div> 
+<div id="statuses"></div> 
+<script src="http://connect.facebook.net/en_US/all.js"></script> 
+<script> 
+FB.init({
+    appId  : '316312168439370',
+    status : true, // check login status
+    cookie : true, // enable cookies 
+    xfbml  : true, // parse XFBML
+    oauth  : true
+  });
+FB.Event.subscribe('auth.authResponseChange', function(response) {
+	if (response.status != "connected") {
+  window.location.reload();
+	}
+});
+FB.getLoginStatus(function(response) {
+  if (response.status == "connected") {
+    // logged in and connected user, someone you know
+    get_friend_likes();
+    document.getElementById('login').innerHTML
+      ='<a href="#" onclick="FB.logout();">Logout</a><br/>';
+  } else {
+    document.getElementById('login').innerHTML
+      ='<fb:login-button show-faces="true" width="200"' 
+      + ' max-rows="1" perms="user_likes, friends_likes, user_photos, friends_photos, friends_status">'
+      + '</fb:login-button>';
+    FB.XFBML.parse();
+  }
+});
+</script> 
+</body> 
+</html>
