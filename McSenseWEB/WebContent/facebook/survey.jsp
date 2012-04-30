@@ -23,6 +23,7 @@ function validateForm(theForm) {
 	var listSelected13 = false;
 	var listSelected14 = false;
 	var listSelected15 = false;
+	var listSelected16 = false;
 	
 	
 	for ( var i = 0; i < theForm.rad1.length; i++ ) {
@@ -115,8 +116,14 @@ function validateForm(theForm) {
 			break;
 		}
 	}
+	for ( var i = 0; i < theForm.rad16.length; i++ ) {
+		if ( theForm.rad16[i].checked ) {
+			listSelected16 = true;
+			break;
+		}
+	}
 	
-	if (!listSelected1 || !listSelected2 || !listSelected3 || !listSelected4 || !listSelected5 || !listSelected6 || !listSelected7 || !listSelected8 || !listSelected9 || !listSelected10 || !listSelected11 || !listSelected12 || !listSelected13 || !listSelected14 || !listSelected15 ){
+	if (!listSelected1 || !listSelected2 || !listSelected3 || !listSelected4 || !listSelected5 || !listSelected6 || !listSelected7 || !listSelected8 || !listSelected9 || !listSelected10 || !listSelected11 || !listSelected12 || !listSelected13 || !listSelected14 || !listSelected15 || !listSelected16){
 		alert('Please answer all questions.');
 		return false;
 	}else
@@ -235,8 +242,8 @@ battery was low
 <input type="radio" name="rad10" value="4" >strongly agree
 <BR>
 <BR>
-11. I would like to be able to specify when and where the automatic tasks
-may collect data
+11. I was concerned about my privacy while participating in the
+user study
 <BR>
 <BR>
 <input type="radio" name="rad11" value="0" >strongly disagree
@@ -246,9 +253,8 @@ may collect data
 <input type="radio" name="rad11" value="4" >strongly agree
 <BR>
 <BR>
-12. I would like to receive recommendations about new mobile phone apps
-and services, better vehicular traffic routes, or healthier lifestyle
-based on the analysis of the data collected from my phone
+12. I would like to be able to specify when and where the automatic tasks
+may collect data
 <BR>
 <BR>
 <input type="radio" name="rad12" value="0" >strongly disagree
@@ -258,8 +264,9 @@ based on the analysis of the data collected from my phone
 <input type="radio" name="rad12" value="4" >strongly agree
 <BR>
 <BR>
-13. I would provide some sensing data for free in exchange for
-recommendations such as those mentioned above
+13. I would like to receive recommendations about new mobile phone apps
+and services, better vehicular traffic routes, or healthier lifestyle
+based on the analysis of the data collected from my phone
 <BR>
 <BR>
 <input type="radio" name="rad13" value="0" >strongly disagree
@@ -269,8 +276,8 @@ recommendations such as those mentioned above
 <input type="radio" name="rad13" value="4" >strongly agree
 <BR>
 <BR>
-14. I would be willing to share my Facebook profile data (for free) to
-help the system provide higher quality recommendations
+14. I would provide some sensing data for free in exchange for
+recommendations such as those mentioned above
 <BR>
 <BR>
 <input type="radio" name="rad14" value="0" >strongly disagree
@@ -280,9 +287,8 @@ help the system provide higher quality recommendations
 <input type="radio" name="rad14" value="4" >strongly agree
 <BR>
 <BR>
-15. I would be willing to execute sensing tasks offered by other
-organizations (commercial or non-commercial) as long as they offer
-privacy/anonymity guarantees.
+15. I would be willing to share my Facebook profile data (for free) to
+help the system provide higher quality recommendations
 <BR>
 <BR>
 <input type="radio" name="rad15" value="0" >strongly disagree
@@ -290,6 +296,18 @@ privacy/anonymity guarantees.
 <input type="radio" name="rad15" value="2" >neutral
 <input type="radio" name="rad15" value="3" >agree
 <input type="radio" name="rad15" value="4" >strongly agree
+<BR>
+<BR>
+16. I would be willing to execute sensing tasks offered by other
+organizations (commercial or non-commercial) as long as they offer
+privacy/anonymity guarantees.
+<BR>
+<BR>
+<input type="radio" name="rad16" value="0" >strongly disagree
+<input type="radio" name="rad16" value="1" >disagree
+<input type="radio" name="rad16" value="2" >neutral
+<input type="radio" name="rad16" value="3" >agree
+<input type="radio" name="rad16" value="4" >strongly agree
 <BR>
 <BR>
 <input type="submit" name="btnSubmit" value="Submit">
