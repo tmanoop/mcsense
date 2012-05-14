@@ -67,8 +67,9 @@ public class FacebookServlet extends HttpServlet {
 			String rad13 = request.getParameter("rad13");
 			String rad14 = request.getParameter("rad14");
 			String rad15 = request.getParameter("rad15");
+			String rad16 = request.getParameter("rad16");
 			
-			String surveyResponse = rad1+";"+rad2 +";"+rad3 +";"+rad4 +";"+rad5 +";"+rad6 +";"+rad7 +";"+rad8 +";"+rad9 +";"+rad10+";"+rad11+";"+rad12+";"+rad13+";"+rad14+";"+rad15+"\n\n";
+			String surveyResponse = rad1+";"+rad2 +";"+rad3 +";"+rad4 +";"+rad5 +";"+rad6 +";"+rad7 +";"+rad8 +";"+rad9 +";"+rad10+";"+rad11+";"+rad12+";"+rad13+";"+rad14+";"+rad15+";"+rad16+"\n\n";
 			System.out.println("Answer for Qs: "+surveyResponse);
 			saveData(id, "\n\n*****SurveyResponse*****\n\n", surveyResponse);
 			
